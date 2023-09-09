@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "TKUUUrbx5sas14fvp7srikHfV5EeiUsglA45RK+xRjlyq8am5NQvSy4tNKP9LjhI9/u8viw7e0vdfNKiO1m1tw==",
+  "success": true,
+  "projectFilePath": "C:\\git\\Seedstarfield\\ssf.models\\ssf.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\chaos\\.nuget\\packages\\yamldotnet\\13.3.1\\yamldotnet.13.3.1.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seedstarfield", "Seedstarfield.csproj", "{4C5254ED-D139-4AE7-8CDB-DEA8891F2C96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssf", "..\ssf.models\ssf.csproj", "{6453E667-036D-4295-9293-8E06D652FF40}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4C5254ED-D139-4AE7-8CDB-DEA8891F2C96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C5254ED-D139-4AE7-8CDB-DEA8891F2C96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C5254ED-D139-4AE7-8CDB-DEA8891F2C96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C5254ED-D139-4AE7-8CDB-DEA8891F2C96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6453E667-036D-4295-9293-8E06D652FF40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6453E667-036D-4295-9293-8E06D652FF40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6453E667-036D-4295-9293-8E06D652FF40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6453E667-036D-4295-9293-8E06D652FF40}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ADDABFBD-0DE3-4B4F-AE68-D5457E45A77A}
+	EndGlobalSection
+EndGlobal

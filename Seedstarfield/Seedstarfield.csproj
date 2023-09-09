@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mutagen.Bethesda.Starfield" Version="0.42.0.1-nightly-20230908-100612" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ssf.models\ssf.csproj" />
+  </ItemGroup>
+
+</Project>
