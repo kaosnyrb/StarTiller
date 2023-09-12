@@ -20,7 +20,7 @@ namespace ssf.IO
         public static string BuildYaml(object obj)
         {
             var serializer = new SerializerBuilder()
-                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .WithNamingConvention(PascalCaseNamingConvention.Instance)
             .Build();
             var yaml = serializer.Serialize(obj);
             System.Console.WriteLine(yaml);

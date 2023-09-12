@@ -47,12 +47,6 @@
       "frameworks": {
         "net7.0-windows7.0": {
           "targetAlias": "net7.0-windows",
-          "dependencies": {
-            "Mutagen.Bethesda.Starfield": {
-              "target": "Package",
-              "version": "[0.42.0.1-nightly-20230908-100612, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",
