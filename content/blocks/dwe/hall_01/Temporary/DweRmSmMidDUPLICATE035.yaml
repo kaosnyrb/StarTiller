@@ -1,0 +1,8 @@
+MutagenObjectType: PlacedObject
+FormKey: 25054B:Undaunted.esp
+EditorID: DweRmSmMidDUPLICATE035
+FormVersion: 44
+Base: 0581BD:Skyrim.esm
+Placement:
+  Position: -3584, 8448, 256
+  Rotation: 0, 0, 4.712389

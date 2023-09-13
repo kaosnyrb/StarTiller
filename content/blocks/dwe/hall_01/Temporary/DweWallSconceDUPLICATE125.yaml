@@ -1,0 +1,8 @@
+MutagenObjectType: PlacedObject
+FormKey: 25053B:Undaunted.esp
+EditorID: DweWallSconceDUPLICATE125
+FormVersion: 44
+Base: 05ADDD:Skyrim.esm
+Scale: 0.67
+Placement:
+  Position: -4184, 8189, 370

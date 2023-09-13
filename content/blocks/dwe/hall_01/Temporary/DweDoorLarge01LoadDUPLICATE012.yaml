@@ -1,0 +1,8 @@
+MutagenObjectType: PlacedObject
+FormKey: 250576:Undaunted.esp
+EditorID: DweDoorLarge01LoadDUPLICATE012
+FormVersion: 44
+Base: 06597B:Skyrim.esm
+Placement:
+  Position: -7928, 8448, 512
+  Rotation: 0, 0, 4.712389

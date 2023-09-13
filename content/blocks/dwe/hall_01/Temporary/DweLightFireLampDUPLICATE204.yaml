@@ -1,0 +1,8 @@
+MutagenObjectType: PlacedObject
+FormKey: 250596:Undaunted.esp
+EditorID: DweLightFireLampDUPLICATE204
+FormVersion: 44
+Base: 077761:Skyrim.esm
+Placement:
+  Position: -3002, 8704, 382
+  Rotation: 0, 0, 4.712389

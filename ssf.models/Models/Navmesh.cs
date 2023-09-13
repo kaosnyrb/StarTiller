@@ -16,7 +16,6 @@ namespace ssf.Models
 
     public class Data
     {
-        public Parent Parent { get; set; }
         public string[] Vertices { get; set; }
         public Triangle[] Triangles { get; set; }
         public int NavmeshGridDivisor { get; set; }
@@ -25,12 +24,6 @@ namespace ssf.Models
         public string Min { get; set; }
         public string Max { get; set; }
         public object NavmeshGrid { get; set; }
-    }
-
-    public class Parent
-    {
-        public string MutagenObjectType { get; set; }
-        public string ParentERROR { get; set; }
     }
 
     public class Triangle

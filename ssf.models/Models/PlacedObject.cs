@@ -8,6 +8,13 @@ namespace ssf.Models
 {
     public class PlacedObject
     {
+        public PlacedObject()
+        {
+            if (Scale == 0)
+            {
+                Scale = 1;
+            }
+        }
         public string MutagenObjectType { get; set; }
         public string FormKey { get; set; }
         public string EditorID { get; set; }
