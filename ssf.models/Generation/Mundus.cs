@@ -117,7 +117,7 @@ namespace ssf.Generation
             var start = FindBlockWithJoin("DweFacadeHallSm1way01", "Entrance", false);
             PlaceBlock(start);
             // While we have exits open.
-            int breaker = 3;
+            int breaker = 30;
             int steps = 0;
             while (openexits.Count > 0 && steps <= breaker)
             {

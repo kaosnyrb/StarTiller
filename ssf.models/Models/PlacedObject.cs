@@ -37,7 +37,7 @@ namespace ssf.Models
             var pos = Utils.ConvertStringToVector3(Position);
 
             //Rotate around pivot 
-//            pos = Utils.RotateVectorAroundPivot(Pivot, pos, -rotation);
+            pos = Utils.RotateVectorAroundPivot(Pivot, pos, rotation);
 
             //Apply translation
             pos += translation;
@@ -50,7 +50,7 @@ namespace ssf.Models
 
             //Degrees to rads
             float target = (float)(rotation * (Math.PI / 180));
-            rot.Z += target;
+            rot.Z -= target;
 
             Rotation = Utils.ConvertVector3ToString(rot);
         }

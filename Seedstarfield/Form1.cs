@@ -20,6 +20,7 @@ namespace Seedstarfield
             SSFEventLog.EventLogs = new Queue<string>();
             BlockLib.Instance = new BlockLib();
             BlockLib.Instance.LoadBlockLib("content\\blocks\\");
+
         }
         private void button1_Click(object sender, EventArgs e)
         {
