@@ -1,8 +1,0 @@
-MutagenObjectType: PlacedObject
-FormKey: 250585:Undaunted.esp
-EditorID: DweFacadeHallSm1wayDUPLICATE096
-FormVersion: 44
-Base: 055117:Skyrim.esm
-Placement:
-  Position: -1792, 8448, 256
-  Rotation: 0, 0, 4.712389

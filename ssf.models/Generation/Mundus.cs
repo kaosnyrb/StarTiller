@@ -1,108 +1,160 @@
-﻿using ssf.Models;
+﻿using ssf.IO;
+using ssf.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ssf.Generation
 {
-	//Based on Mundusform
-	public class Mundus
-	{
-		List<Block> Libary;
-		int BlockDeckPosition = 0;
+    //Based on Mundusform
+    public class Mundus
+    {
+        List<Block> Libary;
+
+        List<Block> Output;
+
+        List<Connector> openexits;
+        Random rng;
+        int BlockDeckPosition = 0;
         //TODO
 
-		void Setup(BlockLib lib)
-		{
-			Libary = lib.blocks.Values.ToList();
-			ShuffleDeck();
+        public void Setup(BlockLib lib)
+        {
+            //Seed the generator
+            rng = new Random(22);
+            Libary = lib.blocks.Values.ToList();
+            ShuffleDeck();
+
+            Output = new List<Block>();
+            openexits = new List<Connector>();
         }
 
         void ShuffleDeck()
         {
             //Shuffle the blocks so they are randomised a bit
             //We act like it's a deck of card for variation
-            Random rng = new Random();
-			var shuffledcards = Libary.OrderBy(a => rng.Next()).ToList();
+
+            var shuffledcards = Libary.OrderBy(a => rng.Next()).ToList();
         }
 
-        //Note that this is C++, need to port.
-        /*
- 		Block FindBlockWithJoin(const char* ConectorType, const char* blocktype, bool deadend)
-		{
+        Block FindBlockWithJoin(string ConectorType, string blocktype, bool deadend)
+        {
             //Find a block that matches a connector
             //with optional dead end finding for closing gaps
-		}
-	    
-        Block TranslateBlock(Block block, Tile exit)
-	    {
-			// Move box to the connector exit
-			block.boundingbox.position.x += exit.x;
-			block.boundingbox.position.y += exit.y;
-			for (int i = 0; i < block.reflist.length; i++)
-			{
-				block.reflist.data[i].pos.x += exit.x;
-				block.reflist.data[i].pos.y += exit.y;
-				block.reflist.data[i].pos.z += exit.z;
-			}
-			for (int i = 0; i < block.exitslist.length; i++)
-			{
-				block.exitslist.data[i].x += exit.x;
-				block.exitslist.data[i].y += exit.y;
-				block.exitslist.data[i].z += exit.z;
-				block.exitslist.data[i].bearing += exit.bearing;
-			}
-			for (int i = 0; i < block.navlist.length; i++)
-			{
-				block.navlist.data[i].x += exit.x;
-				block.navlist.data[i].y += exit.y;
-				block.navlist.data[i].z += exit.z;
-			}
-			return block;
+            while (BlockDeckPosition < Libary.Count)
+            {
+                Block block = Libary[BlockDeckPosition];
+                if (block.blockDetails.startConnector == ConectorType &&
+                    block.blockDetails.blocktype == blocktype)
+                {
+                    //Type and connector match.
+                    //Check for deadend
+
+                    if (deadend && block.blockDetails.Connectors.Count == 0)
+                    {                        
+                        return block.Clone();
+                    }
+                    else if (!deadend)
+                    {
+                        return block.Clone();
+                    }
+                }
+                BlockDeckPosition++;
+                //We reached the end, shuffle.
+                if (BlockDeckPosition >= Libary.Count)
+                {
+                    BlockDeckPosition = 0;
+                    ShuffleDeck();
+                }
+            }
+            return null;
         }
 
-        TileList PlaceBlock(Block block)
-	    {
-			//Render the block into the output
-			_MESSAGE("Place the block");
-			boundingboxes.AddItem(block.boundingbox);
-			for (int i = 0; i < block.reflist.length; i++)
-			{
-				formlist.AddItem(block.reflist.data[i]);
-			}
-			_MESSAGE("Update the navmesh");
-			for (int i = 0; i < block.navlist.length; i++)
-			{
-				MarkTile(block.navlist.data[i].x, block.navlist.data[i].y, block.navlist.data[i].z, block.navlist.data[i].quadsize);
-			}
-			TileList newexits = TileList();
-			for (int i = 0; i < block.exitslist.length; i++)
-			{
-				newexits.AddItem(block.exitslist.data[i]);
-			}
-			return newexits;
+        Block TranslateBlock(Block block, Connector exit)
+        {
+            Vector3 Pivot = new Vector3(0, 0, 0); // Where do
+            block.blockDetails.BoundingTopLeft += exit.startpoint;
+            block.blockDetails.BoundingBottomRight += exit.startpoint;
+            for (int i = 0; i < block.placedObjects.Count; i++)
+            {
+                block.placedObjects[i].Placement.translate(Pivot, exit.startpoint, exit.rotation);
+            }
+            for (int i = 0; i < block.blockDetails.Connectors.Count; i++)
+            {
+                block.blockDetails.Connectors[i].startpoint += exit.startpoint;
+                block.blockDetails.Connectors[i].rotation += exit.rotation;
+            }
+            for (int i = 0; i < block.navmeshs.Count; i++)
+            {
+                block.navmeshs[i].translate(Pivot, exit.startpoint, exit.rotation);
+            }
+            return block;
         }
 
-    	void BuildRift(VMClassRegistry* registry, TESObjectREFR* Target, TESObjectCELL* cell, TESWorldSpace* worldspace)
-	    {
-			//Export
+        void PlaceBlock(Block block)
+        {
+            Output.Add(block);
+            for (int i = 0; i < block.blockDetails.Connectors.Count; i++)
+            {
+                openexits.Add(block.blockDetails.Connectors[i]);
+            }
         }
 
+        public int Generate()
+        {
+            SSFEventLog.EventLogs.Enqueue("Mundus Generation Beginning");
 
-		int Generate()
-		{
-			_MESSAGE("Place the enterance.");
-			_MESSAGE("While we have exits open");
-			_MESSAGE("Get the next unplaced exit on the main branch.");
-			_MESSAGE("Select a block that entrance matches the exit");
-			//FindBlockWithJoin
-			//RotateAroundPivot
-			//TranslateBlock
-			//BlockFitsExit
-		}
+            SSFEventLog.EventLogs.Enqueue("Place the entrance.");
+            // 
+            var start = FindBlockWithJoin("DweFacadeHallSm1way01", "Entrance", false);
+            PlaceBlock(start);
+            // While we have exits open.
+            int breaker = 10;
+            int steps = 0;
+            while (openexits.Count > 0 && steps <= breaker)
+            {
+                int nextexit = rng.Next(openexits.Count);
+                // Get the next unplaced exit on the main branch.
+                var exit = openexits.ElementAt(nextexit);
+                // Select a block that entrance matches the exit
+                var nextblock = FindBlockWithJoin(exit.connectorName, "Hall", false);
+                //RotateAroundPivot
+                nextblock.RotateAroundPivot(new Vector3(0, 0, 0), exit.rotation);
+                //TranslateBlock
+                TranslateBlock(nextblock, exit);
+                //BlockFitsExit
+                //Collision check?
 
-         */
+                //Place
+                openexits.RemoveAt(nextexit);
+                PlaceBlock(nextblock);
+                SSFEventLog.EventLogs.Enqueue("Placed Block: " + nextblock.path);
+                steps++;
+            }
+            return 1;
+        }
+
+        public int Export()
+        {
+            SSFEventLog.EventLogs.Enqueue("Exporting...");
+            string pluginname = "bryntest.esp";
+            int count = 3000;//3428 works
+            foreach (var outblock in Output)
+            {
+                SSFEventLog.EventLogs.Enqueue("Exporting block " + outblock.path);
+                foreach (var placedobj in outblock.placedObjects)
+                {
+                    count++;
+                    string formid = count.ToString("X6");
+                    placedobj.FormKey = formid + ":" + pluginname;
+                    YamlExporter.WriteObjToYamlFile("Output/Temporary/" + formid + "_" + pluginname + ".yaml", placedobj);
+                }
+            }
+            SSFEventLog.EventLogs.Enqueue("Export complete!");
+            return 1;
+        }
     }
 }

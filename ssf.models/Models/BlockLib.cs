@@ -25,32 +25,40 @@ namespace ssf.Models
                 string[] blockfolders = Directory.GetDirectories(blocktype);
                 foreach (string block in blockfolders)
                 {
-                    var blockDetails = File.ReadAllText(block + "//blockDetails.yaml");
-                    BlockDetails blockDetailsobj = YamlImporter.getObjectFromYaml<BlockDetails>(blockDetails);
-                    Block newBlock = new Block()
+                    try
                     {
-                        blockDetails = blockDetailsobj,
-                        path = block,
-                        placedObjects = new List<PlacedObject>(),
-                        navmeshs = new List<Navmesh>(),
-                    };
-                    string[] files = Directory.GetFiles(block + "//Temporary//");
-                    foreach (string placedobj in files)
-                    {
-                        var result = File.ReadAllText(placedobj);
-                        PlacedObject obj = YamlImporter.getObjectFromYaml<PlacedObject>(result);
-                        newBlock.placedObjects.Add(obj);
+                        var blockDetails = File.ReadAllText(block + "//blockDetails.yaml");
+                        BlockDetails blockDetailsobj = YamlImporter.getObjectFromYaml<BlockDetails>(blockDetails);
+                        Block newBlock = new Block()
+                        {
+                            blockDetails = blockDetailsobj,
+                            path = block,
+                            placedObjects = new List<PlacedObject>(),
+                            navmeshs = new List<Navmesh>(),
+                        };
+                        string[] files = Directory.GetFiles(block + "//Temporary//");
+                        foreach (string placedobj in files)
+                        {
+                            var result = File.ReadAllText(placedobj);
+                            PlacedObject obj = YamlImporter.getObjectFromYaml<PlacedObject>(result);
+                            newBlock.placedObjects.Add(obj);
+                        }
+                        string[] navmeshes = Directory.GetFiles(block + "//NavigationMeshes//");
+                        foreach (string navmesh in navmeshes)
+                        {
+                            var result = File.ReadAllText(navmesh);
+                            Navmesh mesh = YamlImporter.getObjectFromYaml<Navmesh>(result);
+                            newBlock.navmeshs.Add(mesh);
+                        }
+                        blocks.Add(block, newBlock);
                     }
-                    string[] navmeshes = Directory.GetFiles(block + "//NavigationMeshes//");
-                    foreach (string navmesh in navmeshes)
+                    catch (Exception ex)
                     {
-                        var result = File.ReadAllText(navmesh);
-                        Navmesh mesh = YamlImporter.getObjectFromYaml<Navmesh>(result);
-                        newBlock.navmeshs.Add(mesh);
+
                     }
-                    blocks.Add(block, newBlock);
                 }
             }
+            SSFEventLog.EventLogs.Enqueue("Block lib loaded, Block count :" + BlockLib.Instance.blocks.Count.ToString());
             return true;
         }
     }
@@ -62,11 +70,30 @@ namespace ssf.Models
         public List<PlacedObject> placedObjects;
         public List<Navmesh> navmeshs;
 
+        public Block Clone()
+        {
+            //Eh if it works.
+            var clone = YamlImporter.getObjectFromYaml<Block>(YamlExporter.BuildYaml(this));
+            return clone;
+        }
         public Block RotateAroundPivot(Vector3 Pivot, float angle)
         {
             //TODO
             return this;
         }
 
+        public Block Translate(Vector3 position)
+        {
+            //TODO
+            blockDetails.startpoint = position;
+            foreach (var connector in blockDetails.Connectors)
+            {
+                connector.startpoint += position;
+            }
+            foreach (var obj in placedObjects) {
+                obj.Placement.translate(new Vector3(0,0,0), position, 0);
+            }
+            return this;
+        }
     }
 }

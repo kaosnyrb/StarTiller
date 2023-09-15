@@ -1,9 +1,0 @@
-MutagenObjectType: PlacedObject
-FormKey: 250598:Undaunted.esp
-EditorID: DweWallHalfDUPLICATE005
-FormVersion: 44
-Base: 05CDF5:Skyrim.esm
-Scale: 0.9
-Placement:
-  Position: -172, 9428, 256
-  Rotation: 0, 0, 1.5707964

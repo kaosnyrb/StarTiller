@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,19 @@ namespace ssf.Models
         public string FormKey { get; set; }
         public int FormVersion { get; set; }
         public Data Data { get; set; }
+
+        public void translate(Vector3 Pivot, Vector3 translation, float rotation)
+        {
+            //TODO
+
+            //Convert string to vector3
+
+            //Rotate around pivot 
+
+            //Apply translation
+
+            //convert back to string (needed for export)
+        }
     }
 
     public class Data

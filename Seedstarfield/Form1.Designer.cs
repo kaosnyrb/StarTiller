@@ -28,8 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             button1 = new Button();
             textBox1 = new TextBox();
+            timer1 = new System.Windows.Forms.Timer(components);
             SuspendLayout();
             // 
             // button1
@@ -48,9 +50,15 @@
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
             textBox1.ReadOnly = true;
+            textBox1.ScrollBars = ScrollBars.Vertical;
             textBox1.Size = new Size(776, 286);
             textBox1.TabIndex = 1;
             textBox1.TextChanged += textBox1_TextChanged;
+            // 
+            // timer1
+            // 
+            timer1.Enabled = true;
+            timer1.Tick += timer1_Tick;
             // 
             // Form1
             // 
@@ -69,5 +77,6 @@
 
         private Button button1;
         private TextBox textBox1;
+        private System.Windows.Forms.Timer timer1;
     }
 }

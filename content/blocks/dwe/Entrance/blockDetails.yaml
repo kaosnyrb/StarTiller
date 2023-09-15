@@ -3,7 +3,7 @@ Startpoint:
   Y: 0
   Z: 0
 StartConnector: DweFacadeHallSm1way01
-Blocktype: Hall
+Blocktype: Entrance
 Connectors:
 - Startpoint:
     X: 0

@@ -1,9 +1,0 @@
-MutagenObjectType: PlacedObject
-FormKey: 250597:Undaunted.esp
-EditorID: DwePipe1wayDUPLICATE158
-FormVersion: 44
-Base: 05FBC0:Skyrim.esm
-Scale: 0.8
-Placement:
-  Position: 1216, 8448, 544
-  Rotation: 0, 0, 1.5707964
