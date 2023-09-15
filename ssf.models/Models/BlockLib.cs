@@ -27,22 +27,81 @@ namespace ssf.Models
                 {
                     try
                     {
-                        var blockDetails = File.ReadAllText(block + "//blockDetails.yaml");
-                        BlockDetails blockDetailsobj = YamlImporter.getObjectFromYaml<BlockDetails>(blockDetails);
+//                        var blockDetails = File.ReadAllText(block + "//blockDetails.yaml");
+//                        BlockDetails blockDetailsobj = YamlImporter.getObjectFromYaml<BlockDetails>(blockDetails);
                         Block newBlock = new Block()
                         {
-                            blockDetails = blockDetailsobj,
+                            blockDetails = new BlockDetails(),
                             path = block,
                             placedObjects = new List<PlacedObject>(),
                             navmeshs = new List<Navmesh>(),
                         };
+                        newBlock.blockDetails.Connectors = new List<Connector>();
                         string[] files = Directory.GetFiles(block + "//Temporary//");
+
+                        //Build the bounding box
+
+                        float MinX = 0;
+                        float MinY = 0;
+
+                        float MaxX = 0;
+                        float MaxY = 0;
+
                         foreach (string placedobj in files)
                         {
                             var result = File.ReadAllText(placedobj);
                             PlacedObject obj = YamlImporter.getObjectFromYaml<PlacedObject>(result);
+                            if (placedobj.Contains("Hall"))
+                            {
+                                newBlock.blockDetails.blocktype = "Hall";
+                            }
+                            if (placedobj.Contains("Entrance"))
+                            {
+                                newBlock.blockDetails.blocktype = "Entrance";
+                            }
+                            if (placedobj.Contains("Room"))
+                            {
+                                newBlock.blockDetails.blocktype = "Room";
+                            }
+
+                            //Testing using info we've exported to fill in other stuff we need.
+                            if (obj.EditorID == null)
+                            {
+                                obj.EditorID = "";
+                            }
+                            if (obj.EditorID.Contains("StartBlock"))
+                            {
+                                newBlock.blockDetails.startpoint = Utils.ConvertStringToVector3(obj.Placement.Position);
+                                newBlock.blockDetails.startConnector = obj.Base;
+                                //newBlock.blockDetails.blocktype = "?"; //Maybe path based?
+                            }
+                            if (obj.EditorID.Contains("ExitBlock"))
+                            {
+                                Connector newexit = new Connector()
+                                {
+                                    connectorName = obj.Base,
+                                    startpoint = Utils.ConvertStringToVector3(obj.Placement.Position),
+                                    rotation = (float)(Utils.ConvertStringToVector3(obj.Placement.Rotation).Z * 57.2958)//Rads to degrees
+                                };
+                                newBlock.blockDetails.Connectors.Add(newexit);
+                            }
+                            else
+                            {
+                                //Boundingbox stuff
+                                int Radius = 250;//Padding for the bouding box
+                                var pos = Utils.ConvertStringToVector3(obj.Placement.Position);
+                                if (pos.X - Radius < MinX) MinX = pos.X - Radius;
+                                if (pos.Y - Radius < MinY) MinY = pos.Y - Radius;
+                                if (pos.X + Radius > MaxX) MaxX = pos.X + Radius;
+                                if (pos.Y + Radius > MaxY) MaxY = pos.Y + Radius;
+                            }
                             newBlock.placedObjects.Add(obj);
                         }
+
+                        newBlock.blockDetails.BoundingTopLeft = new Vector3( MinX, MinY, 0);
+                        newBlock.blockDetails.BoundingBottomRight = new Vector3(MaxX,MaxY,0);
+                        //TODO Do we need Z? Maybe for tighter spaces?
+
                         string[] navmeshes = Directory.GetFiles(block + "//NavigationMeshes//");
                         foreach (string navmesh in navmeshes)
                         {
@@ -54,7 +113,7 @@ namespace ssf.Models
                     }
                     catch (Exception ex)
                     {
-
+                        SSFEventLog.EventLogs.Enqueue(ex.Message);
                     }
                 }
             }

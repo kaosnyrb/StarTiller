@@ -22,8 +22,16 @@ namespace ssf.Models
         public int FormVersion { get; set; }
         public int VersionControl { get; set; }
         public string Base { get; set; }
+
         public float Scale { get; set; }
         public Placement Placement { get; set; }
+
+        //Stuff i'm not using:
+        public int MajorRecordFlagsRaw { get; set; }
+        public List<int> SkyrimMajorRecordFlags { get; set; }
+        public float Radius { get; set; }
+        public LightData LightData { get; set; }
+        public string LevelModifier { get; set; }
     }
 
     public class Placement
@@ -55,4 +63,11 @@ namespace ssf.Models
             Rotation = Utils.ConvertVector3ToString(rot);
         }
     }
+
+    public class LightData
+    {
+        public double FadeOffset {  get; set; }
+        public double ShadowDepthBias { get; set; }
+    }
+
 }

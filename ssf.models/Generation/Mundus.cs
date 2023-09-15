@@ -6,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using YamlDotNet.Core;
 
 namespace ssf.Generation
 {
@@ -24,7 +25,7 @@ namespace ssf.Generation
         public void Setup(BlockLib lib)
         {
             //Seed the generator
-            rng = new Random(22);
+            rng = new Random();
             Libary = lib.blocks.Values.ToList();
             ShuffleDeck();
 
@@ -79,8 +80,12 @@ namespace ssf.Generation
 
         Block TranslateBlock(Block block, Connector exit)
         {
-            Vector3 Pivot = new Vector3(0, 0, 0); // Where do
+            Vector3 Pivot = block.blockDetails.startpoint;
+
+            block.blockDetails.BoundingTopLeft = Utils.RotateVectorAroundPivot(Pivot, block.blockDetails.BoundingTopLeft, exit.rotation);
             block.blockDetails.BoundingTopLeft += exit.startpoint;
+
+            block.blockDetails.BoundingBottomRight = Utils.RotateVectorAroundPivot(Pivot, block.blockDetails.BoundingBottomRight, exit.rotation);
             block.blockDetails.BoundingBottomRight += exit.startpoint;
             for (int i = 0; i < block.placedObjects.Count; i++)
             {
@@ -111,10 +116,10 @@ namespace ssf.Generation
         public int Generate()
         {
             SSFEventLog.EventLogs.Enqueue("Mundus Generation Beginning");
-
             SSFEventLog.EventLogs.Enqueue("Place the entrance.");
             // 
-            var start = FindBlockWithJoin("DweFacadeHallSm1way01", "Entrance", false);
+            int SuccessFullBlocks = 0;
+            var start = FindBlockWithJoin("055117:Skyrim.esm", "Entrance", false);
             PlaceBlock(start);
             // While we have exits open.
             int breaker = 30;
@@ -128,15 +133,29 @@ namespace ssf.Generation
                 var nextblock = FindBlockWithJoin(exit.connectorName, "Hall", false);
                 //TranslateBlock
                 TranslateBlock(nextblock, exit);
-                //BlockFitsExit
-                //Collision check?
-
+                //Collision check
+                bool Collision = false;
+                foreach(var block in Output)
+                {
+                    if (Utils.DoBoundingBoxesIntersect(
+                        block.blockDetails.BoundingTopLeft, block.blockDetails.BoundingBottomRight,
+                        nextblock.blockDetails.BoundingTopLeft, nextblock.blockDetails.BoundingBottomRight))
+                    {
+                        SSFEventLog.EventLogs.Enqueue("Collision");
+                        Collision = true;
+                    }
+                }
                 //Place
-                openexits.RemoveAt(nextexit);
-                PlaceBlock(nextblock);
-                SSFEventLog.EventLogs.Enqueue("Placed Block: " + nextblock.path);
+                if (!Collision)
+                {
+                    openexits.RemoveAt(nextexit);
+                    PlaceBlock(nextblock);
+                    SSFEventLog.EventLogs.Enqueue("Placed Block: " + nextblock.path);
+                    SuccessFullBlocks++;
+                }
                 steps++;
             }
+            SSFEventLog.EventLogs.Enqueue("Total Blocks: " + SuccessFullBlocks);
             return 1;
         }
 
@@ -145,15 +164,28 @@ namespace ssf.Generation
             SSFEventLog.EventLogs.Enqueue("Exporting...");
             string pluginname = "bryntest.esp";
             int count = 3000;//3428 works
+
+            string[] files = Directory.GetFiles("Output/Temporary/");
+            // Iterate through the files and delete each one
+            foreach (string file in files)
+            {
+                File.Delete(file);
+            }
+
             foreach (var outblock in Output)
             {
-                SSFEventLog.EventLogs.Enqueue("Exporting block " + outblock.path);
+                //SSFEventLog.EventLogs.Enqueue("Exporting block " + outblock.path);
                 foreach (var placedobj in outblock.placedObjects)
                 {
-                    count++;
-                    string formid = count.ToString("X6");
-                    placedobj.FormKey = formid + ":" + pluginname;
-                    YamlExporter.WriteObjToYamlFile("Output/Temporary/" + formid + "_" + pluginname + ".yaml", placedobj);
+                    if (!placedobj.EditorID.Contains("ExitBlock"))
+                    {
+                        placedobj.EditorID = "";//We clear this to stop collisions.
+                        placedobj.SkyrimMajorRecordFlags = new List<int>();
+                        count++;
+                        string formid = count.ToString("X6");
+                        placedobj.FormKey = formid + ":" + pluginname;
+                        YamlExporter.WriteObjToYamlFile("Output/Temporary/" + formid + "_" + pluginname + ".yaml", placedobj);
+                    }
                 }
             }
             SSFEventLog.EventLogs.Enqueue("Export complete!");

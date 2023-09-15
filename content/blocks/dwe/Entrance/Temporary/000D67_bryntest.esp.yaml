@@ -1,7 +1,7 @@
 MutagenObjectType: PlacedObject
+EditorID: StartBlock
 FormKey: 000D67:bryntest.esp
 VersionControl: 12079
-FormVersion: 44
 Base: 055117:Skyrim.esm
 Placement:
   Position: 0, 0, 0

@@ -13,7 +13,9 @@ namespace ssf.Models
         public string FormKey { get; set; }
         public int FormVersion { get; set; }
         public Data Data { get; set; }
+        public string VersionControl {  get; set; } 
 
+        
         public void translate(Vector3 Pivot, Vector3 translation, float rotation)
         {
             //TODO
@@ -38,6 +40,7 @@ namespace ssf.Models
         public string Min { get; set; }
         public string Max { get; set; }
         public object NavmeshGrid { get; set; }
+        public parclass Parent { get; set; }
     }
 
     public class Triangle
@@ -47,6 +50,15 @@ namespace ssf.Models
         public int EdgeLink_1_2 { get; set; }
         public int EdgeLink_2_0 { get; set; }
         public string[] Flags { get; set; }
+
+        public int CoverFlags {  get; set; }
+        public bool IsCover { get; set; }
+    }
+
+    public class parclass
+    {
+        public string MutagenObjectType { get; set; }
+        public string Parent { get; set; }
     }
 
 }

@@ -13,6 +13,8 @@ namespace ssf
         //An AI wrote these. Future.
         public static Vector3 ConvertStringToVector3(string input)
         {
+            if (input == null) return new Vector3(0, 0, 0);
+
             // Split the input string by commas.
             string[] components = input.Split(',');
 
@@ -63,6 +65,19 @@ namespace ssf
             p.Y = (float)(ynew + pivot.Y);
 
             return p;
+        }
+
+        public static bool DoBoundingBoxesIntersect(Vector3 box1Min, Vector3 box1Max, Vector3 box2Min, Vector3 box2Max)
+        {
+            // Check for intersection along each axis (x, y, z)
+            if (box1Max.X < box2Min.X || box1Min.X > box2Max.X)
+                return false;
+            if (box1Max.Y < box2Min.Y || box1Min.Y > box2Max.Y)
+                return false;
+            if (box1Max.Z < box2Min.Z || box1Min.Z > box2Max.Z)
+                return false;
+
+            return true;
         }
     }
 }

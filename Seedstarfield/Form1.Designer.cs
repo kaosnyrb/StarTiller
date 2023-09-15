@@ -36,7 +36,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(713, 415);
+            button1.Location = new Point(713, 810);
             button1.Name = "button1";
             button1.Size = new Size(75, 23);
             button1.TabIndex = 0;
@@ -51,7 +51,7 @@
             textBox1.Name = "textBox1";
             textBox1.ReadOnly = true;
             textBox1.ScrollBars = ScrollBars.Vertical;
-            textBox1.Size = new Size(776, 286);
+            textBox1.Size = new Size(776, 764);
             textBox1.TabIndex = 1;
             textBox1.TextChanged += textBox1_TextChanged;
             // 
@@ -64,7 +64,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(800, 845);
             Controls.Add(textBox1);
             Controls.Add(button1);
             Name = "Form1";

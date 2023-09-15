@@ -1,0 +1,11 @@
+MutagenObjectType: PlacedObject
+FormKey: 001679:bryntest.esp
+MajorRecordFlagsRaw: 512
+VersionControl: 12079
+SkyrimMajorRecordFlags:
+- 0x200
+Base: 036AC2:Skyrim.esm
+Scale: 0.88
+Placement:
+  Position: -4833, -2198.3281, -3908.8086
+  Rotation: 0.10890773, -0.4007733, 2.658702

@@ -39,7 +39,7 @@ namespace Seedstarfield
                blockDetails.BoundingTopLeft = new Vector3(0, 128, 0);
                blockDetails.BoundingBottomRight = new Vector3(64, 0, 0);
                YamlExporter.WriteObjToYamlFile("blockDetails.yaml", blockDetails);*/
-
+            textBox1.Text = "";
             Mundus generator = new Mundus();
             generator.Setup(BlockLib.Instance);
             generator.Generate();
