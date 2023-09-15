@@ -47,6 +47,24 @@ namespace ssf.Models
                         float MaxX = 0;
                         float MaxY = 0;
 
+                        //Find the floor
+                        //This pro could be optimised but it's only on startup
+                        float ZeroingZ = 0;
+                        foreach (string placedobj in files)
+                        {
+                            var result = File.ReadAllText(placedobj);
+                            PlacedObject obj = YamlImporter.getObjectFromYaml<PlacedObject>(result);
+                            if (obj.EditorID != null)
+                            {
+                                if (obj.EditorID.Contains("StartBlock"))
+                                {
+                                    //We move everything so the start block is at 0 height
+                                    ZeroingZ = Utils.ConvertStringToVector3(obj.Placement.Position).Z;
+                                    SSFEventLog.EventLogs.Enqueue("Zeroing at: " + ZeroingZ);
+                                }
+                            }
+                        }
+
                         foreach (string placedobj in files)
                         {
                             var result = File.ReadAllText(placedobj);
@@ -62,6 +80,14 @@ namespace ssf.Models
                             if (placedobj.Contains("Room"))
                             {
                                 newBlock.blockDetails.blocktype = "Room";
+                            }
+
+                            //sort the height
+                            if (ZeroingZ != 0)
+                            {
+                                var heighfixpos = Utils.ConvertStringToVector3(obj.Placement.Position);
+                                heighfixpos.Z -= ZeroingZ;
+                                obj.Placement.Position = Utils.ConvertVector3ToString(heighfixpos);
                             }
 
                             //Testing using info we've exported to fill in other stuff we need.
@@ -95,6 +121,9 @@ namespace ssf.Models
                                 if (pos.X + Radius > MaxX) MaxX = pos.X + Radius;
                                 if (pos.Y + Radius > MaxY) MaxY = pos.Y + Radius;
                             }
+
+
+
                             newBlock.placedObjects.Add(obj);
                         }
 
