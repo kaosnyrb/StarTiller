@@ -1,0 +1,17 @@
+Startpoint:
+  X: 0
+  Y: 0
+  Z: 0
+Connectors:
+- X: 0
+  Y: 128
+  Z: 0
+  W: 180
+BoundingTopLeft:
+  X: 0
+  Y: 128
+  Z: 0
+BoundingBottomRight:
+  X: 64
+  Y: 0
+  Z: 0

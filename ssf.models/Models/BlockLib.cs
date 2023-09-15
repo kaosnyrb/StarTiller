@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,8 +25,11 @@ namespace ssf.Models
                 string[] blockfolders = Directory.GetDirectories(blocktype);
                 foreach (string block in blockfolders)
                 {
+                    var blockDetails = File.ReadAllText(block + "//blockDetails.yaml");
+                    BlockDetails blockDetailsobj = YamlImporter.getObjectFromYaml<BlockDetails>(blockDetails);
                     Block newBlock = new Block()
                     {
+                        blockDetails = blockDetailsobj,
                         path = block,
                         placedObjects = new List<PlacedObject>(),
                         navmeshs = new List<Navmesh>(),
@@ -53,9 +57,16 @@ namespace ssf.Models
 
     public class Block
     {
+        public BlockDetails blockDetails { get; set; }
         public string path;
         public List<PlacedObject> placedObjects;
         public List<Navmesh> navmeshs;
+
+        public Block RotateAroundPivot(Vector3 Pivot, float angle)
+        {
+            //TODO
+            return this;
+        }
 
     }
 }

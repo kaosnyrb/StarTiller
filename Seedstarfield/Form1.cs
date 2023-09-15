@@ -20,8 +20,16 @@ namespace Seedstarfield
         }
         private void button1_Click(object sender, EventArgs e)
         {
-           
-//            YamlExporter.WriteObjToYamlFile("placedObject.yaml", obj);
+            /*
+            BlockDetails blockDetails = new BlockDetails();
+            blockDetails.startpoint = new Vector3(0, 0, 0);
+            blockDetails.Connectors = new List<Vector4>
+            {
+                new Vector4(0, 128, 0, 180)
+            };
+            blockDetails.BoundingTopLeft = new Vector3(0, 128, 0);
+            blockDetails.BoundingBottomRight = new Vector3(64, 0, 0);
+            YamlExporter.WriteObjToYamlFile("blockDetails.yaml", blockDetails);*/
         }
         public void LogEvent(string text)
         {
