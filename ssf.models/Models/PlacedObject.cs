@@ -33,17 +33,26 @@ namespace ssf.Models
 
         public void translate(Vector3 Pivot, Vector3 translation, float rotation)
         {
-            //TODO
             //Convert string to vector3
             var pos = Utils.ConvertStringToVector3(Position);
 
             //Rotate around pivot 
+//            pos = Utils.RotateVectorAroundPivot(Pivot, pos, -rotation);
 
             //Apply translation
             pos += translation;
+
             //convert back to string (needed for export)
             Position = Utils.ConvertVector3ToString(pos);
 
+            //Apply Rotation
+            var rot = Utils.ConvertStringToVector3(Rotation);
+
+            //Degrees to rads
+            float target = (float)(rotation * (Math.PI / 180));
+            rot.Z += target;
+
+            Rotation = Utils.ConvertVector3ToString(rot);
         }
     }
 }

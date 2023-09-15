@@ -37,7 +37,7 @@ namespace ssf.Generation
             //Shuffle the blocks so they are randomised a bit
             //We act like it's a deck of card for variation
 
-            var shuffledcards = Libary.OrderBy(a => rng.Next()).ToList();
+            Libary = Libary.OrderBy(a => rng.Next()).ToList();
         }
 
         Block FindBlockWithJoin(string ConectorType, string blocktype, bool deadend)
@@ -54,11 +54,15 @@ namespace ssf.Generation
                     //Check for deadend
 
                     if (deadend && block.blockDetails.Connectors.Count == 0)
-                    {                        
+                    {
+                        BlockDeckPosition = 0;
+                        ShuffleDeck();
                         return block.Clone();
                     }
                     else if (!deadend)
                     {
+                        BlockDeckPosition = 0;
+                        ShuffleDeck();
                         return block.Clone();
                     }
                 }
@@ -84,6 +88,7 @@ namespace ssf.Generation
             }
             for (int i = 0; i < block.blockDetails.Connectors.Count; i++)
             {
+                block.blockDetails.Connectors[i].startpoint = Utils.RotateVectorAroundPivot(Pivot, block.blockDetails.Connectors[i].startpoint, exit.rotation);
                 block.blockDetails.Connectors[i].startpoint += exit.startpoint;
                 block.blockDetails.Connectors[i].rotation += exit.rotation;
             }
@@ -112,7 +117,7 @@ namespace ssf.Generation
             var start = FindBlockWithJoin("DweFacadeHallSm1way01", "Entrance", false);
             PlaceBlock(start);
             // While we have exits open.
-            int breaker = 10;
+            int breaker = 3;
             int steps = 0;
             while (openexits.Count > 0 && steps <= breaker)
             {
@@ -121,8 +126,6 @@ namespace ssf.Generation
                 var exit = openexits.ElementAt(nextexit);
                 // Select a block that entrance matches the exit
                 var nextblock = FindBlockWithJoin(exit.connectorName, "Hall", false);
-                //RotateAroundPivot
-                nextblock.RotateAroundPivot(new Vector3(0, 0, 0), exit.rotation);
                 //TranslateBlock
                 TranslateBlock(nextblock, exit);
                 //BlockFitsExit

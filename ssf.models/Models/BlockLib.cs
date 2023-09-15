@@ -76,11 +76,6 @@ namespace ssf.Models
             var clone = YamlImporter.getObjectFromYaml<Block>(YamlExporter.BuildYaml(this));
             return clone;
         }
-        public Block RotateAroundPivot(Vector3 Pivot, float angle)
-        {
-            //TODO
-            return this;
-        }
 
         public Block Translate(Vector3 position)
         {

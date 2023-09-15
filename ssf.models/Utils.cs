@@ -42,5 +42,27 @@ namespace ssf
             string result = $"{vector.X}, {vector.Y}, {vector.Z}";
             return result;
         }
+
+        public static Vector3 RotateVectorAroundPivot(Vector3 pivot, Vector3 p, double angle)
+        {
+            angle = angle * (Math.PI / 180);
+
+            double s = Math.Sin(angle);
+            double c = Math.Cos(angle);
+
+            // translate point back to origin:
+            p.X -= pivot.X;
+            p.Y -= pivot.Y;
+
+            // rotate point
+            double xnew = p.X * c - p.Y * s;
+            double ynew = p.X * s + p.Y * c;
+
+            // translate point back:
+            p.X = (float)(xnew + pivot.X);
+            p.Y = (float)(ynew + pivot.Y);
+
+            return p;
+        }
     }
 }

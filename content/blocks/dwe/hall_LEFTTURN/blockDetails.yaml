@@ -1,0 +1,21 @@
+Startpoint:
+  X: 0
+  Y: 0
+  Z: 0
+StartConnector: DweFacadeHallSm1way01
+Blocktype: Hall
+Connectors:
+- Startpoint:
+    X: -1024
+    Y: 516
+    Z: 0
+  Rotation: 90
+  ConnectorName: DweFacadeHallSm1way01
+BoundingTopLeft:
+  X: -768
+  Y: 640
+  Z: 0
+BoundingBottomRight:
+  X: 256
+  Y: 0
+  Z: 0
