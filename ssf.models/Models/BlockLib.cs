@@ -48,7 +48,9 @@ namespace ssf.Models
                         float MaxY = 0;
 
                         //Find the floor
-                        //This pro could be optimised but it's only on startup
+                        //This prob could be optimised but it's only on startup
+                        float ZeroingX = 0;
+                        float ZeroingY = 0;
                         float ZeroingZ = 0;
                         foreach (string placedobj in files)
                         {
@@ -59,7 +61,10 @@ namespace ssf.Models
                                 if (obj.EditorID.Contains("StartBlock"))
                                 {
                                     //We move everything so the start block is at 0 height
+                                    ZeroingX = Utils.ConvertStringToVector3(obj.Placement.Position).X;
+                                    ZeroingY = Utils.ConvertStringToVector3(obj.Placement.Position).Y;
                                     ZeroingZ = Utils.ConvertStringToVector3(obj.Placement.Position).Z;
+
                                     SSFEventLog.EventLogs.Enqueue("Zeroing at: " + ZeroingZ);
                                 }
                             }
@@ -86,6 +91,8 @@ namespace ssf.Models
                             if (ZeroingZ != 0)
                             {
                                 var heighfixpos = Utils.ConvertStringToVector3(obj.Placement.Position);
+                                heighfixpos.X -= ZeroingX;
+                                heighfixpos.Y -= ZeroingY;
                                 heighfixpos.Z -= ZeroingZ;
                                 obj.Placement.Position = Utils.ConvertVector3ToString(heighfixpos);
                             }
