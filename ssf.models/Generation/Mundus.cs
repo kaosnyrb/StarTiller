@@ -78,32 +78,6 @@ namespace ssf.Generation
             return null;
         }
 
-        Block TranslateBlock(Block block, Connector exit)
-        {
-            Vector3 Pivot = block.blockDetails.startpoint;
-
-            block.blockDetails.BoundingTopLeft = Utils.RotateVectorAroundPivot(Pivot, block.blockDetails.BoundingTopLeft, exit.rotation);
-            block.blockDetails.BoundingTopLeft += exit.startpoint;
-
-            block.blockDetails.BoundingBottomRight = Utils.RotateVectorAroundPivot(Pivot, block.blockDetails.BoundingBottomRight, exit.rotation);
-            block.blockDetails.BoundingBottomRight += exit.startpoint;
-            for (int i = 0; i < block.placedObjects.Count; i++)
-            {
-                block.placedObjects[i].Placement.translate(Pivot, exit.startpoint, exit.rotation);
-            }
-            for (int i = 0; i < block.blockDetails.Connectors.Count; i++)
-            {
-                block.blockDetails.Connectors[i].startpoint = Utils.RotateVectorAroundPivot(Pivot, block.blockDetails.Connectors[i].startpoint, exit.rotation);
-                block.blockDetails.Connectors[i].startpoint += exit.startpoint;
-                block.blockDetails.Connectors[i].rotation += exit.rotation;
-            }
-            for (int i = 0; i < block.navmeshs.Count; i++)
-            {
-                block.navmeshs[i].translate(Pivot, exit.startpoint, exit.rotation);
-            }
-            return block;
-        }
-
         void PlaceBlock(Block block)
         {
             Output.Add(block);
@@ -122,7 +96,7 @@ namespace ssf.Generation
             var start = FindBlockWithJoin("055117:Skyrim.esm", "Entrance", false);
             PlaceBlock(start);
             // While we have exits open.
-            int breaker = 30;
+            int breaker = 25;
             int steps = 0;
             while (openexits.Count > 0 && steps <= breaker)
             {
@@ -132,7 +106,7 @@ namespace ssf.Generation
                 // Select a block that entrance matches the exit
                 var nextblock = FindBlockWithJoin(exit.connectorName, "Hall", false);
                 //TranslateBlock
-                TranslateBlock(nextblock, exit);
+                Utils.TranslateBlock(nextblock, exit.startpoint,exit.rotation);
                 //Collision check
                 bool Collision = false;
                 foreach(var block in Output)
@@ -141,7 +115,7 @@ namespace ssf.Generation
                         block.blockDetails.BoundingTopLeft, block.blockDetails.BoundingBottomRight,
                         nextblock.blockDetails.BoundingTopLeft, nextblock.blockDetails.BoundingBottomRight))
                     {
-                        SSFEventLog.EventLogs.Enqueue("Collision");
+                        //SSFEventLog.EventLogs.Enqueue("Collision");
                         Collision = true;
                     }
                 }

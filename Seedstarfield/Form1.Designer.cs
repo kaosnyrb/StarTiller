@@ -40,7 +40,7 @@
             button1.Name = "button1";
             button1.Size = new Size(75, 23);
             button1.TabIndex = 0;
-            button1.Text = "Test";
+            button1.Text = "Build";
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
@@ -64,7 +64,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 845);
+            ClientSize = new Size(815, 845);
             Controls.Add(textBox1);
             Controls.Add(button1);
             Name = "Form1";

@@ -12,6 +12,8 @@ namespace ssf.Models
     {
         public Vector3 startpoint { get; set; }
         public string startConnector { get; set; }
+        public Vector3 startRotation { get; set; }
+
         public string blocktype { get; set; }
         public List<Connector> Connectors { get; set; }
         public Vector3 BoundingTopLeft { get; set; }

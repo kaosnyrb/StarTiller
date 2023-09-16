@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ssf.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -78,6 +79,63 @@ namespace ssf
                 return false;
 
             return true;
+        }
+
+        public static Block TranslateBlock(Block block, Vector3 Pos, float Rotation)
+        {
+            //SSFEventLog.EventLogs.Enqueue("Translating " + block.path + " by " + Pos + " and " + Rotation);
+            Vector3 Pivot = block.blockDetails.startpoint;
+
+            block.blockDetails.BoundingTopLeft = Utils.RotateVectorAroundPivot(Pivot, block.blockDetails.BoundingTopLeft, Rotation);
+            block.blockDetails.BoundingTopLeft += Pos;
+
+            block.blockDetails.BoundingBottomRight = Utils.RotateVectorAroundPivot(Pivot, block.blockDetails.BoundingBottomRight, Rotation);
+            block.blockDetails.BoundingBottomRight += Pos;
+
+            //Block points might need shifting
+            if (block.blockDetails.BoundingTopLeft.X > block.blockDetails.BoundingBottomRight.X)
+            {
+                //SSFEventLog.EventLogs.Enqueue("Flipping X Bounding");
+                float x = block.blockDetails.BoundingTopLeft.X;
+                block.blockDetails.BoundingTopLeft = new Vector3(
+                    block.blockDetails.BoundingBottomRight.X,
+                    block.blockDetails.BoundingTopLeft.Y,
+                    block.blockDetails.BoundingTopLeft.Z);
+                block.blockDetails.BoundingBottomRight = new Vector3(
+                    x,
+                    block.blockDetails.BoundingBottomRight.Y,
+                    block.blockDetails.BoundingBottomRight.Z);
+
+            }
+            if (block.blockDetails.BoundingTopLeft.Y > block.blockDetails.BoundingBottomRight.Y)
+            {
+                //SSFEventLog.EventLogs.Enqueue("Flipping Y Bounding");
+                float y = block.blockDetails.BoundingTopLeft.X;
+                block.blockDetails.BoundingTopLeft = new Vector3(
+                    block.blockDetails.BoundingTopLeft.X,
+                    block.blockDetails.BoundingBottomRight.Y,
+                    block.blockDetails.BoundingTopLeft.Z);
+                block.blockDetails.BoundingBottomRight = new Vector3(
+                    block.blockDetails.BoundingBottomRight.X,
+                    y,
+                    block.blockDetails.BoundingBottomRight.Z);
+            }
+
+            for (int i = 0; i < block.placedObjects.Count; i++)
+            {
+                block.placedObjects[i].Placement.translate(Pivot, Pos, Rotation);
+            }
+            for (int i = 0; i < block.blockDetails.Connectors.Count; i++)
+            {
+                block.blockDetails.Connectors[i].startpoint = Utils.RotateVectorAroundPivot(Pivot, block.blockDetails.Connectors[i].startpoint, Rotation);
+                block.blockDetails.Connectors[i].startpoint += Pos;
+                block.blockDetails.Connectors[i].rotation += Rotation;
+            }
+            for (int i = 0; i < block.navmeshs.Count; i++)
+            {
+                block.navmeshs[i].translate(Pivot, Pos, Rotation);
+            }
+            return block;
         }
     }
 }

@@ -27,8 +27,6 @@ namespace ssf.Models
                 {
                     try
                     {
-//                        var blockDetails = File.ReadAllText(block + "//blockDetails.yaml");
-//                        BlockDetails blockDetailsobj = YamlImporter.getObjectFromYaml<BlockDetails>(blockDetails);
                         Block newBlock = new Block()
                         {
                             blockDetails = new BlockDetails(),
@@ -40,10 +38,8 @@ namespace ssf.Models
                         string[] files = Directory.GetFiles(block + "//Temporary//");
 
                         //Build the bounding box
-
                         float MinX = 0;
                         float MinY = 0;
-
                         float MaxX = 0;
                         float MaxY = 0;
 
@@ -64,8 +60,7 @@ namespace ssf.Models
                                     ZeroingX = Utils.ConvertStringToVector3(obj.Placement.Position).X;
                                     ZeroingY = Utils.ConvertStringToVector3(obj.Placement.Position).Y;
                                     ZeroingZ = Utils.ConvertStringToVector3(obj.Placement.Position).Z;
-
-                                    SSFEventLog.EventLogs.Enqueue("Zeroing at: " + ZeroingZ);
+                                    //SSFEventLog.EventLogs.Enqueue("Zeroing at: " + ZeroingZ);
                                 }
                             }
                         }
@@ -105,6 +100,7 @@ namespace ssf.Models
                             if (obj.EditorID.Contains("StartBlock"))
                             {
                                 newBlock.blockDetails.startpoint = Utils.ConvertStringToVector3(obj.Placement.Position);
+                                newBlock.blockDetails.startRotation = Utils.ConvertStringToVector3(obj.Placement.Rotation);
                                 newBlock.blockDetails.startConnector = obj.Base;
                                 //newBlock.blockDetails.blocktype = "?"; //Maybe path based?
                             }
@@ -134,8 +130,8 @@ namespace ssf.Models
                             newBlock.placedObjects.Add(obj);
                         }
 
-                        newBlock.blockDetails.BoundingTopLeft = new Vector3( MinX, MinY, 0);
-                        newBlock.blockDetails.BoundingBottomRight = new Vector3(MaxX,MaxY,0);
+                        newBlock.blockDetails.BoundingTopLeft = new Vector3( MinX, MinY, -1);
+                        newBlock.blockDetails.BoundingBottomRight = new Vector3(MaxX,MaxY,1);
                         //TODO Do we need Z? Maybe for tighter spaces?
 
                         string[] navmeshes = Directory.GetFiles(block + "//NavigationMeshes//");
@@ -145,6 +141,18 @@ namespace ssf.Models
                             Navmesh mesh = YamlImporter.getObjectFromYaml<Navmesh>(result);
                             newBlock.navmeshs.Add(mesh);
                         }
+
+                        //Unrotate the block.
+                        //If the start or end blocks are the wrong way round things get wierd.
+                        // TODO stop blocks being the wrong way round
+                        if (newBlock.blockDetails.startRotation.Z != 0)
+                        {
+                            float rotationneeded = (float)(newBlock.blockDetails.startRotation.Z * 57.2958);
+                            SSFEventLog.EventLogs.Enqueue("Rotating Block" + newBlock.path + " by " + -rotationneeded);
+                            Utils.TranslateBlock(newBlock, newBlock.blockDetails.startpoint, -rotationneeded);
+                            newBlock.blockDetails.startRotation = new Vector3(0, 0, 0);
+                        }
+
                         blocks.Add(block, newBlock);
                     }
                     catch (Exception ex)
