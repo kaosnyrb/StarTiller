@@ -87,7 +87,8 @@ namespace ssf.Generation
             }
         }
 
-        public int Generate()
+
+        public int Generate(int maxsteps)
         {
             SSFEventLog.EventLogs.Enqueue("Mundus Generation Beginning");
             SSFEventLog.EventLogs.Enqueue("Place the entrance.");
@@ -96,7 +97,7 @@ namespace ssf.Generation
             var start = FindBlockWithJoin("055117:Skyrim.esm", "Entrance", false);
             PlaceBlock(start);
             // While we have exits open.
-            int breaker = 25;
+            int breaker = maxsteps;
             int steps = 0;
             while (openexits.Count > 0 && steps <= breaker)
             {
@@ -106,19 +107,37 @@ namespace ssf.Generation
                 // Select a block that entrance matches the exit
                 var nextblock = FindBlockWithJoin(exit.connectorName, "Hall", false);
                 //TranslateBlock
-                Utils.TranslateBlock(nextblock, exit.startpoint,exit.rotation);
+                Utils.TranslateBlock(nextblock, exit.startpoint, exit.rotation);
                 //Collision check
                 bool Collision = false;
-                foreach(var block in Output)
+                foreach (var block in Output)
                 {
                     if (Utils.DoBoundingBoxesIntersect(
                         block.blockDetails.BoundingTopLeft, block.blockDetails.BoundingBottomRight,
                         nextblock.blockDetails.BoundingTopLeft, nextblock.blockDetails.BoundingBottomRight))
                     {
-                        //SSFEventLog.EventLogs.Enqueue("Collision");
                         Collision = true;
                     }
                 }
+                //Bruteforce collision checks
+                foreach (var block in Output)
+                {
+                    foreach (var exisitingobj in block.placedObjects)
+                    {
+                        foreach (var newobj in nextblock.placedObjects)
+                        {
+                            if (!exisitingobj.EditorID.Contains("ExitBlock"))
+                            {
+                                Vector3 dist = Utils.ConvertStringToVector3(exisitingobj.Placement.Position) - Utils.ConvertStringToVector3(newobj.Placement.Position);
+                                if (dist.Length() < 64)
+                                {
+                                    Collision = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 //Place
                 if (!Collision)
                 {
@@ -130,7 +149,7 @@ namespace ssf.Generation
                 steps++;
             }
             SSFEventLog.EventLogs.Enqueue("Total Blocks: " + SuccessFullBlocks);
-            return 1;
+            return SuccessFullBlocks;
         }
 
         public int Export()

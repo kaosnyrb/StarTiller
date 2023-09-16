@@ -117,7 +117,7 @@ namespace ssf.Models
                             else
                             {
                                 //Boundingbox stuff
-                                int Radius = 250;//Padding for the bouding box
+                                int Radius = 128;//Padding for the bouding box
                                 var pos = Utils.ConvertStringToVector3(obj.Placement.Position);
                                 if (pos.X - Radius < MinX) MinX = pos.X - Radius;
                                 if (pos.Y - Radius < MinY) MinY = pos.Y - Radius;

@@ -41,8 +41,12 @@ namespace Seedstarfield
                YamlExporter.WriteObjToYamlFile("blockDetails.yaml", blockDetails);*/
             textBox1.Text = "";
             Mundus generator = new Mundus();
-            generator.Setup(BlockLib.Instance);
-            generator.Generate();
+            int blocks = 0;
+            do
+            {
+                generator.Setup(BlockLib.Instance);
+                blocks = generator.Generate(100);
+            } while (blocks < 10);
 
             generator.Export();
         }
