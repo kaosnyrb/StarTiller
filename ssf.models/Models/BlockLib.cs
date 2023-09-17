@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace ssf.Models
 {
@@ -65,6 +66,7 @@ namespace ssf.Models
                             }
                         }
 
+
                         foreach (string placedobj in files)
                         {
                             var result = File.ReadAllText(placedobj);
@@ -82,6 +84,11 @@ namespace ssf.Models
                                 newBlock.blockDetails.blocktype = "Room";
                             }
 
+                            if (Utils.ConvertStringToVector3(obj.Placement.Rotation).X != 0 ||
+                                Utils.ConvertStringToVector3(obj.Placement.Rotation).Y != 0)
+                            {
+                                continue;
+                            }
                             //sort the height
                             if (ZeroingZ != 0)
                             {
@@ -139,6 +146,13 @@ namespace ssf.Models
                         {
                             var result = File.ReadAllText(navmesh);
                             Navmesh mesh = YamlImporter.getObjectFromYaml<Navmesh>(result);
+                            //Zero the navmesh.
+                            for(int i = 0; i < mesh.Data.Vertices.Count(); i++)
+                            {
+                                var pos = Utils.ConvertStringToVector3(mesh.Data.Vertices[i]);
+                                pos -= new Vector3(ZeroingX, ZeroingY, ZeroingZ);
+                                mesh.Data.Vertices[i] = Utils.ConvertVector3ToString(pos);
+                            }
                             newBlock.navmeshs.Add(mesh);
                         }
 

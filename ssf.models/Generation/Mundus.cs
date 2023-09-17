@@ -20,7 +20,6 @@ namespace ssf.Generation
         List<Connector> openexits;
         Random rng;
         int BlockDeckPosition = 0;
-        //TODO
 
         public void Setup(BlockLib lib)
         {
@@ -43,9 +42,11 @@ namespace ssf.Generation
 
         Block FindBlockWithJoin(string ConectorType, string blocktype, bool deadend)
         {
+            int Checkoutcount = 0;
+
             //Find a block that matches a connector
             //with optional dead end finding for closing gaps
-            while (BlockDeckPosition < Libary.Count)
+            while (Checkoutcount < Libary.Count * 2)
             {
                 Block block = Libary[BlockDeckPosition];
                 if (block.blockDetails.startConnector == ConectorType &&
@@ -74,6 +75,7 @@ namespace ssf.Generation
                     BlockDeckPosition = 0;
                     ShuffleDeck();
                 }
+                Checkoutcount++;
             }
             return null;
         }
@@ -95,6 +97,7 @@ namespace ssf.Generation
             // 
             int SuccessFullBlocks = 0;
             var start = FindBlockWithJoin("055117:Skyrim.esm", "Entrance", false);
+            if (start == null) return 0;
             PlaceBlock(start);
             // While we have exits open.
             int breaker = maxsteps;
@@ -106,6 +109,8 @@ namespace ssf.Generation
                 var exit = openexits.ElementAt(nextexit);
                 // Select a block that entrance matches the exit
                 var nextblock = FindBlockWithJoin(exit.connectorName, "Hall", false);
+                if (nextblock == null) return 0;
+
                 //TranslateBlock
                 Utils.TranslateBlock(nextblock, exit.startpoint, exit.rotation);
                 //Collision check
@@ -158,8 +163,14 @@ namespace ssf.Generation
             string pluginname = "bryntest.esp";
             int count = 3000;//3428 works
 
-            string[] files = Directory.GetFiles("Output/Temporary/");
             // Iterate through the files and delete each one
+            string[] files = Directory.GetFiles("Output/Temporary/");
+            foreach (string file in files)
+            {
+                File.Delete(file);
+            }
+            // Iterate through the files and delete each one
+            files = Directory.GetFiles("Output/NavigationMeshes/");
             foreach (string file in files)
             {
                 File.Delete(file);
@@ -179,6 +190,15 @@ namespace ssf.Generation
                         placedobj.FormKey = formid + ":" + pluginname;
                         YamlExporter.WriteObjToYamlFile("Output/Temporary/" + formid + "_" + pluginname + ".yaml", placedobj);
                     }
+                }
+                foreach(var navmesh in outblock.navmeshs)
+                {
+                    count++;
+                    string formid = count.ToString("X6");
+                    navmesh.VersionControl = 12079;
+                    navmesh.FormKey = formid + ":" + pluginname;
+                    navmesh.Data.Parent.Parent = "000D62:bryntest.esp";
+                    YamlExporter.WriteObjToYamlFile("Output/NavigationMeshes/" + formid + "_" + pluginname + ".yaml", navmesh);
                 }
             }
             SSFEventLog.EventLogs.Enqueue("Export complete!");

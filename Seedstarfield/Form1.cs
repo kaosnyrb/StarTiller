@@ -45,8 +45,8 @@ namespace Seedstarfield
             do
             {
                 generator.Setup(BlockLib.Instance);
-                blocks = generator.Generate(100);
-            } while (blocks < 10);
+                blocks = generator.Generate(20);
+            } while (blocks < 1);
 
             generator.Export();
         }

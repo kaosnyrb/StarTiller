@@ -13,20 +13,25 @@ namespace ssf.Models
         public string FormKey { get; set; }
         public int FormVersion { get; set; }
         public Data Data { get; set; }
-        public string VersionControl {  get; set; } 
+        public int VersionControl {  get; set; } 
 
         
         public void translate(Vector3 Pivot, Vector3 translation, float rotation)
         {
-            //TODO
+            for ( int i = 0; i < Data.Vertices.Length; i++)
+            {
+                //Convert string to vector3
+                var pos = Utils.ConvertStringToVector3(Data.Vertices[i]);
 
-            //Convert string to vector3
+                //Rotate around pivot 
+                pos = Utils.RotateVectorAroundPivot(Pivot, pos, rotation);
 
-            //Rotate around pivot 
+                //Apply translation
+                pos += translation;
 
-            //Apply translation
-
-            //convert back to string (needed for export)
+                //convert back to string (needed for export)
+                Data.Vertices[i] = Utils.ConvertVector3ToString(pos);
+            }
         }
     }
 

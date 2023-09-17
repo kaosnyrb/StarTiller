@@ -1,0 +1,7 @@
+MutagenObjectType: PlacedNpc
+FormKey: 001364:bryntest.esp
+VersionControl: 12079
+Base: 10EE4D:Skyrim.esm
+LevelModifier: Easy
+Placement:
+  Position: -3943.7366, 114.93902, -3921.634

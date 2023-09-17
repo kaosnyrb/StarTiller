@@ -1,0 +1,8 @@
+MutagenObjectType: PlacedObject
+FormKey: 001612:bryntest.esp
+VersionControl: 12079
+EditorID: ExitBlock
+Base: 055117:Skyrim.esm
+Placement:
+  Position: -3579.1406, 115.25, -3923.634
+  Rotation: 0, 0, 4.713187
