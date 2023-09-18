@@ -56,11 +56,13 @@ namespace ssf.Models
             //Apply Rotation
             var rot = Utils.ConvertStringToVector3(Rotation);
 
-            //Degrees to rads
-            float target = (float)(rotation * (Math.PI / 180));
-            rot.Z -= target;
 
-            Rotation = Utils.ConvertVector3ToString(rot);
+            //TODO
+            //;Objects in Skyrim are rotated in order of Z, Y, X, so we will do that here as well.
+            // Y and X change if Z do.
+            var result = Utils.LocalToGlobal(rot, new Vector3(0, 0, Utils.ToRadians(-rotation)));
+
+            Rotation = Utils.ConvertVector3ToString(result);
         }
     }
 

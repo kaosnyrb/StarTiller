@@ -16,8 +16,6 @@ namespace ssf.Models
 
         public string blocktype { get; set; }
         public List<Connector> Connectors { get; set; }
-        public Vector3 BoundingTopLeft { get; set; }
-        public Vector3 BoundingBottomRight { get; set; }   
     }
 
     public class Connector

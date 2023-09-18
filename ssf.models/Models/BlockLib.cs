@@ -38,12 +38,6 @@ namespace ssf.Models
                         newBlock.blockDetails.Connectors = new List<Connector>();
                         string[] files = Directory.GetFiles(block + "//Temporary//");
 
-                        //Build the bounding box
-                        float MinX = 0;
-                        float MinY = 0;
-                        float MaxX = 0;
-                        float MaxY = 0;
-
                         //Find the floor
                         //This prob could be optimised but it's only on startup
                         float ZeroingX = 0;
@@ -83,12 +77,12 @@ namespace ssf.Models
                             {
                                 newBlock.blockDetails.blocktype = "Room";
                             }
-
+                            /*
                             if (Utils.ConvertStringToVector3(obj.Placement.Rotation).X != 0 ||
                                 Utils.ConvertStringToVector3(obj.Placement.Rotation).Y != 0)
                             {
                                 continue;
-                            }
+                            }*/
                             //sort the height
                             if (ZeroingZ != 0)
                             {
@@ -121,25 +115,8 @@ namespace ssf.Models
                                 };
                                 newBlock.blockDetails.Connectors.Add(newexit);
                             }
-                            else
-                            {
-                                //Boundingbox stuff
-                                int Radius = 128;//Padding for the bouding box
-                                var pos = Utils.ConvertStringToVector3(obj.Placement.Position);
-                                if (pos.X - Radius < MinX) MinX = pos.X - Radius;
-                                if (pos.Y - Radius < MinY) MinY = pos.Y - Radius;
-                                if (pos.X + Radius > MaxX) MaxX = pos.X + Radius;
-                                if (pos.Y + Radius > MaxY) MaxY = pos.Y + Radius;
-                            }
-
-
-
                             newBlock.placedObjects.Add(obj);
                         }
-
-                        newBlock.blockDetails.BoundingTopLeft = new Vector3( MinX, MinY, -1);
-                        newBlock.blockDetails.BoundingBottomRight = new Vector3(MaxX,MaxY,1);
-                        //TODO Do we need Z? Maybe for tighter spaces?
 
                         string[] navmeshes = Directory.GetFiles(block + "//NavigationMeshes//");
                         foreach (string navmesh in navmeshes)

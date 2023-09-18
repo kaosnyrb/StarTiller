@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -86,41 +87,6 @@ namespace ssf
             //SSFEventLog.EventLogs.Enqueue("Translating " + block.path + " by " + Pos + " and " + Rotation);
             Vector3 Pivot = block.blockDetails.startpoint;
 
-            block.blockDetails.BoundingTopLeft = Utils.RotateVectorAroundPivot(Pivot, block.blockDetails.BoundingTopLeft, Rotation);
-            block.blockDetails.BoundingTopLeft += Pos;
-
-            block.blockDetails.BoundingBottomRight = Utils.RotateVectorAroundPivot(Pivot, block.blockDetails.BoundingBottomRight, Rotation);
-            block.blockDetails.BoundingBottomRight += Pos;
-
-            //Block points might need shifting
-            if (block.blockDetails.BoundingTopLeft.X > block.blockDetails.BoundingBottomRight.X)
-            {
-                //SSFEventLog.EventLogs.Enqueue("Flipping X Bounding");
-                float x = block.blockDetails.BoundingTopLeft.X;
-                block.blockDetails.BoundingTopLeft = new Vector3(
-                    block.blockDetails.BoundingBottomRight.X,
-                    block.blockDetails.BoundingTopLeft.Y,
-                    block.blockDetails.BoundingTopLeft.Z);
-                block.blockDetails.BoundingBottomRight = new Vector3(
-                    x,
-                    block.blockDetails.BoundingBottomRight.Y,
-                    block.blockDetails.BoundingBottomRight.Z);
-
-            }
-            if (block.blockDetails.BoundingTopLeft.Y > block.blockDetails.BoundingBottomRight.Y)
-            {
-                //SSFEventLog.EventLogs.Enqueue("Flipping Y Bounding");
-                float y = block.blockDetails.BoundingTopLeft.X;
-                block.blockDetails.BoundingTopLeft = new Vector3(
-                    block.blockDetails.BoundingTopLeft.X,
-                    block.blockDetails.BoundingBottomRight.Y,
-                    block.blockDetails.BoundingTopLeft.Z);
-                block.blockDetails.BoundingBottomRight = new Vector3(
-                    block.blockDetails.BoundingBottomRight.X,
-                    y,
-                    block.blockDetails.BoundingBottomRight.Z);
-            }
-
             for (int i = 0; i < block.placedObjects.Count; i++)
             {
                 block.placedObjects[i].Placement.translate(Pivot, Pos, Rotation);
@@ -136,6 +102,68 @@ namespace ssf
                 block.navmeshs[i].translate(Pivot, Pos, Rotation);
             }
             return block;
+        }
+
+        public static Vector3 ToEulerAngles(Quaternion q)
+        {
+            Vector3 angles = new();
+
+            // roll / x
+            double sinr_cosp = 2 * (q.W * q.X + q.Y * q.Z);
+            double cosr_cosp = 1 - 2 * (q.X * q.X + q.Y * q.Y);
+            angles.X = (float)Math.Atan2(sinr_cosp, cosr_cosp);
+
+            // pitch / y
+            double sinp = 2 * (q.W * q.Y - q.Z * q.X);
+            if (Math.Abs(sinp) >= 1)
+            {
+                angles.Y = (float)Math.CopySign(Math.PI / 2, sinp);
+            }
+            else
+            {
+                angles.Y = (float)Math.Asin(sinp);
+            }
+
+            // yaw / z
+            double siny_cosp = 2 * (q.W * q.Z + q.X * q.Y);
+            double cosy_cosp = 1 - 2 * (q.Y * q.Y + q.Z * q.Z);
+            angles.Z = (float)Math.Atan2(siny_cosp, cosy_cosp);
+
+            return angles;
+        }
+
+        public static Vector3 LocalToGlobal(Vector3 localAngles, Vector3 globalAngles)
+        {
+            // Convert the local angles to radians
+            float localYaw = localAngles.X;
+            float localPitch = localAngles.Y;
+            float localRoll = localAngles.Z;
+
+            // Convert the global angles to radians
+            float globalYaw = globalAngles.X;
+            float globalPitch = globalAngles.Y;
+            float globalRoll = globalAngles.Z;
+
+            // Create quaternions for the local and global rotations
+            Quaternion localRotation = Quaternion.CreateFromYawPitchRoll(localYaw, localPitch, localRoll);
+            Quaternion globalRotation = Quaternion.CreateFromYawPitchRoll(globalYaw, globalPitch, globalRoll);
+
+            // Rotate the local rotation by the global rotation
+            Quaternion resultRotation = globalRotation * localRotation;
+
+            // Convert the result to Euler angles in degrees
+            Vector3 resultAngles = ToEulerAngles(resultRotation);
+
+            return resultAngles;
+        }
+
+        public static float ToRadians(float degrees)
+        {
+            return (float)(degrees * (Math.PI / 180));
+        }
+        public static float ToDegrees(float rads)
+        {
+            return (float)(rads * (180 / Math.PI));
         }
     }
 }

@@ -115,15 +115,6 @@ namespace ssf.Generation
                 Utils.TranslateBlock(nextblock, exit.startpoint, exit.rotation);
                 //Collision check
                 bool Collision = false;
-                foreach (var block in Output)
-                {
-                    if (Utils.DoBoundingBoxesIntersect(
-                        block.blockDetails.BoundingTopLeft, block.blockDetails.BoundingBottomRight,
-                        nextblock.blockDetails.BoundingTopLeft, nextblock.blockDetails.BoundingBottomRight))
-                    {
-                        Collision = true;
-                    }
-                }
                 //Bruteforce collision checks
                 foreach (var block in Output)
                 {
@@ -142,7 +133,6 @@ namespace ssf.Generation
                         }
                     }
                 }
-
                 //Place
                 if (!Collision)
                 {
