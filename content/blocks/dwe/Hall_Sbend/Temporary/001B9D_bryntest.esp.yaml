@@ -1,0 +1,10 @@
+MutagenObjectType: PlacedObject
+FormKey: 001B9D:bryntest.esp
+VersionControl: 12082
+Base: 088238:Skyrim.esm
+Radius: 388.70392
+LightData:
+  FadeOffset: -0.31125975
+  ShadowDepthBias: 1
+Placement:
+  Position: 2540.2205, 2906.645, 331.1546

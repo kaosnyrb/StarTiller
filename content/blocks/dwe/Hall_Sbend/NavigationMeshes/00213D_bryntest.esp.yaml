@@ -1,0 +1,153 @@
+FormKey: 00213D:bryntest.esp
+VersionControl: 12082
+Data:
+  Parent:
+    MutagenObjectType: CellNavmeshParent
+    Parent: 00181B:bryntest.esp
+  Vertices:
+  - 2368, 9792, -1003.9999
+  - 1683.7502, 11027.693, -1025.9999
+  - 2360.7236, 10351.131, -1026
+  - 1962.3364, 10724.655, -1025.9999
+  - 2037.9639, 10676.351, -1025.7406
+  - 2261.3647, 10501.166, -1020.939
+  - 2034.5802, 10725.221, -1025.9999
+  - 2277.3767, 10434.356, -1022.0202
+  - 1686.2102, 11144.442, -1017.3835
+  - 2421.4336, 10355.92, -1025.9999
+  - 1775.9744, 10560.116, -1024.6859
+  - 2459.5737, 10678.58, -1025.9999
+  - 1850.7622, 11122.972, -1012.072
+  - 1679.5017, 10531.325, -1025.9998
+  - 1881.9276, 10804.047, -1025.9999
+  - 2591.066, 10539.314, -1025.9998
+  - 2091.9944, 10641.84, -1025.5553
+  - 2457.8743, 10292.277, -1025.5553
+  - 1739.2021, 10508.295, -1024.9539
+  - 2646.7605, 10116.541, -1025.9998
+  - 2084.097, 10444.58, -1014.9692
+  - 2624, 9792, -1003.9998
+  Triangles:
+  - Vertices: 11, 5, 9
+    EdgeLink_0_1: 16
+    EdgeLink_1_2: 14
+    EdgeLink_2_0: 1
+    Flags:
+    - Found
+  - Vertices: 9, 15, 11
+    EdgeLink_0_1: 12
+    EdgeLink_1_2: -1
+    Flags:
+    - Found
+  - Vertices: 4, 3, 10
+    EdgeLink_0_1: 15
+    EdgeLink_1_2: 7
+    EdgeLink_2_0: 3
+    Flags:
+    - Found
+  - Vertices: 10, 20, 4
+    EdgeLink_0_1: -1
+    EdgeLink_1_2: 4
+    EdgeLink_2_0: 2
+    Flags:
+    - Found
+  - Vertices: 20, 16, 4
+    EdgeLink_0_1: 5
+    EdgeLink_1_2: -1
+    EdgeLink_2_0: 3
+    Flags:
+    - Found
+  - Vertices: 20, 5, 16
+    EdgeLink_0_1: -1
+    EdgeLink_1_2: 16
+    EdgeLink_2_0: 4
+    Flags:
+    - Found
+  - Vertices: 14, 13, 10
+    EdgeLink_0_1: 11
+    EdgeLink_1_2: 17
+    EdgeLink_2_0: 7
+    Flags:
+    - Found
+  - Vertices: 3, 14, 10
+    EdgeLink_0_1: -1
+    EdgeLink_1_2: 6
+    EdgeLink_2_0: 2
+    Flags:
+    - Found
+  - Vertices: 0, 21, 19
+    EdgeLink_0_1: -1
+    EdgeLink_1_2: -1
+    EdgeLink_2_0: 10
+    Flags:
+    - Found
+  - Vertices: 1, 14, 12
+    EdgeLink_0_1: 11
+    EdgeLink_1_2: -1
+    EdgeLink_2_0: 18
+    Flags:
+    - Found
+  - Vertices: 19, 17, 0
+    EdgeLink_0_1: 13
+    EdgeLink_1_2: -1
+    EdgeLink_2_0: 8
+    Flags:
+    - Found
+  - Vertices: 13, 14, 1
+    EdgeLink_0_1: 6
+    EdgeLink_1_2: 9
+    EdgeLink_2_0: -1
+    Flags:
+    - Found
+  - Vertices: 9, 17, 15
+    EdgeLink_0_1: -1
+    EdgeLink_1_2: 13
+    EdgeLink_2_0: 1
+    Flags:
+    - Found
+  - Vertices: 17, 19, 15
+    EdgeLink_0_1: 10
+    EdgeLink_1_2: -1
+    EdgeLink_2_0: 12
+    Flags:
+    - Found
+  - Vertices: 9, 5, 7
+    EdgeLink_1_2: -1
+    EdgeLink_2_0: 19
+    Flags:
+    - Found
+  - Vertices: 4, 6, 3
+    EdgeLink_0_1: -1
+    EdgeLink_1_2: -1
+    EdgeLink_2_0: 2
+    Flags:
+    - Found
+  - Vertices: 16, 5, 11
+    EdgeLink_0_1: 5
+    EdgeLink_2_0: -1
+    Flags:
+    - Found
+  - Vertices: 18, 10, 13
+    EdgeLink_0_1: -1
+    EdgeLink_1_2: 6
+    EdgeLink_2_0: -1
+    Flags:
+    - Found
+  - Vertices: 12, 8, 1
+    EdgeLink_0_1: -1
+    EdgeLink_1_2: -1
+    EdgeLink_2_0: 9
+    Flags:
+    - Found
+  - Vertices: 2, 9, 7
+    EdgeLink_0_1: -1
+    EdgeLink_1_2: 14
+    EdgeLink_2_0: -1
+    Flags:
+    - Found
+  NavmeshGridDivisor: 2
+  MaxDistanceX: 483.6294
+  MaxDistanceY: 676.2212
+  Min: 1679.5017, 9792, -1026
+  Max: 2646.7605, 11144.442, -1003.9998
+  NavmeshGrid: 0x03000000030004000500080000000000010008000A000C000D000E0013000C00000002000300040005000600070009000B000F00100011001200070000000000010005000C000D000E001000
