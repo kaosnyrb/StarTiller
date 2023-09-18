@@ -36,6 +36,20 @@ namespace ssf.Models
                             navmeshs = new List<Navmesh>(),
                         };
                         newBlock.blockDetails.Connectors = new List<Connector>();
+
+                        if (block.Contains("Hall"))
+                        {
+                            newBlock.blockDetails.blocktype = "Hall";
+                        }
+                        if (block.Contains("Entrance"))
+                        {
+                            newBlock.blockDetails.blocktype = "Entrance";
+                        }
+                        if (block.Contains("Room"))
+                        {
+                            newBlock.blockDetails.blocktype = "Room";
+                        }
+
                         string[] files = Directory.GetFiles(block + "//Temporary//");
 
                         //Find the floor
@@ -65,18 +79,7 @@ namespace ssf.Models
                         {
                             var result = File.ReadAllText(placedobj);
                             PlacedObject obj = YamlImporter.getObjectFromYaml<PlacedObject>(result);
-                            if (placedobj.Contains("Hall"))
-                            {
-                                newBlock.blockDetails.blocktype = "Hall";
-                            }
-                            if (placedobj.Contains("Entrance"))
-                            {
-                                newBlock.blockDetails.blocktype = "Entrance";
-                            }
-                            if (placedobj.Contains("Room"))
-                            {
-                                newBlock.blockDetails.blocktype = "Room";
-                            }
+
                             /*
                             if (Utils.ConvertStringToVector3(obj.Placement.Rotation).X != 0 ||
                                 Utils.ConvertStringToVector3(obj.Placement.Rotation).Y != 0)

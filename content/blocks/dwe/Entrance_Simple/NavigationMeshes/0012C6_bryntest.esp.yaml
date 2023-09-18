@@ -1,0 +1,81 @@
+FormKey: 0012C6:bryntest.esp
+VersionControl: 12079
+Data:
+  Parent:
+    MutagenObjectType: CellNavmeshParent
+    Parent: 0012C5:bryntest.esp
+  Vertices:
+  - -1187.9751, 854.34656, -4228.3687
+  - -1326.7125, 820.8201, -4240.2144
+  - -1316.2749, 761.8221, -4240.2144
+  - -1139.1687, 730.82983, -4249.2266
+  - -910.46765, 852.4958, -4235.591
+  - -867.3785, 795.9492, -4228.42
+  - -842.29443, 743.86346, -4249.2266
+  - -709.1687, 730.82983, -4249.2266
+  - -1095.4727, 853.7296, -4230.776
+  - -788.27356, 763.3895, -4238.823
+  Triangles:
+  - Vertices: 0, 1, 2
+    EdgeLink_0_1: -1
+    EdgeLink_1_2: -1
+    EdgeLink_2_0: 1
+    Flags:
+    - Found
+    CoverFlags: 16388
+    IsCover: True
+  - Vertices: 3, 0, 2
+    EdgeLink_0_1: 2
+    EdgeLink_2_0: -1
+    Flags:
+    - Found
+  - Vertices: 8, 0, 3
+    EdgeLink_0_1: -1
+    EdgeLink_1_2: 1
+    EdgeLink_2_0: 3
+    Flags:
+    - Found
+    CoverFlags: 16391
+    IsCover: True
+  - Vertices: 3, 4, 8
+    EdgeLink_0_1: 6
+    EdgeLink_1_2: -1
+    EdgeLink_2_0: 2
+    Flags:
+    - Found
+    CoverFlags: 16384
+  - Vertices: 5, 3, 6
+    EdgeLink_0_1: 6
+    EdgeLink_1_2: -1
+    EdgeLink_2_0: 5
+    Flags:
+    - Found
+  - Vertices: 9, 5, 6
+    EdgeLink_0_1: -1
+    EdgeLink_1_2: 4
+    EdgeLink_2_0: 7
+    Flags:
+    - Found
+    CoverFlags: 16388
+    IsCover: True
+  - Vertices: 3, 5, 4
+    EdgeLink_0_1: 4
+    EdgeLink_1_2: -1
+    EdgeLink_2_0: 3
+    Flags:
+    - Found
+    CoverFlags: 16640
+    IsCover: True
+  - Vertices: 6, 7, 9
+    EdgeLink_0_1: -1
+    EdgeLink_1_2: -1
+    EdgeLink_2_0: 5
+    Flags:
+    - Found
+    CoverFlags: 16384
+  NavmeshGridDivisor: 1
+  MaxDistanceX: 617.5438
+  MaxDistanceY: 123.51672
+  Min: -1326.7125, 730.82983, -4249.2266
+  Max: -709.1687, 854.34656, -4228.3687
+  NavmeshGrid: 0x0800000000000100020003000400050006000700

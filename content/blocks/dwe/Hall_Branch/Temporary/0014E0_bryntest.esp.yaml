@@ -1,8 +1,0 @@
-MutagenObjectType: PlacedObject
-FormKey: 0014E0:bryntest.esp
-VersionControl: 12081
-Base: 05FBC9:Skyrim.esm
-Scale: 1.1
-Placement:
-  Position: 10527.871, 656.60345, 13122.571
-  Rotation: 0.2077657, -0.08699132, 5.1033144
