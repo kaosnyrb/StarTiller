@@ -178,6 +178,10 @@ namespace ssf.Generation
                         count++;
                         string formid = count.ToString("X6");
                         placedobj.FormKey = formid + ":" + pluginname;
+                        if (placedobj.Placement.Rotation.Contains("E"))
+                        {
+                            SSFEventLog.EventLogs.Enqueue("Odd Rotation: " + placedobj.Placement.Rotation);
+                        }
                         YamlExporter.WriteObjToYamlFile("Output/Temporary/" + formid + "_" + pluginname + ".yaml", placedobj);
                     }
                 }

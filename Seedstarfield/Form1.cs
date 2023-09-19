@@ -18,27 +18,13 @@ namespace Seedstarfield
             InitializeComponent();
             //Load block lib
             SSFEventLog.EventLogs = new Queue<string>();
-            BlockLib.Instance = new BlockLib();
-            BlockLib.Instance.LoadBlockLib("content\\blocks\\");
-
+            BlockLib.Instance = new BlockLib
+            {
+                blocks = Utils.LoadBlockLib("content\\blocks\\")
+            };
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            /*   
-               BlockDetails blockDetails = new BlockDetails();
-               blockDetails.startpoint = new Vector3(0, 0, 0);
-               blockDetails.Connectors = new List<Connector>
-               {
-                   new Connector()
-                   {
-                       connectorName = "DweFacadeHallSm1way01",
-                       rotation = 0,
-                       startpoint = new Vector3(10, 128, 0),
-                   }
-               };
-               blockDetails.BoundingTopLeft = new Vector3(0, 128, 0);
-               blockDetails.BoundingBottomRight = new Vector3(64, 0, 0);
-               YamlExporter.WriteObjToYamlFile("blockDetails.yaml", blockDetails);*/
             textBox1.Text = "";
             Mundus generator = new Mundus();
             int blocks = 0;
@@ -54,11 +40,6 @@ namespace Seedstarfield
         {
             textBox1.Text += text;
         }
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (SSFEventLog.EventLogs.Count > 0)

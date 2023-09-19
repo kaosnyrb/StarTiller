@@ -15,24 +15,6 @@ namespace ssf.Models
         public Data Data { get; set; }
         public int VersionControl {  get; set; } 
 
-        
-        public void translate(Vector3 Pivot, Vector3 translation, float rotation)
-        {
-            for ( int i = 0; i < Data.Vertices.Length; i++)
-            {
-                //Convert string to vector3
-                var pos = Utils.ConvertStringToVector3(Data.Vertices[i]);
-
-                //Rotate around pivot 
-                pos = Utils.RotateVectorAroundPivot(Pivot, pos, rotation);
-
-                //Apply translation
-                pos += translation;
-
-                //convert back to string (needed for export)
-                Data.Vertices[i] = Utils.ConvertVector3ToString(pos);
-            }
-        }
     }
 
     public class Data

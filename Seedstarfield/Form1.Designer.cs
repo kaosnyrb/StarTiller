@@ -53,7 +53,6 @@
             textBox1.ScrollBars = ScrollBars.Vertical;
             textBox1.Size = new Size(776, 764);
             textBox1.TabIndex = 1;
-            textBox1.TextChanged += textBox1_TextChanged;
             // 
             // timer1
             // 

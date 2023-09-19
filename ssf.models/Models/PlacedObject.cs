@@ -38,32 +38,6 @@ namespace ssf.Models
     {
         public string Position { get; set; }
         public string Rotation { get; set; }
-
-        public void translate(Vector3 Pivot, Vector3 translation, float rotation)
-        {
-            //Convert string to vector3
-            var pos = Utils.ConvertStringToVector3(Position);
-
-            //Rotate around pivot 
-            pos = Utils.RotateVectorAroundPivot(Pivot, pos, rotation);
-
-            //Apply translation
-            pos += translation;
-
-            //convert back to string (needed for export)
-            Position = Utils.ConvertVector3ToString(pos);
-
-            //Apply Rotation
-            var rot = Utils.ConvertStringToVector3(Rotation);
-
-
-            //TODO
-            //;Objects in Skyrim are rotated in order of Z, Y, X, so we will do that here as well.
-            // Y and X change if Z do.
-            var result = Utils.LocalToGlobal(rot, new Vector3(0, 0, Utils.ToRadians(-rotation)));
-
-            Rotation = Utils.ConvertVector3ToString(result);
-        }
     }
 
     public class LightData

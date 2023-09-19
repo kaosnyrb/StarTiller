@@ -1,4 +1,5 @@
-﻿using ssf.Models;
+﻿using ssf.IO;
+using ssf.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,11 +8,156 @@ using System.Numerics;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace ssf
 {
     public class Utils
     {
+        public static Dictionary<string, Block> LoadBlockLib(string folderPath)
+        {
+            Dictionary<string, Block> blocks = new Dictionary<string, Block>();
+            string[] subfolders = Directory.GetDirectories(folderPath);
+            foreach (string blocktype in subfolders)
+            {
+                //Types
+                string[] blockfolders = Directory.GetDirectories(blocktype);
+                foreach (string block in blockfolders)
+                {
+                    try
+                    {
+                        Block newBlock = new Block()
+                        {
+                            blockDetails = new BlockDetails(),
+                            path = block,
+                            placedObjects = new List<PlacedObject>(),
+                            navmeshs = new List<Navmesh>(),
+                        };
+                        newBlock.blockDetails.Connectors = new List<Connector>();
+
+                        if (block.Contains("Hall"))
+                        {
+                            newBlock.blockDetails.blocktype = "Hall";
+                        }
+                        if (block.Contains("Entrance"))
+                        {
+                            newBlock.blockDetails.blocktype = "Entrance";
+                        }
+                        if (block.Contains("Room"))
+                        {
+                            newBlock.blockDetails.blocktype = "Room";
+                        }
+
+                        string[] files = Directory.GetFiles(block + "//Temporary//");
+
+                        //Find the floor
+                        //This prob could be optimised but it's only on startup
+                        float ZeroingX = 0;
+                        float ZeroingY = 0;
+                        float ZeroingZ = 0;
+                        foreach (string placedobj in files)
+                        {
+                            var result = File.ReadAllText(placedobj);
+                            PlacedObject obj = YamlImporter.getObjectFromYaml<PlacedObject>(result);
+                            if (obj.EditorID != null)
+                            {
+                                if (obj.EditorID.Contains("StartBlock"))
+                                {
+                                    //We move everything so the start block is at 0 height
+                                    ZeroingX = Utils.ConvertStringToVector3(obj.Placement.Position).X;
+                                    ZeroingY = Utils.ConvertStringToVector3(obj.Placement.Position).Y;
+                                    ZeroingZ = Utils.ConvertStringToVector3(obj.Placement.Position).Z;
+                                    //SSFEventLog.EventLogs.Enqueue("Zeroing at: " + ZeroingZ);
+                                }
+                            }
+                        }
+
+
+                        foreach (string placedobj in files)
+                        {
+                            var result = File.ReadAllText(placedobj);
+                            PlacedObject obj = YamlImporter.getObjectFromYaml<PlacedObject>(result);
+
+                            /*
+                            if (Utils.ConvertStringToVector3(obj.Placement.Rotation).X != 0 ||
+                                Utils.ConvertStringToVector3(obj.Placement.Rotation).Y != 0)
+                            {
+                                continue;
+                            }*/
+                            //sort the height
+                            if (ZeroingZ != 0)
+                            {
+                                var heighfixpos = Utils.ConvertStringToVector3(obj.Placement.Position);
+                                heighfixpos.X -= ZeroingX;
+                                heighfixpos.Y -= ZeroingY;
+                                heighfixpos.Z -= ZeroingZ;
+                                obj.Placement.Position = Utils.ConvertVector3ToString(heighfixpos);
+                            }
+
+                            //Testing using info we've exported to fill in other stuff we need.
+                            if (obj.EditorID == null)
+                            {
+                                obj.EditorID = "";
+                            }
+                            if (obj.EditorID.Contains("StartBlock"))
+                            {
+                                newBlock.blockDetails.startpoint = Utils.ConvertStringToVector3(obj.Placement.Position);
+                                newBlock.blockDetails.startRotation = Utils.ConvertStringToVector3(obj.Placement.Rotation);
+                                newBlock.blockDetails.startConnector = obj.Base;
+                                //newBlock.blockDetails.blocktype = "?"; //Maybe path based?
+                            }
+                            if (obj.EditorID.Contains("ExitBlock"))
+                            {
+                                Connector newexit = new Connector()
+                                {
+                                    connectorName = obj.Base,
+                                    startpoint = Utils.ConvertStringToVector3(obj.Placement.Position),
+                                    rotation = (float)(Utils.ConvertStringToVector3(obj.Placement.Rotation).Z * 57.2958)//Rads to degrees
+                                };
+                                newBlock.blockDetails.Connectors.Add(newexit);
+                            }
+                            newBlock.placedObjects.Add(obj);
+                        }
+
+                        string[] navmeshes = Directory.GetFiles(block + "//NavigationMeshes//");
+                        foreach (string navmesh in navmeshes)
+                        {
+                            var result = File.ReadAllText(navmesh);
+                            Navmesh mesh = YamlImporter.getObjectFromYaml<Navmesh>(result);
+                            //Zero the navmesh.
+                            for (int i = 0; i < mesh.Data.Vertices.Count(); i++)
+                            {
+                                var pos = Utils.ConvertStringToVector3(mesh.Data.Vertices[i]);
+                                pos -= new Vector3(ZeroingX, ZeroingY, ZeroingZ);
+                                mesh.Data.Vertices[i] = Utils.ConvertVector3ToString(pos);
+                            }
+                            newBlock.navmeshs.Add(mesh);
+                        }
+
+                        //Unrotate the block.
+                        //If the start or end blocks are the wrong way round things get wierd.
+                        // TODO stop blocks being the wrong way round
+                        if (newBlock.blockDetails.startRotation.Z != 0)
+                        {
+                            float rotationneeded = (float)(newBlock.blockDetails.startRotation.Z * 57.2958);
+                            SSFEventLog.EventLogs.Enqueue("Rotating Block" + newBlock.path + " by " + -rotationneeded);
+                            Utils.TranslateBlock(newBlock, newBlock.blockDetails.startpoint, -rotationneeded);
+                            newBlock.blockDetails.startRotation = new Vector3(0, 0, 0);
+                        }
+
+                        blocks.Add(block, newBlock);
+                    }
+                    catch (Exception ex)
+                    {
+                        SSFEventLog.EventLogs.Enqueue(ex.Message);
+                    }
+                }
+            }
+            SSFEventLog.EventLogs.Enqueue("Block lib loaded, Block count :" + blocks.Count.ToString());
+            return blocks;
+        }
+
         //An AI wrote these. Future.
         public static Vector3 ConvertStringToVector3(string input)
         {
@@ -40,6 +186,7 @@ namespace ssf
                 return Vector3.Zero; // Return a default Vector3 if parsing fails.
             }
         }
+
         public static string ConvertVector3ToString(Vector3 vector)
         {
             // Use string interpolation to format the Vector3 as a string.
@@ -69,27 +216,45 @@ namespace ssf
             return p;
         }
 
-        public static bool DoBoundingBoxesIntersect(Vector3 box1Min, Vector3 box1Max, Vector3 box2Min, Vector3 box2Max)
-        {
-            // Check for intersection along each axis (x, y, z)
-            if (box1Max.X < box2Min.X || box1Min.X > box2Max.X)
-                return false;
-            if (box1Max.Y < box2Min.Y || box1Min.Y > box2Max.Y)
-                return false;
-            if (box1Max.Z < box2Min.Z || box1Min.Z > box2Max.Z)
-                return false;
-
-            return true;
-        }
-
         public static Block TranslateBlock(Block block, Vector3 Pos, float Rotation)
         {
             //SSFEventLog.EventLogs.Enqueue("Translating " + block.path + " by " + Pos + " and " + Rotation);
             Vector3 Pivot = block.blockDetails.startpoint;
-
             for (int i = 0; i < block.placedObjects.Count; i++)
             {
-                block.placedObjects[i].Placement.translate(Pivot, Pos, Rotation);
+                //Convert string to vector3
+                var pos = Utils.ConvertStringToVector3(block.placedObjects[i].Placement.Position);
+                //Rotate around pivot 
+                pos = Utils.RotateVectorAroundPivot(Pivot, pos, Rotation);
+                //Apply translation
+                pos += Pos;
+                //convert back to string (needed for export)
+                block.placedObjects[i].Placement.Position = Utils.ConvertVector3ToString(pos);
+                //Apply Rotation
+                var rot = Utils.ConvertStringToVector3(block.placedObjects[i].Placement.Rotation);
+
+                //TODO
+                //;Objects in Skyrim are rotated in order of Z, Y, X, so we will do that here as well.
+                // Y and X change if Z do.
+                rot.Z += Utils.ToRadians(-Rotation);
+                float AngleX = (float)(rot.X * Math.Cos(rot.Z) + rot.Y * Math.Sin(rot.Z));
+                float AngleY = (float)(rot.Y * Math.Cos(rot.Z) - rot.X * Math.Sin(rot.Z));
+                //Too small a rotation to care.
+                float rotationLimiter = 0.5f;
+                if (rot.Z > -rotationLimiter && rot.Z < rotationLimiter)
+                {
+                    rot.Z = 0;
+                }
+                if (AngleX > -rotationLimiter && AngleX < rotationLimiter)
+                {
+                    AngleX = 0;
+                }
+                if (AngleY > -rotationLimiter && AngleY < rotationLimiter)
+                {
+                    AngleY = 0;
+                }
+                var resultRotation = new Vector3(AngleX, AngleY, rot.Z);
+                block.placedObjects[i].Placement.Rotation = Utils.ConvertVector3ToString(resultRotation);
             }
             for (int i = 0; i < block.blockDetails.Connectors.Count; i++)
             {
@@ -99,62 +264,22 @@ namespace ssf
             }
             for (int i = 0; i < block.navmeshs.Count; i++)
             {
-                block.navmeshs[i].translate(Pivot, Pos, Rotation);
+                for (int j = 0; j < block.navmeshs[i].Data.Vertices.Length; j++)
+                {
+                    //Convert string to vector3
+                    var pos = Utils.ConvertStringToVector3(block.navmeshs[i].Data.Vertices[j]);
+
+                    //Rotate around pivot 
+                    pos = Utils.RotateVectorAroundPivot(Pivot, pos, Rotation);
+
+                    //Apply translation
+                    pos += Pos;
+
+                    //convert back to string (needed for export)
+                    block.navmeshs[i].Data.Vertices[j] = Utils.ConvertVector3ToString(pos);
+                }
             }
             return block;
-        }
-
-        public static Vector3 ToEulerAngles(Quaternion q)
-        {
-            Vector3 angles = new();
-
-            // roll / x
-            double sinr_cosp = 2 * (q.W * q.X + q.Y * q.Z);
-            double cosr_cosp = 1 - 2 * (q.X * q.X + q.Y * q.Y);
-            angles.X = (float)Math.Atan2(sinr_cosp, cosr_cosp);
-
-            // pitch / y
-            double sinp = 2 * (q.W * q.Y - q.Z * q.X);
-            if (Math.Abs(sinp) >= 1)
-            {
-                angles.Y = (float)Math.CopySign(Math.PI / 2, sinp);
-            }
-            else
-            {
-                angles.Y = (float)Math.Asin(sinp);
-            }
-
-            // yaw / z
-            double siny_cosp = 2 * (q.W * q.Z + q.X * q.Y);
-            double cosy_cosp = 1 - 2 * (q.Y * q.Y + q.Z * q.Z);
-            angles.Z = (float)Math.Atan2(siny_cosp, cosy_cosp);
-
-            return angles;
-        }
-
-        public static Vector3 LocalToGlobal(Vector3 localAngles, Vector3 globalAngles)
-        {
-            // Convert the local angles to radians
-            float localYaw = localAngles.X;
-            float localPitch = localAngles.Y;
-            float localRoll = localAngles.Z;
-
-            // Convert the global angles to radians
-            float globalYaw = globalAngles.X;
-            float globalPitch = globalAngles.Y;
-            float globalRoll = globalAngles.Z;
-
-            // Create quaternions for the local and global rotations
-            Quaternion localRotation = Quaternion.CreateFromYawPitchRoll(localYaw, localPitch, localRoll);
-            Quaternion globalRotation = Quaternion.CreateFromYawPitchRoll(globalYaw, globalPitch, globalRoll);
-
-            // Rotate the local rotation by the global rotation
-            Quaternion resultRotation = globalRotation * localRotation;
-
-            // Convert the result to Euler angles in degrees
-            Vector3 resultAngles = ToEulerAngles(resultRotation);
-
-            return resultAngles;
         }
 
         public static float ToRadians(float degrees)
