@@ -65,9 +65,9 @@ namespace ssf
                                 if (obj.EditorID.Contains("StartBlock"))
                                 {
                                     //We move everything so the start block is at 0 height
-                                    ZeroingX = Utils.ConvertStringToVector3(obj.Placement.Position).X;
-                                    ZeroingY = Utils.ConvertStringToVector3(obj.Placement.Position).Y;
-                                    ZeroingZ = Utils.ConvertStringToVector3(obj.Placement.Position).Z;
+                                    ZeroingX = ConvertStringToVector3(obj.Placement.Position).X;
+                                    ZeroingY = ConvertStringToVector3(obj.Placement.Position).Y;
+                                    ZeroingZ = ConvertStringToVector3(obj.Placement.Position).Z;
                                     //SSFEventLog.EventLogs.Enqueue("Zeroing at: " + ZeroingZ);
                                 }
                             }
@@ -79,20 +79,20 @@ namespace ssf
                             var result = File.ReadAllText(placedobj);
                             PlacedObject obj = YamlImporter.getObjectFromYaml<PlacedObject>(result);
 
-                            /*
-                            if (Utils.ConvertStringToVector3(obj.Placement.Rotation).X != 0 ||
-                                Utils.ConvertStringToVector3(obj.Placement.Rotation).Y != 0)
+                            // Dump anything that doesn't rotate well.
+                            if (ConvertStringToVector3(obj.Placement.Rotation).X != 0 ||
+                                ConvertStringToVector3(obj.Placement.Rotation).Y != 0)
                             {
                                 continue;
-                            }*/
+                            }
                             //sort the height
                             if (ZeroingZ != 0)
                             {
-                                var heighfixpos = Utils.ConvertStringToVector3(obj.Placement.Position);
+                                var heighfixpos = ConvertStringToVector3(obj.Placement.Position);
                                 heighfixpos.X -= ZeroingX;
                                 heighfixpos.Y -= ZeroingY;
                                 heighfixpos.Z -= ZeroingZ;
-                                obj.Placement.Position = Utils.ConvertVector3ToString(heighfixpos);
+                                obj.Placement.Position = ConvertVector3ToString(heighfixpos);
                             }
 
                             //Testing using info we've exported to fill in other stuff we need.
@@ -102,8 +102,8 @@ namespace ssf
                             }
                             if (obj.EditorID.Contains("StartBlock"))
                             {
-                                newBlock.blockDetails.startpoint = Utils.ConvertStringToVector3(obj.Placement.Position);
-                                newBlock.blockDetails.startRotation = Utils.ConvertStringToVector3(obj.Placement.Rotation);
+                                newBlock.blockDetails.startpoint = ConvertStringToVector3(obj.Placement.Position);
+                                newBlock.blockDetails.startRotation = ConvertStringToVector3(obj.Placement.Rotation);
                                 newBlock.blockDetails.startConnector = obj.Base;
                                 //newBlock.blockDetails.blocktype = "?"; //Maybe path based?
                             }
@@ -112,8 +112,8 @@ namespace ssf
                                 Connector newexit = new Connector()
                                 {
                                     connectorName = obj.Base,
-                                    startpoint = Utils.ConvertStringToVector3(obj.Placement.Position),
-                                    rotation = (float)(Utils.ConvertStringToVector3(obj.Placement.Rotation).Z * 57.2958)//Rads to degrees
+                                    startpoint = ConvertStringToVector3(obj.Placement.Position),
+                                    rotation = (float)(ConvertStringToVector3(obj.Placement.Rotation).Z * 57.2958)//Rads to degrees
                                 };
                                 newBlock.blockDetails.Connectors.Add(newexit);
                             }
@@ -128,9 +128,9 @@ namespace ssf
                             //Zero the navmesh.
                             for (int i = 0; i < mesh.Data.Vertices.Count(); i++)
                             {
-                                var pos = Utils.ConvertStringToVector3(mesh.Data.Vertices[i]);
+                                var pos = ConvertStringToVector3(mesh.Data.Vertices[i]);
                                 pos -= new Vector3(ZeroingX, ZeroingY, ZeroingZ);
-                                mesh.Data.Vertices[i] = Utils.ConvertVector3ToString(pos);
+                                mesh.Data.Vertices[i] = ConvertVector3ToString(pos);
                             }
                             newBlock.navmeshs.Add(mesh);
                         }
@@ -142,7 +142,7 @@ namespace ssf
                         {
                             float rotationneeded = (float)(newBlock.blockDetails.startRotation.Z * 57.2958);
                             SSFEventLog.EventLogs.Enqueue("Rotating Block" + newBlock.path + " by " + -rotationneeded);
-                            Utils.TranslateBlock(newBlock, newBlock.blockDetails.startpoint, -rotationneeded);
+                            TranslateBlock(newBlock, newBlock.blockDetails.startpoint, -rotationneeded);
                             newBlock.blockDetails.startRotation = new Vector3(0, 0, 0);
                         }
 
@@ -223,20 +223,20 @@ namespace ssf
             for (int i = 0; i < block.placedObjects.Count; i++)
             {
                 //Convert string to vector3
-                var pos = Utils.ConvertStringToVector3(block.placedObjects[i].Placement.Position);
+                var pos = ConvertStringToVector3(block.placedObjects[i].Placement.Position);
                 //Rotate around pivot 
-                pos = Utils.RotateVectorAroundPivot(Pivot, pos, Rotation);
+                pos = RotateVectorAroundPivot(Pivot, pos, Rotation);
                 //Apply translation
                 pos += Pos;
                 //convert back to string (needed for export)
-                block.placedObjects[i].Placement.Position = Utils.ConvertVector3ToString(pos);
+                block.placedObjects[i].Placement.Position = ConvertVector3ToString(pos);
                 //Apply Rotation
-                var rot = Utils.ConvertStringToVector3(block.placedObjects[i].Placement.Rotation);
+                var rot = ConvertStringToVector3(block.placedObjects[i].Placement.Rotation);
 
                 //TODO
                 //;Objects in Skyrim are rotated in order of Z, Y, X, so we will do that here as well.
                 // Y and X change if Z do.
-                rot.Z += Utils.ToRadians(-Rotation);
+                rot.Z += ToRadians(-Rotation);
                 float AngleX = (float)(rot.X * Math.Cos(rot.Z) + rot.Y * Math.Sin(rot.Z));
                 float AngleY = (float)(rot.Y * Math.Cos(rot.Z) - rot.X * Math.Sin(rot.Z));
                 //Too small a rotation to care.
@@ -254,11 +254,11 @@ namespace ssf
                     AngleY = 0;
                 }
                 var resultRotation = new Vector3(AngleX, AngleY, rot.Z);
-                block.placedObjects[i].Placement.Rotation = Utils.ConvertVector3ToString(resultRotation);
+                block.placedObjects[i].Placement.Rotation = ConvertVector3ToString(resultRotation);
             }
             for (int i = 0; i < block.blockDetails.Connectors.Count; i++)
             {
-                block.blockDetails.Connectors[i].startpoint = Utils.RotateVectorAroundPivot(Pivot, block.blockDetails.Connectors[i].startpoint, Rotation);
+                block.blockDetails.Connectors[i].startpoint = RotateVectorAroundPivot(Pivot, block.blockDetails.Connectors[i].startpoint, Rotation);
                 block.blockDetails.Connectors[i].startpoint += Pos;
                 block.blockDetails.Connectors[i].rotation += Rotation;
             }
@@ -267,16 +267,16 @@ namespace ssf
                 for (int j = 0; j < block.navmeshs[i].Data.Vertices.Length; j++)
                 {
                     //Convert string to vector3
-                    var pos = Utils.ConvertStringToVector3(block.navmeshs[i].Data.Vertices[j]);
+                    var pos = ConvertStringToVector3(block.navmeshs[i].Data.Vertices[j]);
 
                     //Rotate around pivot 
-                    pos = Utils.RotateVectorAroundPivot(Pivot, pos, Rotation);
+                    pos = RotateVectorAroundPivot(Pivot, pos, Rotation);
 
                     //Apply translation
                     pos += Pos;
 
                     //convert back to string (needed for export)
-                    block.navmeshs[i].Data.Vertices[j] = Utils.ConvertVector3ToString(pos);
+                    block.navmeshs[i].Data.Vertices[j] = ConvertVector3ToString(pos);
                 }
             }
             return block;

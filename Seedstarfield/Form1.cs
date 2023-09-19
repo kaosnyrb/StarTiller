@@ -27,14 +27,14 @@ namespace Seedstarfield
         {
             textBox1.Text = "";
             Mundus generator = new Mundus();
-            int blocks = 0;
+            List<Block> blocks = new List<Block>();
             do
             {
                 generator.Setup(BlockLib.Instance);
                 blocks = generator.Generate(20);
-            } while (blocks < 1);
+            } while (blocks.Count < 1);
 
-            generator.Export();
+            BlockExporter.Export(blocks);
         }
         public void LogEvent(string text)
         {
