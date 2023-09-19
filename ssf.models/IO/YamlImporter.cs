@@ -11,6 +11,13 @@ namespace ssf.IO
 {
     public class YamlImporter
     {
+
+        public static T getObjectFromFile<T>(string filePath)
+        {
+            string content = File.ReadAllText(filePath);
+            return getObjectFromYaml<T>(content);
+        }
+
         public static T getObjectFromYaml<T>(string yaml)
         {
             var deserializer = new DeserializerBuilder()

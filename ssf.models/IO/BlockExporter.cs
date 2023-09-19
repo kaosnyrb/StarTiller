@@ -9,20 +9,20 @@ namespace ssf.IO
 {
     public class BlockExporter
     {
-        public static int Export(List<Block> blocks)
+        public static int Export(List<Block> blocks, SeedStarfieldSettings settings)
         {
-            SSFEventLog.EventLogs.Enqueue("Exporting...");
-            string pluginname = "bryntest.esp";
-            int count = 3000;//3428 works
+            SSFEventLog.EventLogs.Enqueue("Exporting to " + settings.ExportPath);
+            string pluginname = settings.EspName;
+            int count = settings.FormIdOffset;//3428 works
 
             // Iterate through the files and delete each one
-            string[] files = Directory.GetFiles("Output/Temporary/");
+            string[] files = Directory.GetFiles(settings.ExportPath + "/Temporary/");
             foreach (string file in files)
             {
                 File.Delete(file);
             }
             // Iterate through the files and delete each one
-            files = Directory.GetFiles("Output/NavigationMeshes/");
+            files = Directory.GetFiles(settings.ExportPath + "/NavigationMeshes/");
             foreach (string file in files)
             {
                 File.Delete(file);
@@ -40,11 +40,12 @@ namespace ssf.IO
                         count++;
                         string formid = count.ToString("X6");
                         placedobj.FormKey = formid + ":" + pluginname;
+                        if (placedobj.Placement.Rotation == null) placedobj.Placement.Rotation = "0,0,0";
                         if (placedobj.Placement.Rotation.Contains("E"))
                         {
                             SSFEventLog.EventLogs.Enqueue("Odd Rotation: " + placedobj.Placement.Rotation);
                         }
-                        YamlExporter.WriteObjToYamlFile("Output/Temporary/" + formid + "_" + pluginname + ".yaml", placedobj);
+                        YamlExporter.WriteObjToYamlFile(settings.ExportPath + "/Temporary/" + formid + "_" + pluginname + ".yaml", placedobj);
                     }
                 }
                 foreach (var navmesh in outblock.navmeshs)
@@ -53,8 +54,8 @@ namespace ssf.IO
                     string formid = count.ToString("X6");
                     navmesh.VersionControl = 12079;
                     navmesh.FormKey = formid + ":" + pluginname;
-                    navmesh.Data.Parent.Parent = "000D62:bryntest.esp";
-                    YamlExporter.WriteObjToYamlFile("Output/NavigationMeshes/" + formid + "_" + pluginname + ".yaml", navmesh);
+                    navmesh.Data.Parent.Parent = "000D62:" + pluginname;
+                    YamlExporter.WriteObjToYamlFile(settings.ExportPath + "/NavigationMeshes/" + formid + "_" + pluginname + ".yaml", navmesh);
                 }
             }
             SSFEventLog.EventLogs.Enqueue("Export complete!");

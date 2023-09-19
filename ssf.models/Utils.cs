@@ -80,11 +80,12 @@ namespace ssf
                             PlacedObject obj = YamlImporter.getObjectFromYaml<PlacedObject>(result);
 
                             // Dump anything that doesn't rotate well.
+                            /*
                             if (ConvertStringToVector3(obj.Placement.Rotation).X != 0 ||
                                 ConvertStringToVector3(obj.Placement.Rotation).Y != 0)
                             {
                                 continue;
-                            }
+                            }*/
                             //sort the height
                             if (ZeroingZ != 0)
                             {
@@ -208,6 +209,15 @@ namespace ssf
             // rotate point
             double xnew = p.X * c - p.Y * s;
             double ynew = p.X * s + p.Y * c;
+
+            if (xnew < 0.01 && xnew > -0.01)
+            {
+                xnew = 0;
+            }
+            if (ynew < 0.01 && ynew > -0.01)
+            {
+                ynew = 0;
+            }
 
             // translate point back:
             p.X = (float)(xnew + pivot.X);
