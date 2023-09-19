@@ -52,7 +52,7 @@
             button1.TabIndex = 0;
             button1.Text = "Build";
             button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            button1.Click += button1_ClickAsync;
             // 
             // textBox1
             // 
@@ -126,7 +126,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(12, 71);
+            label3.Location = new Point(12, 67);
             label3.Name = "label3";
             label3.Size = new Size(77, 15);
             label3.TabIndex = 8;
@@ -134,7 +134,7 @@
             // 
             // FormIdOffset_Text
             // 
-            FormIdOffset_Text.Location = new Point(112, 68);
+            FormIdOffset_Text.Location = new Point(112, 64);
             FormIdOffset_Text.Name = "FormIdOffset_Text";
             FormIdOffset_Text.Size = new Size(100, 23);
             FormIdOffset_Text.TabIndex = 9;
@@ -143,7 +143,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(12, 106);
+            label4.Location = new Point(12, 96);
             label4.Name = "label4";
             label4.Size = new Size(61, 15);
             label4.TabIndex = 10;
@@ -151,7 +151,7 @@
             // 
             // espname_text
             // 
-            espname_text.Location = new Point(112, 103);
+            espname_text.Location = new Point(112, 93);
             espname_text.Name = "espname_text";
             espname_text.Size = new Size(100, 23);
             espname_text.TabIndex = 11;

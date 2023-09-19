@@ -4,6 +4,7 @@ using ssf.Generation;
 using ssf.IO;
 using ssf.Models;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
@@ -34,9 +35,9 @@ namespace Seedstarfield
                 blocks = Utils.LoadBlockLib(settings.ContentPath)
             };
         }
-        private void button1_Click(object sender, EventArgs e)
-        {
-            textBox1.Text = "";
+
+        private async void DoWork()
+        {            
             Mundus generator = new Mundus();
             List<Block> blocks = new List<Block>();
             do
@@ -44,8 +45,13 @@ namespace Seedstarfield
                 generator.Setup(BlockLib.Instance);
                 blocks = generator.Generate(settings.GenLength);
             } while (blocks.Count < settings.MinBlocks);
-
             BlockExporter.Export(blocks, settings);
+        }
+
+        private async void button1_ClickAsync(object sender, EventArgs e)
+        {
+            textBox1.Text = "";
+            await Task.Run(() => DoWork());
         }
         public void LogEvent(string text)
         {
@@ -53,7 +59,7 @@ namespace Seedstarfield
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (SSFEventLog.EventLogs.Count > 0)
+            while (SSFEventLog.EventLogs.Count > 0)
             {
                 textBox1.Text += SSFEventLog.EventLogs.Dequeue() + Environment.NewLine;
             }
@@ -92,7 +98,7 @@ namespace Seedstarfield
 
         private void espname_text_TextChanged(object sender, EventArgs e)
         {
-            settings.EspName= espname_text.Text;
+            settings.EspName = espname_text.Text;
         }
     }
 }
