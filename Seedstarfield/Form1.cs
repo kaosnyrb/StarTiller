@@ -22,6 +22,12 @@ namespace Seedstarfield
 
             settings = YamlImporter.getObjectFromFile<SeedStarfieldSettings>("settings.yaml");
 
+            //refresh ui
+            GenLength_TextBox.Text = settings.GenLength.ToString();
+            MinBlocks_Text.Text = settings.MinBlocks.ToString();
+            FormIdOffset_Text.Text = settings.FormIdOffset.ToString();
+            espname_text.Text = settings.EspName;
+
             SSFEventLog.EventLogs = new Queue<string>();
             BlockLib.Instance = new BlockLib
             {
@@ -60,12 +66,33 @@ namespace Seedstarfield
             notePad.StartInfo.FileName = settings.SpriggitCli;
             notePad.StartInfo.Arguments = " deserialize --InputPath \"" + settings.GitModPath + "\" --OutputPath \"" + settings.DataFolder + settings.EspName + "\"";
 
+            SSFEventLog.EventLogs.Enqueue("Running SpriggitCli with : " + notePad.StartInfo.Arguments);
             notePad.Start();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             YamlExporter.WriteObjToYamlFile("settings.yaml", settings);
+        }
+
+        private void GenLength_TextBox_TextChanged(object sender, EventArgs e)
+        {
+            settings.GenLength = int.Parse(GenLength_TextBox.Text);
+        }
+
+        private void MinBlocks_Text_TextChanged(object sender, EventArgs e)
+        {
+            settings.MinBlocks = int.Parse(MinBlocks_Text.Text);
+        }
+
+        private void FormIdOffset_Text_TextChanged(object sender, EventArgs e)
+        {
+            settings.FormIdOffset = int.Parse(FormIdOffset_Text.Text);
+        }
+
+        private void espname_text_TextChanged(object sender, EventArgs e)
+        {
+            settings.EspName= espname_text.Text;
         }
     }
 }
