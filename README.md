@@ -10,4 +10,3 @@ Mundusform was based on hand crafted block files, which was time consuming. I'd 
 Seedstarfield is built on top of https://github.com/Mutagen-Modding/Spriggit which can convert esp to yaml.
 
 This means that we can export blocks from the CS to yaml and then use them as blocks.
-

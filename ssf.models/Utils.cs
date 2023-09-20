@@ -159,7 +159,7 @@ namespace ssf
             return blocks;
         }
 
-        //An AI wrote these. Future.
+
         public static Vector3 ConvertStringToVector3(string input)
         {
             if (input == null) return new Vector3(0, 0, 0);
@@ -243,27 +243,13 @@ namespace ssf
                 //Apply Rotation
                 var rot = ConvertStringToVector3(block.placedObjects[i].Placement.Rotation);
 
-                //TODO
-                //;Objects in Skyrim are rotated in order of Z, Y, X, so we will do that here as well.
-                // Y and X change if Z do.
-                rot.Z += ToRadians(-Rotation);
-                float AngleX = (float)(rot.X * Math.Cos(rot.Z) + rot.Y * Math.Sin(rot.Z));
-                float AngleY = (float)(rot.Y * Math.Cos(rot.Z) - rot.X * Math.Sin(rot.Z));
-                //Too small a rotation to care.
-                float rotationLimiter = 0.5f;
-                if (rot.Z > -rotationLimiter && rot.Z < rotationLimiter)
-                {
-                    rot.Z = 0;
-                }
-                if (AngleX > -rotationLimiter && AngleX < rotationLimiter)
-                {
-                    AngleX = 0;
-                }
-                if (AngleY > -rotationLimiter && AngleY < rotationLimiter)
-                {
-                    AngleY = 0;
-                }
-                var resultRotation = new Vector3(AngleX, AngleY, rot.Z);
+                
+                var resultRotation = RotationUtils.rotateAroundZ(rot, ToRadians(-Rotation));
+
+                if (resultRotation.X < 0.01f && resultRotation.X > -0.01f) resultRotation.X = 0;
+                if (resultRotation.Y < 0.01f && resultRotation.Y > -0.01f) resultRotation.Y = 0;
+                if (resultRotation.Z < 0.01f && resultRotation.Z > -0.01f) resultRotation.Z = 0;
+
                 block.placedObjects[i].Placement.Rotation = ConvertVector3ToString(resultRotation);
             }
             for (int i = 0; i < block.blockDetails.Connectors.Count; i++)
