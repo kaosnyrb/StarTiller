@@ -45,6 +45,11 @@ namespace ssf.IO
                         {
                             SSFEventLog.EventLogs.Enqueue("Odd Rotation: " + placedobj.Placement.Rotation);
                         }
+                        var rot = Utils.ConvertStringToVector3(placedobj.Placement.Rotation);
+                        if (rot.Y > 10 || rot.Y < -10)
+                        {
+                            SSFEventLog.EventLogs.Enqueue("Odd Rotation: " + placedobj.Placement.Rotation);
+                        }
                         YamlExporter.WriteObjToYamlFile(settings.ExportPath + "/Temporary/" + formid + "_" + pluginname + ".yaml", placedobj);
                     }
                 }

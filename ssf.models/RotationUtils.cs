@@ -57,7 +57,7 @@ namespace ssf
             {
                 //positive gimbal lock
                 worldAng.X = (float)-Math.Atan2(r32, r22);
-                worldAng.Y = -90;
+                worldAng.Y = -1.5708f;
                 worldAng.Z = 0;
 
             }
@@ -65,7 +65,7 @@ namespace ssf
             {
                 //negative gimbal lock
                 worldAng.X = (float)-Math.Atan2(r32, r22);
-                worldAng.Y = 90;
+                worldAng.Y = 1.5708f;
                 worldAng.Z = 0;
             }
             else

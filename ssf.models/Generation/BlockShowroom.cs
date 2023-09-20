@@ -29,6 +29,7 @@ namespace ssf.Generation
             {
                 Block block = Libary[i].Clone();
                 Utils.TranslateBlock(block, new Vector3(0, 5000 * i, 0), 0);
+                Output.Add(block);                
                 for (int j = 0;j < 5;j++)
                 {
                     var newblock = block.Clone();

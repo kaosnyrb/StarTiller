@@ -96,6 +96,14 @@ namespace ssf
                                 obj.Placement.Position = ConvertVector3ToString(heighfixpos);
                             }
 
+                            //Clean the rotations
+                            var rotationLimiter = 0.01f; //0.1 is about 5 degrees
+                            var resultRotation = ConvertStringToVector3(obj.Placement.Rotation);
+                            if (resultRotation.X < rotationLimiter && resultRotation.X > -rotationLimiter) resultRotation.X = 0;
+                            if (resultRotation.Y < rotationLimiter && resultRotation.Y > -rotationLimiter) resultRotation.Y = 0;
+                            if (resultRotation.Z < rotationLimiter && resultRotation.Z > -rotationLimiter) resultRotation.Z = 0;
+                            obj.Placement.Rotation = ConvertVector3ToString(resultRotation);
+
                             //Testing using info we've exported to fill in other stuff we need.
                             if (obj.EditorID == null)
                             {
@@ -114,7 +122,7 @@ namespace ssf
                                 {
                                     connectorName = obj.Base,
                                     startpoint = ConvertStringToVector3(obj.Placement.Position),
-                                    rotation = (float)(ConvertStringToVector3(obj.Placement.Rotation).Z * 57.2958)//Rads to degrees
+                                    rotation = ToRadians(ConvertStringToVector3(obj.Placement.Rotation).Z)
                                 };
                                 newBlock.blockDetails.Connectors.Add(newexit);
                             }
@@ -139,6 +147,7 @@ namespace ssf
                         //Unrotate the block.
                         //If the start or end blocks are the wrong way round things get wierd.
                         // TODO stop blocks being the wrong way round
+
                         if (newBlock.blockDetails.startRotation.Z != 0)
                         {
                             float rotationneeded = (float)(newBlock.blockDetails.startRotation.Z * 57.2958);
@@ -235,22 +244,26 @@ namespace ssf
                 //Convert string to vector3
                 var pos = ConvertStringToVector3(block.placedObjects[i].Placement.Position);
                 //Rotate around pivot 
-                pos = RotateVectorAroundPivot(Pivot, pos, Rotation);
+                if (Rotation != 0)
+                {
+                    pos = RotateVectorAroundPivot(Pivot, pos, Rotation);
+                }
                 //Apply translation
                 pos += Pos;
                 //convert back to string (needed for export)
                 block.placedObjects[i].Placement.Position = ConvertVector3ToString(pos);
                 //Apply Rotation
-                var rot = ConvertStringToVector3(block.placedObjects[i].Placement.Rotation);
+                if (Rotation != 0)
+                {
+                    var rot = ConvertStringToVector3(block.placedObjects[i].Placement.Rotation);
 
-                
-                var resultRotation = RotationUtils.rotateAroundZ(rot, ToRadians(-Rotation));
-
-                if (resultRotation.X < 0.01f && resultRotation.X > -0.01f) resultRotation.X = 0;
-                if (resultRotation.Y < 0.01f && resultRotation.Y > -0.01f) resultRotation.Y = 0;
-                if (resultRotation.Z < 0.01f && resultRotation.Z > -0.01f) resultRotation.Z = 0;
-
-                block.placedObjects[i].Placement.Rotation = ConvertVector3ToString(resultRotation);
+                    var resultRotation = RotationUtils.rotateAroundZ(rot, ToRadians(-Rotation));
+                    var rotationLimiter = 0.001f;
+                    if (resultRotation.X < rotationLimiter && resultRotation.X > -rotationLimiter) resultRotation.X = 0;
+                    if (resultRotation.Y < rotationLimiter && resultRotation.Y > -rotationLimiter) resultRotation.Y = 0;
+                    if (resultRotation.Z < rotationLimiter && resultRotation.Z > -rotationLimiter) resultRotation.Z = 0;
+                    block.placedObjects[i].Placement.Rotation = ConvertVector3ToString(resultRotation);
+                }
             }
             for (int i = 0; i < block.blockDetails.Connectors.Count; i++)
             {
