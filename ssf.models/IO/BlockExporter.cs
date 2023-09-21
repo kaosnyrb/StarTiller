@@ -1,4 +1,5 @@
-﻿using ssf.Models;
+﻿using ssf.Manipulators;
+using ssf.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace ssf.IO
             {
                 File.Delete(file);
             }
-
+            string formid = "";
             foreach (var outblock in blocks)
             {
                 //SSFEventLog.EventLogs.Enqueue("Exporting block " + outblock.path);
@@ -38,9 +39,10 @@ namespace ssf.IO
                         placedobj.EditorID = "";//We clear this to stop collisions.
                         placedobj.SkyrimMajorRecordFlags = new List<int>();
                         count++;
-                        string formid = count.ToString("X6");
+                        formid = count.ToString("X6");
                         placedobj.FormKey = formid + ":" + pluginname;
                         if (placedobj.Placement.Rotation == null) placedobj.Placement.Rotation = "0,0,0";
+                        if (placedobj.Placement.Position == null) placedobj.Placement.Position = "0,0,0";
                         if (placedobj.Placement.Rotation.Contains("E"))
                         {
                             SSFEventLog.EventLogs.Enqueue("Odd Rotation: " + placedobj.Placement.Rotation);
@@ -53,16 +55,20 @@ namespace ssf.IO
                         YamlExporter.WriteObjToYamlFile(settings.ExportPath + "/Temporary/" + formid + "_" + pluginname + ".yaml", placedobj);
                     }
                 }
-                foreach (var navmesh in outblock.navmeshs)
-                {
-                    count++;
-                    string formid = count.ToString("X6");
-                    navmesh.VersionControl = 12079;
-                    navmesh.FormKey = formid + ":" + pluginname;
-                    navmesh.Data.Parent.Parent = "000D62:" + pluginname;
-                    YamlExporter.WriteObjToYamlFile(settings.ExportPath + "/NavigationMeshes/" + formid + "_" + pluginname + ".yaml", navmesh);
-                }
             }
+
+            var mesh = NavMeshUtils.BuildNavmesh(blocks);
+            count++;
+            formid = count.ToString("X6");
+            mesh.VersionControl = 12079;
+            mesh.FormKey = formid + ":" + pluginname;
+            mesh.Data.Parent = new parclass
+            {
+                MutagenObjectType = "CellNavmeshParent",
+                Parent = "000D62:" + pluginname
+            };
+            YamlExporter.WriteObjToYamlFile(settings.ExportPath + "/NavigationMeshes/" + formid + "_" + pluginname + ".yaml", mesh);
+
             SSFEventLog.EventLogs.Enqueue("Export complete!");
             return 1;
         }

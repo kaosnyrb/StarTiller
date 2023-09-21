@@ -1,0 +1,42 @@
+FormKey: 0026A5:bryntest.esp
+VersionControl: 12085
+Data:
+  Parent:
+    MutagenObjectType: CellNavmeshParent
+    Parent: 0026A0:bryntest.esp
+  Vertices:
+  - 149.99123, 768.02795, 0
+  - -149.92123, 768.02795, 0
+  - 149.99123, 256.02795, 0
+  - 149.99123, -255.95793, 0
+  - -149.92123, -255.95793, 0
+  - -149.92123, 256.02795, 0
+  Triangles:
+  - Vertices: 5, 2, 1
+    EdgeLink_0_1: 3
+    EdgeLink_1_2: 1
+    EdgeLink_2_0: -1
+    Flags:
+    - Found
+  - Vertices: 0, 1, 2
+    EdgeLink_0_1: -1
+    EdgeLink_2_0: -1
+    Flags:
+    - Found
+  - Vertices: 4, 3, 5
+    EdgeLink_0_1: -1
+    EdgeLink_1_2: 3
+    EdgeLink_2_0: -1
+    Flags:
+    - Found
+  - Vertices: 2, 5, 3
+    EdgeLink_1_2: 2
+    EdgeLink_2_0: -1
+    Flags:
+    - Found
+  NavmeshGridDivisor: 1
+  MaxDistanceX: 299.91248
+  MaxDistanceY: 1023.9859
+  Min: -149.92123, -255.95793, 0
+  Max: 149.99123, 768.02795, 0
+  NavmeshGrid: 0x040000000000010002000300

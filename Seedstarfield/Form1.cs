@@ -37,8 +37,8 @@ namespace Seedstarfield
         }
 
         private async void DoWork()
-        {            
-            BlockShowroom generator = new BlockShowroom();
+        {
+            Mundus generator = new Mundus();
             List<Block> blocks = new List<Block>();
             do
             {
