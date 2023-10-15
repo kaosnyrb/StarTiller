@@ -2,6 +2,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ssf;
+using ssf.IO;
+using ssf.Models;
+using System.Collections.Generic;
 
 namespace StarTiller
 {
@@ -9,12 +13,16 @@ namespace StarTiller
     {
         Graphics_Core GCore;
         Ui_Core ui_Core;
+
+
+
         public Game1()
         {
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             GCore = new Graphics_Core(this);
             ui_Core = new Ui_Core();
+
         }
 
         protected override void Initialize()
