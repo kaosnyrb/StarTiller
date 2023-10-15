@@ -19,13 +19,16 @@ namespace KNPE
 
         public static Vector3 LightDirection = Vector3.Forward;
 
+        public static int ScreenWidth = 1920;
+        public static int ScreenHeight = 1080;
+
         public Graphics_Core(Game game)
         {
             graphics = new GraphicsDeviceManager(game);
             
             game.Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferWidth = 1920;
-            graphics.PreferredBackBufferHeight = 1080;
+            graphics.PreferredBackBufferWidth = ScreenWidth;
+            graphics.PreferredBackBufferHeight = ScreenHeight;
             gameAccess = game;
 
 
@@ -38,7 +41,7 @@ namespace KNPE
         internal void LoadContent(Game game)
         {
             spriteBatch = new SpriteBatch(game.GraphicsDevice);
-            //ScreenTextManager.LoadFont(game.Content, "CreeperFont");
+            ScreenTextManager.LoadFont(game.Content, "Arial");
             LoadSprites(game);
             LoadModels(game);
             RenderEntity3d_Manager.Init(game.Content);
@@ -47,6 +50,7 @@ namespace KNPE
         public static void LoadSprites(Game game)
         {
             SpriteManager.LoadSprite(0, game.Content, "MOTDImage");
+            SpriteManager.LoadSprite(1, game.Content, "button");
         }
 
         public static void LoadModels(Game game)
@@ -68,6 +72,7 @@ namespace KNPE
 
             RenderEntity3d_Manager.ClearRenderList();
             SpriteManager.ClearRenderSpriteList();
+            ScreenTextManager.ClearText();
         }
 
 
@@ -75,13 +80,8 @@ namespace KNPE
         internal void Draw(GameTime gameTime)
         {
             //graphics.GraphicsDevice.Clear(ClearOptions.Target,new Vector4(0,0.05f,0,255),1,0);
-
-            SpriteManager.RenderSprite(0, Vector2.Zero);
-
             RenderEntity3d_Manager.Draw(graphics.GraphicsDevice, gameTime);
-
             SpriteManager.Draw(spriteBatch);
-            
             ScreenTextManager.Draw(spriteBatch);
         }
     }

@@ -20,8 +20,8 @@ namespace KNPE
         {
             batch.Begin();
             
-            batch.DrawString(Font, TextContent, Position + new Vector2(1, 1), Color.Black, 0, new Vector2(0, 0), 3, SpriteEffects.None, 0);
-            batch.DrawString(Font, TextContent, Position, TextColour, 0, new Vector2(0, 0), 3, SpriteEffects.None, 0);
+            batch.DrawString(Font, TextContent, Position + new Vector2(1, 1), Color.Black, 0, new Vector2(0, 0), 1, SpriteEffects.None, 0);
+            batch.DrawString(Font, TextContent, Position, TextColour, 0, new Vector2(0, 0), 1, SpriteEffects.None, 0);
             
             batch.End();
         }
