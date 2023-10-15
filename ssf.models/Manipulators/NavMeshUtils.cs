@@ -12,7 +12,7 @@ namespace ssf.Manipulators
     {
         public static Navmesh BuildNavmesh(List<Block> blocks)
         {
-            SSFEventLog.EventLogs.Enqueue("Building Navmesh. Be patient as this can can a min or two.");
+            SSFEventLog.EventLogs.Enqueue("Building Navmesh. Be patient as this can take a min or two.");
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
             int distancecheck = 512;
@@ -23,13 +23,13 @@ namespace ssf.Manipulators
             List<Triangle> triangles = new List<Triangle>();
 
             int mergedVerts = 0;
-            //Original Vert / New Vert. Used to transform block triangles into global triangles
             foreach (var block in blocks)
             {
                 foreach (var nav in block.navmeshs)
                 {
-                    //Add Verts
+                    //Original Vert / New Vert. Used to transform block triangles into global triangles
                     Dictionary<int, int> VertTransformation = new Dictionary<int, int>();
+                    //Add Verts
                     for (int i = 0; i < nav.Data.Vertices.Length;i++)
                     {
                         Vector3 vert = Utils.ConvertStringToVector3(nav.Data.Vertices[i]);
