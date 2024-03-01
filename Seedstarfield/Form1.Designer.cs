@@ -32,7 +32,6 @@
             button1 = new Button();
             textBox1 = new TextBox();
             timer1 = new System.Windows.Forms.Timer(components);
-            button2 = new Button();
             button3 = new Button();
             GenLength_TextBox = new TextBox();
             label1 = new Label();
@@ -46,7 +45,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(647, 340);
+            button1.Location = new Point(728, 340);
             button1.Name = "button1";
             button1.Size = new Size(75, 23);
             button1.TabIndex = 0;
@@ -68,16 +67,6 @@
             // 
             timer1.Enabled = true;
             timer1.Tick += timer1_Tick;
-            // 
-            // button2
-            // 
-            button2.Location = new Point(728, 340);
-            button2.Name = "button2";
-            button2.Size = new Size(75, 23);
-            button2.TabIndex = 2;
-            button2.Text = "Spriggit";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
             // 
             // button3
             // 
@@ -171,11 +160,10 @@
             Controls.Add(label1);
             Controls.Add(GenLength_TextBox);
             Controls.Add(button3);
-            Controls.Add(button2);
             Controls.Add(textBox1);
             Controls.Add(button1);
             Name = "Form1";
-            Text = "Seedstarfield";
+            Text = "StarTiller";
             ResumeLayout(false);
             PerformLayout();
         }
@@ -185,7 +173,6 @@
         private Button button1;
         private TextBox textBox1;
         private System.Windows.Forms.Timer timer1;
-        private Button button2;
         private Button button3;
         private TextBox GenLength_TextBox;
         private Label label1;

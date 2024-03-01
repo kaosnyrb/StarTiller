@@ -1,0 +1,1 @@
+.\Spriggit.CLI.exe deserialize --InputPath "E:\SteamLibrary\steamapps\common\Starfield\Data\AvontechShipyards.esp" --OutputPath "E:\mods\avontechshipyard\yaml\thing.esp"

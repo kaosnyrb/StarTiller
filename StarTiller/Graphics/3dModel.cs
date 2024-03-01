@@ -46,8 +46,8 @@ namespace KNPE
         }
         public void InitShader(ContentManager theContentManager)
         {
-            Shader = theContentManager.Load<Effect>("Shader");
-            Phong = theContentManager.Load<Effect>("Shaders/Phong");
+            //Shader = theContentManager.Load<Effect>("Shader");
+            //Phong = theContentManager.Load<Effect>("Shaders/Phong");
         }
         public int ResetEffectSettings = 0;
 
@@ -137,6 +137,7 @@ namespace KNPE
         public int ModelID = 0;
         public bool Active = false;
     }
+
     public static class RenderEntity3d_Manager
     {
         public static int MAXMODELS = 20;
@@ -194,13 +195,12 @@ namespace KNPE
         public static void Draw(GraphicsDevice Device, GameTime Time)
         {
             // Calculate the camera matrices.
-            Viewport viewport = Device.Viewport;
             Matrix view = Camera.GetViewMatrix();
+            float aspectratio = (float)Graphics_Core.ScreenWidth / (float)Graphics_Core.ScreenHeight;
             Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
-                                                                    (float)viewport.Width / (float)viewport.Height,
-                                                                    1,
-                                                                    10000);
-            
+                                                                    aspectratio,
+                                                                    0.1f,
+                                                                    1000000.0f);
             Matrix worldMatrix;
             for (int i = 0; i < MAXRENDERENTITYS; i++)
             {
@@ -212,33 +212,5 @@ namespace KNPE
                 }
             }
         }
-
-        public static void Draw(GraphicsDevice Device, Matrix view, Matrix projection, Matrix Adjust, GameTime Time)
-        {
-            // Calculate the camera matrices.
-            Viewport viewport = Device.Viewport;
-            //Matrix view = BoatGameTestbed.mCamera.View;
-            //Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
-            //                                                        (float)viewport.Width / (float)viewport.Height,
-            //                                                        3,
-            //                                                        10000);
-
-            Matrix worldMatrix;
-
-            //effect.Parameters["View"].SetValue(view);
-            //effect.Parameters["Projection"].SetValue(projection);
-
-            for (int i = 0; i < MAXRENDERENTITYS; i++)
-            {
-                if (RenderEntity3dList[i].Active)
-                {
-                    RenderEntity3dList[i].Rotation.Translation = Vector3.Zero;
-                    worldMatrix = RenderEntity3dList[i].Rotation * Matrix.CreateTranslation(RenderEntity3dList[i].Position);
-                    ModelList[RenderEntity3dList[i].ModelID].DrawWithCull(worldMatrix * Adjust,
-                        view, projection, 1, 1);
-                }
-            }
-        }
-
     }
 }

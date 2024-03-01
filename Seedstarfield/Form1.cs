@@ -45,7 +45,8 @@ namespace Seedstarfield
                 generator.Setup(BlockLib.Instance);
                 blocks = generator.Generate(settings.GenLength);
             } while (blocks.Count < settings.MinBlocks);
-            BlockExporter.Export(blocks, settings);
+            ESMExporter.Export(blocks, settings);
+            //            BlockExporter.Export(blocks, settings);
         }
 
         private async void button1_ClickAsync(object sender, EventArgs e)

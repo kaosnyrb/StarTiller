@@ -55,7 +55,7 @@ namespace KNPE
 
         public static void LoadModels(Game game)
         {
-            //RenderEntity3d_Manager.LoadModel(0, game.Content, "TestPlayer", 1);
+            RenderEntity3d_Manager.LoadModel(0, game.Content, "box", 1);
         }
 
         internal void UnloadContent(Game game)

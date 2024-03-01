@@ -1,5 +1,7 @@
 ﻿
 using Microsoft.Xna.Framework;
+using System.Drawing;
+
 namespace KNPE
 {
 
@@ -15,15 +17,18 @@ namespace KNPE
 
         public static Vector3 CameraUp = Vector3.Up;
 
+        public static float rot = 0.0f;
+
         public static Matrix GetViewMatrix()
-        {           
+        {
+            CreateLookAt(CameraPosition, CameraTarget);
+
             Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
                                                                     (float)1280 / (float)720,
                                                                     1,
                                                                     175000);
-            Frustum = new BoundingFrustum(ViewMatrix * projection);
             ViewMatrix = Matrix.CreateLookAt(CameraPosition, CameraTarget, CameraUp);
-        
+            Frustum = new BoundingFrustum(ViewMatrix * projection);
 
             return ViewMatrix;
         }
@@ -32,10 +37,12 @@ namespace KNPE
         {
             CameraPosition = Position;
             CameraTarget = Target;
-            CameraForward = CameraTarget - CameraPosition;
+            CameraForward = CameraPosition - CameraTarget;
             CameraForward.Normalize();
+
             CameraRight = Vector3.Cross(CameraForward, CameraUp);
             CameraRight.Normalize();
+
             ViewMatrix = Matrix.CreateLookAt(CameraPosition, CameraTarget, CameraUp);
         }
     }

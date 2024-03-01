@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ssf.Models
 {
+    /*
     public class Cell
     {
         public string FormKey { get; set; }
@@ -42,5 +43,5 @@ namespace ssf.Models
         public string DirectionalZMinus { get; set; }
         public string Specular { get; set; }
         public int Scale { get; set; }
-    }
+    }*/
 }

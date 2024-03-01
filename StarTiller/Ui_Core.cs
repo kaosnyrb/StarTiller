@@ -37,6 +37,8 @@ namespace StarTiller
                 { "Build", new Button(new Vector2(Graphics_Core.ScreenWidth - 128, 16), new Vector2(128, 64), 1, "Build") },
                 { "Export", new Button(new Vector2(Graphics_Core.ScreenWidth - 128, 128), new Vector2(128, 64), 1, "Export") }
             };
+
+            Camera.CreateLookAt(new Vector3(0, 1, 20), new Vector3(0, 0, 0));
         }
 
         public async Task ButtonHandlerAsync(Vector2 mousePosition)
@@ -73,6 +75,7 @@ namespace StarTiller
             }
         }
 
+        float count = 0;
         public async void Update(Game game, GameTime gameTime)
         {
             var mouseState = Mouse.GetState();
@@ -87,6 +90,20 @@ namespace StarTiller
                 Console += SSFEventLog.EventLogs.Dequeue() + Environment.NewLine;
             }
             ScreenTextManager.RenderText(Console, new Vector2(32, 32), Color.White);
+            
+            if (Keyboard.GetState().IsKeyDown(Keys.W))
+            {
+                Camera.CameraPosition.Y += 0.1f;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            {
+                Camera.CameraPosition.Y -= 0.1f;
+            }
+            RenderEntity3d_Manager.RenderModel(0, new Vector3(0, 10, 0), Matrix.CreateRotationZ(count += 0.01f));
+
+            ScreenTextManager.RenderText(Camera.CameraPosition.ToString() + " : " + Camera.CameraTarget.ToString(), new Vector2(0, 0), Color.White);
+
+            Camera.rot += 0.01f;
         }
 
         public void Draw(GameTime gameTime)
@@ -96,6 +113,8 @@ namespace StarTiller
             {
                 button.Value.Draw(gameTime);
             }
+
+            
         }
 
         public async void RunGeneration()
