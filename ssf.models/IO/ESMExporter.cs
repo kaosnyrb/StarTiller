@@ -172,7 +172,9 @@ namespace ssf.IO
                             int i = Convert.ToInt32("0x" + basemod[0], 16);
                             var formkey = new FormKey(basemod[1], (uint)i);
                             IFormLink<IPlaceableObjectGetter> baseobj = formkey.ToLink<IPlaceableObjectGetter>();
-                            
+
+                            SSFEventLog.EventLogs.Enqueue("pos" + " " + pos.X + " " + pos.Y + " " + pos.Z);
+                            SSFEventLog.EventLogs.Enqueue("rot" + " " + rot.X + " " + rot.Y + " " + rot.Z);
                             newCell.Temporary.Add(new Mutagen.Bethesda.Starfield.PlacedObject(myMod)
                             {
                                 Base = baseobj,

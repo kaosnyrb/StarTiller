@@ -258,7 +258,7 @@ namespace ssf
                 {
                     var rot = ConvertStringToVector3(block.placedObjects[i].Placement.Rotation);
 
-                    var resultRotation = RotationUtils.rotateAroundZ(rot, ToRadians(-Rotation));
+                    var resultRotation = RotationUtils.rotateAroundZ(rot, -Rotation);
                     var rotationLimiter = 0.001f;
                     if (resultRotation.X < rotationLimiter && resultRotation.X > -rotationLimiter) resultRotation.X = 0;
                     if (resultRotation.Y < rotationLimiter && resultRotation.Y > -rotationLimiter) resultRotation.Y = 0;
@@ -270,7 +270,7 @@ namespace ssf
             {
                 if(Rotation != 0)
                 {
-                    block.blockDetails.Connectors[i].startpoint = RotateVectorAroundPivot(Pivot, block.blockDetails.Connectors[i].startpoint, Rotation);
+                    block.blockDetails.Connectors[i].startpoint = RotateVectorAroundPivot(Pivot, block.blockDetails.Connectors[i].startpoint, ToDegrees(-Rotation));
                 }
                 block.blockDetails.Connectors[i].startpoint += Pos;
                 block.blockDetails.Connectors[i].rotation += Rotation;

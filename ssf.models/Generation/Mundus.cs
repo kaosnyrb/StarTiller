@@ -23,7 +23,7 @@ namespace ssf.Generation
 
         int BlockDeckPosition = 0;
 
-        int CollisionDistance = 1;//64
+        int CollisionDistance = 2;//64
 
         public void Setup(BlockLib lib, int seed)
         {
