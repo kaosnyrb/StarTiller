@@ -23,10 +23,12 @@ namespace ssf.Generation
 
         int BlockDeckPosition = 0;
 
-        public void Setup(BlockLib lib)
+        int CollisionDistance = 1;//64
+
+        public void Setup(BlockLib lib, int seed)
         {
             //Seed the generator
-            rng = new Random();
+            rng = new Random(seed);
             Libary = lib.blocks.Values.ToList();
             ShuffleDeck();
 
@@ -92,7 +94,7 @@ namespace ssf.Generation
         }
 
 
-        public List<Block> Generate(int maxsteps)
+        public List<Block> Generate(int maxsteps, int seed)
         {
             Output = new List<Block>();
             SSFEventLog.EventLogs.Enqueue("Mundus Generation Beginning");
@@ -128,7 +130,7 @@ namespace ssf.Generation
                             if (!exisitingobj.EditorID.Contains("ExitBlock"))
                             {
                                 Vector3 dist = Utils.ConvertStringToVector3(exisitingobj.Placement.Position) - Utils.ConvertStringToVector3(newobj.Placement.Position);
-                                if (dist.Length() < 64)
+                                if (dist.Length() < CollisionDistance)
                                 {
                                     Collision = true;
                                 }

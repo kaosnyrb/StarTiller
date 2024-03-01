@@ -42,8 +42,8 @@ namespace Seedstarfield
             List<Block> blocks = new List<Block>();
             do
             {
-                generator.Setup(BlockLib.Instance);
-                blocks = generator.Generate(settings.GenLength);
+                generator.Setup(BlockLib.Instance, settings.seed);
+                blocks = generator.Generate(settings.GenLength, settings.seed);
             } while (blocks.Count < settings.MinBlocks);
             ESMExporter.Export(blocks, settings);
             //            BlockExporter.Export(blocks, settings);
@@ -52,6 +52,8 @@ namespace Seedstarfield
         private async void button1_ClickAsync(object sender, EventArgs e)
         {
             textBox1.Text = "";
+            settings.cellname = CellName.Text;
+            settings.seed = int.Parse(Seed.Text);
             await Task.Run(() => DoWork());
         }
         public void LogEvent(string text)

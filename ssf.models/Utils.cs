@@ -238,7 +238,7 @@ namespace ssf
 
         public static Block TranslateBlock(Block block, Vector3 Pos, float Rotation)
         {
-            //SSFEventLog.EventLogs.Enqueue("Translating " + block.path + " by " + Pos + " and " + Rotation);
+            SSFEventLog.EventLogs.Enqueue("Translating " + block.path + " by " + Pos + " and " + Rotation);
             Vector3 Pivot = block.blockDetails.startpoint;
             for (int i = 0; i < block.placedObjects.Count; i++)
             {
@@ -268,7 +268,10 @@ namespace ssf
             }
             for (int i = 0; i < block.blockDetails.Connectors.Count; i++)
             {
-                block.blockDetails.Connectors[i].startpoint = RotateVectorAroundPivot(Pivot, block.blockDetails.Connectors[i].startpoint, Rotation);
+                if(Rotation != 0)
+                {
+                    block.blockDetails.Connectors[i].startpoint = RotateVectorAroundPivot(Pivot, block.blockDetails.Connectors[i].startpoint, Rotation);
+                }
                 block.blockDetails.Connectors[i].startpoint += Pos;
                 block.blockDetails.Connectors[i].rotation += Rotation;
             }
@@ -280,8 +283,10 @@ namespace ssf
                     var pos = ConvertStringToVector3(block.navmeshs[i].Data.Vertices[j]);
 
                     //Rotate around pivot 
-                    pos = RotateVectorAroundPivot(Pivot, pos, Rotation);
-
+                    if (Rotation != 0)
+                    {
+                        pos = RotateVectorAroundPivot(Pivot, pos, Rotation);
+                    }
                     //Apply translation
                     pos += Pos;
 

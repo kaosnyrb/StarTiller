@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
+using DynamicData;
 
 namespace ssf.IO
 {
@@ -52,7 +53,7 @@ namespace ssf.IO
                 Console.WriteLine("Building Record : " + prefix + "_cell_" + item);
                 var newCell = new Cell(myMod)
                 {
-                    EditorID = prefix + "_cell_" + item,
+                    EditorID = settings.cellname,
                     Temporary = new ExtendedList<IPlaced>(),
                     Flags = Cell.Flag.IsInteriorCell,
                     Lighting = new CellLighting()
@@ -143,17 +144,18 @@ namespace ssf.IO
                 foreach (var outblock in blocks)
                 {
                     SSFEventLog.EventLogs.Enqueue("Exporting block " + outblock.path);
-                    IFormLink<IPlaceableObjectGetter> OutpostGroupPackinDummy = new FormKey(env.LoadOrder[0].ModKey, 0x00015804).ToLink<IPlaceableObjectGetter>();
-                    IFormLink<IPlaceableObjectGetter> PrefabPackinPivotDummy = new FormKey(env.LoadOrder[0].ModKey, 0x0003F808).ToLink<IPlaceableObjectGetter>();
-                    IFormLink<IKeywordGetter> UpdatesDynamicNavmeshKeyword = new FormKey(env.LoadOrder[0].ModKey, 0x00140158).ToLink<IKeywordGetter>();
-                    IFormLink<IPlaceableObjectGetter> TRP_Canister_Toxic_01 = new FormKey(env.LoadOrder[0].ModKey, 0x00024358).ToLink<IPlaceableObjectGetter>();
+                    //IFormLink<IPlaceableObjectGetter> OutpostGroupPackinDummy = new FormKey(env.LoadOrder[0].ModKey, 0x00015804).ToLink<IPlaceableObjectGetter>();
+                    //IFormLink<IPlaceableObjectGetter> PrefabPackinPivotDummy = new FormKey(env.LoadOrder[0].ModKey, 0x0003F808).ToLink<IPlaceableObjectGetter>();
+                    //IFormLink<IKeywordGetter> UpdatesDynamicNavmeshKeyword = new FormKey(env.LoadOrder[0].ModKey, 0x00140158).ToLink<IKeywordGetter>();
+
+                    
+                    IFormLink<IPlaceableObjectGetter> COCMarkerHeading = new FormKey(env.LoadOrder[0].ModKey, 0x00000032).ToLink<IPlaceableObjectGetter>();
 
                     foreach (var placedobj in outblock.placedObjects)
                     {
                         if (!placedobj.EditorID.Contains("ExitBlock"))
                         {
                             placedobj.EditorID = "";//We clear this to stop collisions.
-                            placedobj.SkyrimMajorRecordFlags = new List<int>();
                             if (placedobj.Placement.Rotation == null) placedobj.Placement.Rotation = "0,0,0";
                             if (placedobj.Placement.Position == null) placedobj.Placement.Position = "0,0,0";
                             if (placedobj.Placement.Rotation.Contains("E"))
@@ -166,10 +168,8 @@ namespace ssf.IO
                                 SSFEventLog.EventLogs.Enqueue("Odd Rotation: " + placedobj.Placement.Rotation);
                             }
                             var pos = Utils.ConvertStringToVector3(placedobj.Placement.Position);
-
                             var basemod = placedobj.Base.Split(':');
                             int i = Convert.ToInt32("0x" + basemod[0], 16);
-
                             var formkey = new FormKey(basemod[1], (uint)i);
                             IFormLink<IPlaceableObjectGetter> baseobj = formkey.ToLink<IPlaceableObjectGetter>();
                             
@@ -181,6 +181,13 @@ namespace ssf.IO
                             });
                         }
                     }
+                    /*
+                    var mesh = NavMeshUtils.BuildNavmesh(blocks);
+                    NavmeshGeometry navmeshGeometry = new NavmeshGeometry();
+                    newCell.NavigationMeshes.Add(new NavigationMesh(myMod)
+                    {
+                        NavmeshGeometry = navmeshGeometry                        
+                    });*/
                 }
 
                 //Add complete cell
@@ -198,19 +205,7 @@ namespace ssf.IO
                     myMod.Cells.Add(cellblock);
                 }
             }
-            /*
-            var mesh = NavMeshUtils.BuildNavmesh(blocks);
-            count++;
-            formid = count.ToString("X6");
-            mesh.VersionControl = 12079;
-            mesh.FormKey = formid + ":" + pluginname;
-            mesh.Data.Parent = new parclass
-            {
-                MutagenObjectType = "CellNavmeshParent",
-                Parent = "000D62:" + pluginname
-            };
-            YamlExporter.WriteObjToYamlFile(settings.ExportPath + "/NavigationMeshes/" + formid + "_" + pluginname + ".yaml", mesh);
-            */
+            
 
             myMod.WriteToBinary(datapath + "\\" + pluginname + ".esm");
             SSFEventLog.EventLogs.Enqueue("Export complete!");

@@ -41,6 +41,8 @@
             FormIdOffset_Text = new TextBox();
             label4 = new Label();
             espname_text = new TextBox();
+            CellName = new TextBox();
+            Seed = new TextBox();
             SuspendLayout();
             // 
             // button1
@@ -146,11 +148,29 @@
             espname_text.TabIndex = 11;
             espname_text.TextChanged += espname_text_TextChanged;
             // 
+            // CellName
+            // 
+            CellName.Location = new Point(112, 122);
+            CellName.Name = "CellName";
+            CellName.Size = new Size(100, 23);
+            CellName.TabIndex = 12;
+            CellName.Text = "cellname1";
+            // 
+            // Seed
+            // 
+            Seed.Location = new Point(112, 151);
+            Seed.Name = "Seed";
+            Seed.Size = new Size(100, 23);
+            Seed.TabIndex = 13;
+            Seed.Text = "1";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(815, 845);
+            Controls.Add(Seed);
+            Controls.Add(CellName);
             Controls.Add(espname_text);
             Controls.Add(label4);
             Controls.Add(FormIdOffset_Text);
@@ -182,5 +202,7 @@
         private TextBox FormIdOffset_Text;
         private Label label4;
         private TextBox espname_text;
+        private TextBox CellName;
+        private TextBox Seed;
     }
 }

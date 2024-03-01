@@ -11,6 +11,10 @@ namespace ssf
         public string ContentPath { get; set; }
         public int GenLength { get; set; }
         public int MinBlocks { get; set; }
+
+        public int seed { get;set; }
+
+        public string cellname { get; set; }
         public string EspName { get; set; }
         public string ExportPath { get; set; }
         public int FormIdOffset { get; set; }

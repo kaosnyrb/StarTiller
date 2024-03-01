@@ -4,4 +4,5 @@ VersionControl: 12085
 EditorID: ExitBlock_01
 Base: 00041D32:Starfield.esm
 Placement:
-  Position: 0, 512, 0
+  Position: 0, 4, 0
+  Rotation: 0, 0, 0
