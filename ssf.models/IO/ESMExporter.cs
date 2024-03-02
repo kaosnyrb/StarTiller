@@ -98,7 +98,7 @@ namespace ssf.IO
                 var cellblockNumber = int.Parse(stringkey.Substring(stringkey.Length - 1));
                 var subBlockNumber = int.Parse(stringkey.Substring(stringkey.Length - 2, 1));
 
-                SSFEventLog.EventLogs.Enqueue("Created Cell :" + key);
+                SSFEventLog.EventLogs.Enqueue("Created Cell :" + key.ToString("x"));
 
                 //Try and use existing cellblocks and subblocks first.
                 CellBlock cellblock = null;

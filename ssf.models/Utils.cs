@@ -100,6 +100,10 @@ namespace ssf
                             //Clean the rotations
                             var rotationLimiter = 0.01f; //0.1 is about 5 degrees
                             var resultRotation = ConvertStringToVector3(obj.Placement.Rotation);
+                            resultRotation.X = ToDegrees(resultRotation.X);
+                            resultRotation.X = ToDegrees(resultRotation.Y);
+                            resultRotation.X = ToDegrees(resultRotation.Z);
+
                             if (resultRotation.X < rotationLimiter && resultRotation.X > -rotationLimiter) resultRotation.X = 0;
                             if (resultRotation.Y < rotationLimiter && resultRotation.Y > -rotationLimiter) resultRotation.Y = 0;
                             if (resultRotation.Z < rotationLimiter && resultRotation.Z > -rotationLimiter) resultRotation.Z = 0;
@@ -123,7 +127,7 @@ namespace ssf
                                 {
                                     connectorName = obj.Base,
                                     startpoint = ConvertStringToVector3(obj.Placement.Position),
-                                    rotation = ToRadians(ConvertStringToVector3(obj.Placement.Rotation).Z)
+                                    rotation = ConvertStringToVector3(obj.Placement.Rotation).Z
                                 };
                                 newBlock.blockDetails.Connectors.Add(newexit);
                             }
@@ -207,10 +211,10 @@ namespace ssf
 
         public static Vector3 RotateVectorAroundPivot(Vector3 pivot, Vector3 p, double angle)
         {
-            angle = angle * (Math.PI / 180);
+            //angle = angle * (Math.PI / 180);
 
-            double s = Math.Sin(angle);
-            double c = Math.Cos(angle);
+            double s = Math.Sin(-angle);
+            double c = Math.Cos(-angle);
 
             // translate point back to origin:
             p.X -= pivot.X;
@@ -242,11 +246,16 @@ namespace ssf
             Vector3 Pivot = block.blockDetails.startpoint;
             for (int i = 0; i < block.placedObjects.Count; i++)
             {
+                if (block.placedObjects.Count > 2)
+                {
+                    Console.WriteLine("DEBUG");
+                }
                 //Convert string to vector3
                 var pos = ConvertStringToVector3(block.placedObjects[i].Placement.Position);
                 //Rotate around pivot 
                 if (Rotation != 0)
                 {
+                    //slightly off
                     pos = RotateVectorAroundPivot(Pivot, pos, Rotation);
                 }
                 //Apply translation
@@ -257,8 +266,7 @@ namespace ssf
                 if (Rotation != 0)
                 {
                     var rot = ConvertStringToVector3(block.placedObjects[i].Placement.Rotation);
-
-                    var resultRotation = RotationUtils.rotateAroundZ(rot, -Rotation);
+                    var resultRotation = RotationUtils.rotateAroundZ(rot, Rotation);
                     var rotationLimiter = 0.001f;
                     if (resultRotation.X < rotationLimiter && resultRotation.X > -rotationLimiter) resultRotation.X = 0;
                     if (resultRotation.Y < rotationLimiter && resultRotation.Y > -rotationLimiter) resultRotation.Y = 0;
@@ -270,7 +278,7 @@ namespace ssf
             {
                 if(Rotation != 0)
                 {
-                    block.blockDetails.Connectors[i].startpoint = RotateVectorAroundPivot(Pivot, block.blockDetails.Connectors[i].startpoint, ToDegrees(-Rotation));
+                    block.blockDetails.Connectors[i].startpoint = RotateVectorAroundPivot(Pivot, block.blockDetails.Connectors[i].startpoint,Rotation);
                 }
                 block.blockDetails.Connectors[i].startpoint += Pos;
                 block.blockDetails.Connectors[i].rotation += Rotation;
