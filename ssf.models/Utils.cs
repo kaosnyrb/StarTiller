@@ -98,17 +98,19 @@ namespace ssf
                             }
 
                             //Clean the rotations
+                            
                             var rotationLimiter = 0.01f; //0.1 is about 5 degrees
                             var resultRotation = ConvertStringToVector3(obj.Placement.Rotation);
+                            /*
                             resultRotation.X = ToDegrees(resultRotation.X);
-                            resultRotation.X = ToDegrees(resultRotation.Y);
-                            resultRotation.X = ToDegrees(resultRotation.Z);
-
+                            resultRotation.Y = ToDegrees(resultRotation.Y);
+                            resultRotation.Z = ToDegrees(resultRotation.Z);
+                            */
                             if (resultRotation.X < rotationLimiter && resultRotation.X > -rotationLimiter) resultRotation.X = 0;
                             if (resultRotation.Y < rotationLimiter && resultRotation.Y > -rotationLimiter) resultRotation.Y = 0;
                             if (resultRotation.Z < rotationLimiter && resultRotation.Z > -rotationLimiter) resultRotation.Z = 0;
                             obj.Placement.Rotation = ConvertVector3ToString(resultRotation);
-
+                            
                             //Testing using info we've exported to fill in other stuff we need.
                             if (obj.EditorID == null)
                             {
