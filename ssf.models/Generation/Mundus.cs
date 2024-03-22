@@ -94,7 +94,7 @@ namespace ssf.Generation
         }
 
 
-        public List<Block> Generate(int maxsteps, int seed)
+        public List<Block> Generate(int maxsteps)
         {
             Output = new List<Block>();
             SSFEventLog.EventLogs.Enqueue("Mundus Generation Beginning");

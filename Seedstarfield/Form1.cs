@@ -3,6 +3,7 @@ using ssf;
 using ssf.Generation;
 using ssf.IO;
 using ssf.Models;
+using ssf.POI;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -38,14 +39,19 @@ namespace Seedstarfield
 
         private async void DoWork()
         {
+            
             Mundus generator = new Mundus();
             List<Block> blocks = new List<Block>();
+            POIBuilder.Setup(BlockLib.Instance, settings.seed);
+            POIBuilder.Generate(100, settings);
+
+            /*
             do
             {
                 generator.Setup(BlockLib.Instance, settings.seed);
-                blocks = generator.Generate(settings.GenLength, settings.seed);
+                blocks = generator.Generate(settings.GenLength);
             } while (blocks.Count < settings.MinBlocks);
-            ESMExporter.Export(blocks, settings);
+            ESMExporter.Export(blocks, settings);*/
             //            BlockExporter.Export(blocks, settings);
         }
 
