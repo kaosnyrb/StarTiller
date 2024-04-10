@@ -163,9 +163,42 @@ namespace ssf.POI
                 };
                 myMod.PackIns.Add(packin);
                 */
+                //Location
+                Location location = new Location(myMod)
+                {
+                    EditorID = prefix + "_loc_" + item,
+                    Name = item,
+                    Keywords = new ExtendedList<IFormLinkGetter<IKeywordGetter>>(),
+                    WorldLocationRadius = 0,
+                    ActorFadeMult = 1,
+                    TNAM = 0,
+                };
+
+                myMod.Locations.Add(location);
+
+                //GalbankMarker - useful for debugging
+                IFormLinkNullable<IPlaceableObjectGetter> NA_Skyscraper_BLD_Galbank_01 = new FormKey(env.LoadOrder[0].ModKey, 0x002C76F3).ToNullableLink<IPlaceableObjectGetter>();
+                var placed = new Mutagen.Bethesda.Starfield.PlacedObject(myMod)
+                {
+                    Base = NA_Skyscraper_BLD_Galbank_01,
+                    StarfieldMajorRecordFlags = StarfieldMajorRecord.StarfieldMajorRecordFlag.VisibleWhenDistant,
+                    Position = new P3Float(),
+                };
+
+                //TopCell
+                var topcell = new Cell(myMod)
+                {
+                    Flags = Cell.Flag.HasWater,
+                    Grid = new CellGrid(),
+                    WaterHeight = 0,
+                    XILS = 1,
+                    MajorFlags = Cell.MajorFlag.Persistent,
+                    Persistent = new ExtendedList<IPlaced>()                    
+                };
+                topcell.Persistent.Add(placed);
+
                 //Worldspace
                 //WaterClear "Water" [WATR:00000018]
-                IFormLinkNullable<ILocationGetter> OEJM007Location = new FormKey(env.LoadOrder[0].ModKey, 0x00090A3E).ToNullableLink<ILocationGetter>();
                 IFormLinkNullable<IWaterGetter> WaterClear = new FormKey(env.LoadOrder[0].ModKey, 0x00000018).ToNullableLink<IWaterGetter>();
                 byte[] FNAM = new byte[1] { 00 };
                 byte[] HNAM = new byte[1] { 05 };
@@ -174,7 +207,7 @@ namespace ssf.POI
                     EditorID = prefix + "_world_" + item,
                     Components = new ExtendedList<AComponent>(),
                     Name = prefix + "_world_" + item,
-                    Location = OEJM007Location,
+                    Location = location.ToNullableLink<ILocationGetter>(),
                     LodWater = WaterClear,
                     LodWaterHeight = 0,
                     LandDefaults = new WorldspaceLandDefaults() { DefaultLandHeight = -2048, DefaultWaterHeight = -200 },
@@ -194,7 +227,7 @@ namespace ssf.POI
                     ObjectBoundsMax = new P2Float(3, 3),
                     HNAM = HNAM,
                     SubCells = new ExtendedList<WorldspaceBlock>(),
-                    TopCell = new Cell(myMod)
+                    TopCell = topcell
                 };
                 byte[] PNAM = new byte[4] { 0xFF, 0xFF, 0xFF, 0xFF };
                 IFormLinkNullable<ISurfaceBlockGetter> OverlayBlockOEJM007World = new FormKey(env.LoadOrder[0].ModKey, 0x00098E69).ToNullableLink<ISurfaceBlockGetter>();
@@ -226,7 +259,8 @@ namespace ssf.POI
                     Conditions = new ExtendedList<Condition>()
                 });
 
-                for(short x = 0; x < 2; x++)
+
+                for (short x = 0; x < 2; x++)
                 {
                     for(short y = 0; y < 2; y++)
                     {
@@ -245,19 +279,23 @@ namespace ssf.POI
                             GroupType = GroupTypeEnum.ExteriorCellSubBlock,                            
                         });
                         //Loop here?
-                        wsb.Items[0].Items.Add(new Cell(myMod)
+                        var newcell = new Cell(myMod)
                         {
-                            Grid = new CellGrid() { Point = new P2Int(0,0)},
+                            Grid = new CellGrid() { Point = new P2Int(0, 0) },
                             Flags = Cell.Flag.HasWater,
-                            XILS = 1                            
-                        });
+                            XILS = 1,
+                            Temporary = new ExtendedList<IPlaced>()                            
+                        };
+
+
+//                        newcell.Temporary.Add(placed);
+
+                        wsb.Items[0].Items.Add(newcell);
                         worldspace.SubCells.Add(wsb);
                     }
                 }
 
                 myMod.Worldspaces.Add(worldspace);
-
-
 
                 //Planet Content Manager Content Node
                 IFormLinkNullable<IGlobalGetter> PCM_CellLoadMinDensity_VeryClose = new FormKey(env.LoadOrder[0].ModKey, 0x002A4406).ToNullableLink<IGlobalGetter>();
