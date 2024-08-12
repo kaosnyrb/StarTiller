@@ -104,13 +104,10 @@ namespace ssf.POI
                     Persistent = new ExtendedList<IPlaced>()
                 };
 
-               
+                //Worldspace and terrain
                 var baseworld = myMod.Worldspaces[new FormKey(myMod.ModKey, 0x00000CEB)];
-
-                var newworld = myMod.Worldspaces.DuplicateInAsNewRecord(baseworld);
-                
+                var newworld = myMod.Worldspaces.DuplicateInAsNewRecord(baseworld);               
                 var newblock = myMod.SurfaceBlocks.DuplicateInAsNewRecord(myMod.SurfaceBlocks[new FormKey(myMod.ModKey, 0x00000CEC)]);
-
                 string newterrainfile = "Data\\Terrain\\" + prefix + "wld" + item + ".btd";
                 try
                 {
@@ -148,13 +145,30 @@ namespace ssf.POI
                         Flags = Cell.Flag.HasWater,
                         XILS = 1,
                         Temporary = new ExtendedList<IPlaced>(),
-                        WaterHeight = -200,
-                        
+                        WaterHeight = -200,                        
                     };
-                   
-                }
-                //Create Content node
 
+                    //Add blocks
+                    //Cell sizes
+                    // 10,10,-10
+                    // 90,90,-10
+                    //Block offset matters
+                    //Block is 16
+                    IFormLinkNullable<IPlaceableObjectGetter> to_pkn_base = new FormKey(myMod.ModKey, 0x000014BE).ToNullableLink<IPlaceableObjectGetter>();
+                    for(int x = 0; x < 5; x++)
+                    {
+                        for(int y = 0; y < 5; y++) 
+                        {
+                            var inewblock = new Mutagen.Bethesda.Starfield.PlacedObject(myMod)
+                            {
+                                Base = to_pkn_base,
+                                Position = new P3Float((point.X * 100) + (10 + (16 * x)), (point.Y * 100) + 10 + (16 * y), -10)
+
+                            };
+                            sbc.Items[0].Items[0].Temporary.Add(inewblock);
+                        }
+                    }
+                }
                 //Add content node to the branch
                 Random rand = new Random();
                 var pcmcn = new PlanetContentManagerContentNode(myMod)
