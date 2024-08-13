@@ -25,7 +25,7 @@ namespace ssf.POI.Cellgen
             //Block offset matters
             //Block is 16
 
-            int edgepadding = 8;
+            int edgepadding = 10;
             int cellsize = 100;
             int blocksize = 16;
 
@@ -34,10 +34,11 @@ namespace ssf.POI.Cellgen
             {
                 for (int y = 0; y < 6; y++)
                 {
-                    var inewblock = new Mutagen.Bethesda.Starfield.PlacedObject(myMod)
+                    var inewblock = new PlacedObject(myMod)
                     {
                         Base = to_pkn_base,
-                        Position = new P3Float((cellPos.X * cellsize) + (edgepadding + (blocksize * x)), (cellPos.Y * cellsize) + edgepadding + (blocksize * y), -10)
+                        Position = new P3Float((cellPos.X * cellsize) + (edgepadding + (blocksize * x)), (cellPos.Y * cellsize) + edgepadding + (blocksize * y), -10),
+                        MajorRecordFlagsRaw = 66560
                     };
                     results.Add(inewblock);
                 }

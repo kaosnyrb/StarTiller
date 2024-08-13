@@ -2,6 +2,7 @@
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments;
 using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Binary.Parameters;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Starfield;
 using Noggog;
@@ -153,7 +154,8 @@ namespace ssf.POI
                     var packins = FortCellGen.BuildCell(myMod, settings.seed, point);
                     foreach(var pack in packins)
                     {
-                        sbc.Items[0].Items[0].Temporary.Add(pack);
+                        newworld.TopCell.Persistent.Add(pack);
+                        //sbc.Items[0].Items[0].Temporary.Add(pack);
                     }
                 }
                 //Add content node to the branch
@@ -171,7 +173,12 @@ namespace ssf.POI
             {
                 rec.IsCompressed = false;
             }
-            myMod.WriteToBinary(datapath + "\\" + pluginname + ".esm");
+            
+            myMod.WriteToBinary(datapath + "\\" + pluginname + ".esm",new BinaryWriteParameters()
+            {
+                FormIDUniqueness = FormIDUniquenessOption.NoCheck,
+
+            });
             SSFEventLog.EventLogs.Enqueue("Export complete!");
         }
     }
