@@ -37,13 +37,16 @@ namespace ssf.POI.Cellgen
             //Base
             for(int i = 0; i < myMod.PackIns.Count; i++)
             {
-                if (myMod.PackIns.ElementAt(i).EditorID == "to_pkn_base")
+                if (myMod.PackIns.ElementAt(i).EditorID != null)
                 {
-                    SmallPkns.Add(myMod.PackIns.ElementAt(i).FormKey);
-                }
-                if (myMod.PackIns.ElementAt(i).EditorID.Contains("to_pkn_sm_"))
-                {
-                    SmallPkns.Add(myMod.PackIns.ElementAt(i).FormKey);
+                    if (myMod.PackIns.ElementAt(i).EditorID == "to_pkn_base")
+                    {
+                        SmallPkns.Add(myMod.PackIns.ElementAt(i).FormKey);
+                    }
+                    if (myMod.PackIns.ElementAt(i).EditorID.Contains("to_pkn_sm_"))
+                    {
+                        SmallPkns.Add(myMod.PackIns.ElementAt(i).FormKey);
+                    }
                 }
             }
         }
