@@ -29,6 +29,8 @@ namespace ssf.POI
             rng = new Random(seed);
         }
 
+
+
         public static void Generate(int maxsteps, SeedStarfieldSettings settings)
         {
             string pluginname = settings.EspName;
@@ -45,7 +47,6 @@ namespace ssf.POI
                 //Find the modkey 
                 ModKey newMod = new ModKey(pluginname, ModType.Master);
                 myMod = new StarfieldMod(newMod, StarfieldRelease.Starfield);
-                myMod.SyncRecordCount();
                 if (!env.LoadOrder.ModExists(newMod))
                 {
                     myMod = new StarfieldMod(newMod, StarfieldRelease.Starfield);
@@ -72,7 +73,15 @@ namespace ssf.POI
                 SSFEventLog.EventLogs.Enqueue(poiname);
                 SSFEventLog.EventLogs.Enqueue(shortname);
                 SSFEventLog.EventLogs.Enqueue(prefix + "wld" + item);
-                
+
+                for (int x = 0; x < 2000; x++)
+                {
+                    // Formid padding
+                    // Basically we get overrides if we start adding stuff without a gap.
+                    // So we generate a bunch here and don't even add them to the esm.
+                    var fsd = new Cell(myMod);
+                }
+
                 IFormLinkNullable<IKeywordGetter> LocTypeDungeon = new FormKey(env.LoadOrder[0].ModKey, 0x000254BC).ToNullableLink<IKeywordGetter>();
                 IFormLinkNullable<IKeywordGetter> LocTypeClearable = new FormKey(env.LoadOrder[0].ModKey, 0x00064EDE).ToNullableLink<IKeywordGetter>();
                 IFormLinkNullable<IKeywordGetter> LocTypeOE_Keyword = new FormKey(env.LoadOrder[0].ModKey, 0x001A5468).ToNullableLink<IKeywordGetter>();
@@ -112,6 +121,7 @@ namespace ssf.POI
                 var baseworld = myMod.Worldspaces[new FormKey(myMod.ModKey, 0x00000CEB)];
                 var newworld = myMod.Worldspaces.DuplicateInAsNewRecord(baseworld);               
                 var newblock = myMod.SurfaceBlocks.DuplicateInAsNewRecord(myMod.SurfaceBlocks[new FormKey(myMod.ModKey, 0x00000CEC)]);
+
                 string newterrainfile = "Data\\Terrain\\" + prefix + "wld" + item + ".btd";
                 try
                 {
@@ -137,6 +147,9 @@ namespace ssf.POI
                     MajorFlags = Cell.MajorFlag.Persistent,
                     Persistent = new ExtendedList<IPlaced>()
                 };
+                    
+
+
                 int cellid = 0;
                 foreach(var sbc in newworld.SubCells)
                 {
@@ -160,8 +173,7 @@ namespace ssf.POI
                     }
                 }
                 //Add content node to the branchs
-                Random rand = new Random();
-                int id = rand.Next(100);
+                int id = rng.Next(100);
                 //Block
                 var pcmcn = new PlanetContentManagerContentNode(myMod)
                 {
@@ -169,8 +181,13 @@ namespace ssf.POI
                     Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
                 };
                 myMod.PlanetContentManagerContentNodes.Add(pcmcn);
-                myMod.PlanetContentManagerBranchNodes[new FormKey(myMod.ModKey, 0x00000F66)].Nodes.Add(pcmcn.ToLinkGetter<IPlanetNodeGetter>());
-                
+                for(int i =0;i<myMod.PlanetContentManagerContentNodes.Count;i++)
+                {
+                    if(myMod.PlanetContentManagerBranchNodes.ElementAt(i).EditorID== "takeovercontent")
+                    {
+                        myMod.PlanetContentManagerBranchNodes.ElementAt(i).Nodes.Add(pcmcn.ToLinkGetter<IPlanetNodeGetter>());
+                    }
+                }
                 //Scan
                 var pcmcnscan = new PlanetContentManagerContentNode(myMod)
                 {
@@ -178,8 +195,13 @@ namespace ssf.POI
                     Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
                 };
                 myMod.PlanetContentManagerContentNodes.Add(pcmcnscan);
-                myMod.PlanetContentManagerBranchNodes[new FormKey(myMod.ModKey, 0x000010EC)].Nodes.Add(pcmcnscan.ToLinkGetter<IPlanetNodeGetter>());
-                
+                for (int i = 0; i < myMod.PlanetContentManagerContentNodes.Count; i++)
+                {
+                    if (myMod.PlanetContentManagerBranchNodes.ElementAt(i).EditorID == "takeoverscancontent1")
+                    {
+                        myMod.PlanetContentManagerBranchNodes.ElementAt(i).Nodes.Add(pcmcnscan.ToLinkGetter<IPlanetNodeGetter>());
+                    }
+                }
                 //Quest
                 var pcmcnquest = new PlanetContentManagerContentNode(myMod)
                 {
@@ -187,16 +209,27 @@ namespace ssf.POI
                     Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
                 };
                 myMod.PlanetContentManagerContentNodes.Add(pcmcnquest);
-                myMod.PlanetContentManagerBranchNodes[new FormKey(myMod.ModKey, 0x000010DC)].Nodes.Add(pcmcnquest.ToLinkGetter<IPlanetNodeGetter>());
+                for (int i = 0; i < myMod.PlanetContentManagerContentNodes.Count; i++)
+                {
+                    if (myMod.PlanetContentManagerBranchNodes.ElementAt(i).EditorID == "takeoverquestcontent")
+                    {
+                        myMod.PlanetContentManagerBranchNodes.ElementAt(i).Nodes.Add(pcmcnquest.ToLinkGetter<IPlanetNodeGetter>());
+                    }
+                }
             }
             foreach (var rec in myMod.EnumerateMajorRecords())
             {
                 rec.IsCompressed = false;
+                
+                if (rec.FormKey.ToString() == "001513:du_takeover.esm")
+                {
+                    Console.WriteLine("Break");
+                }
+                SSFEventLog.EventLogs.Enqueue(rec.FormKey.ToString() + " " + rec.EditorID);
             }
             myMod.WriteToBinary(datapath + "\\" + pluginname + ".esm",new BinaryWriteParameters()
             {
-                FormIDUniqueness = FormIDUniquenessOption.Iterate,
-
+                FormIDUniqueness = FormIDUniquenessOption.Iterate
             });
             SSFEventLog.EventLogs.Enqueue("Export complete!");
         }
