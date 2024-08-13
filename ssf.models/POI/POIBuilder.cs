@@ -45,6 +45,7 @@ namespace ssf.POI
                 //Find the modkey 
                 ModKey newMod = new ModKey(pluginname, ModType.Master);
                 myMod = new StarfieldMod(newMod, StarfieldRelease.Starfield);
+                myMod.SyncRecordCount();
                 if (!env.LoadOrder.ModExists(newMod))
                 {
                     myMod = new StarfieldMod(newMod, StarfieldRelease.Starfield);
@@ -158,25 +159,43 @@ namespace ssf.POI
                         //sbc.Items[0].Items[0].Temporary.Add(pack);
                     }
                 }
-                //Add content node to the branch
+                //Add content node to the branchs
                 Random rand = new Random();
+                int id = rand.Next(100);
+                //Block
                 var pcmcn = new PlanetContentManagerContentNode(myMod)
                 {
-                    EditorID = item + rand.Next(100),
+                    EditorID = "block" + item + id,
                     Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
                 };
                 myMod.PlanetContentManagerContentNodes.Add(pcmcn);
                 myMod.PlanetContentManagerBranchNodes[new FormKey(myMod.ModKey, 0x00000F66)].Nodes.Add(pcmcn.ToLinkGetter<IPlanetNodeGetter>());
-
+                
+                //Scan
+                var pcmcnscan = new PlanetContentManagerContentNode(myMod)
+                {
+                    EditorID = "scan" + item + id,
+                    Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
+                };
+                myMod.PlanetContentManagerContentNodes.Add(pcmcnscan);
+                myMod.PlanetContentManagerBranchNodes[new FormKey(myMod.ModKey, 0x000010EC)].Nodes.Add(pcmcnscan.ToLinkGetter<IPlanetNodeGetter>());
+                
+                //Quest
+                var pcmcnquest = new PlanetContentManagerContentNode(myMod)
+                {
+                    EditorID = "quest" + item + id,
+                    Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
+                };
+                myMod.PlanetContentManagerContentNodes.Add(pcmcnquest);
+                myMod.PlanetContentManagerBranchNodes[new FormKey(myMod.ModKey, 0x000010DC)].Nodes.Add(pcmcnquest.ToLinkGetter<IPlanetNodeGetter>());
             }
             foreach (var rec in myMod.EnumerateMajorRecords())
             {
                 rec.IsCompressed = false;
             }
-            
             myMod.WriteToBinary(datapath + "\\" + pluginname + ".esm",new BinaryWriteParameters()
             {
-                FormIDUniqueness = FormIDUniquenessOption.NoCheck,
+                FormIDUniqueness = FormIDUniquenessOption.Iterate,
 
             });
             SSFEventLog.EventLogs.Enqueue("Export complete!");
