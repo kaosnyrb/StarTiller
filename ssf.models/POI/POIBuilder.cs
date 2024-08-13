@@ -1,4 +1,5 @@
-﻿using Mutagen.Bethesda;
+﻿using DynamicData;
+using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Records;
@@ -6,6 +7,7 @@ using Mutagen.Bethesda.Starfield;
 using Noggog;
 using ssf.Generation;
 using ssf.Models;
+using ssf.POI.Cellgen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -133,14 +135,14 @@ namespace ssf.POI
                     MajorFlags = Cell.MajorFlag.Persistent,
                     Persistent = new ExtendedList<IPlaced>()
                 };
-                int ia = 0;
+                int cellid = 0;
                 foreach(var sbc in newworld.SubCells)
                 {
                     var point = sbc.Items[0].Items[0].Grid.Point;
 
                     sbc.Items[0].Items[0] = new Cell(myMod)
                     {
-                        EditorID = prefix+newworld.EditorID + "cell" + ia++,
+                        EditorID = prefix+newworld.EditorID + "cell" + cellid++,
                         Grid = new CellGrid() { Point = point },
                         Flags = Cell.Flag.HasWater,
                         XILS = 1,
@@ -148,25 +150,10 @@ namespace ssf.POI
                         WaterHeight = -200,                        
                     };
 
-                    //Add blocks
-                    //Cell sizes
-                    // 10,10,-10
-                    // 90,90,-10
-                    //Block offset matters
-                    //Block is 16
-                    IFormLinkNullable<IPlaceableObjectGetter> to_pkn_base = new FormKey(myMod.ModKey, 0x000014BE).ToNullableLink<IPlaceableObjectGetter>();
-                    for(int x = 0; x < 5; x++)
+                    var packins = FortCellGen.BuildCell(myMod, settings.seed, point);
+                    foreach(var pack in packins)
                     {
-                        for(int y = 0; y < 5; y++) 
-                        {
-                            var inewblock = new Mutagen.Bethesda.Starfield.PlacedObject(myMod)
-                            {
-                                Base = to_pkn_base,
-                                Position = new P3Float((point.X * 100) + (10 + (16 * x)), (point.Y * 100) + 10 + (16 * y), -10)
-
-                            };
-                            sbc.Items[0].Items[0].Temporary.Add(inewblock);
-                        }
+                        sbc.Items[0].Items[0].Temporary.Add(pack);
                     }
                 }
                 //Add content node to the branch
