@@ -10,6 +10,7 @@ namespace ssf.Manipulators
 {
     public class NavMeshUtils
     {
+        /*
         public static Navmesh BuildNavmesh(List<Block> blocks)
         {
             SSFEventLog.EventLogs.Enqueue("Building Navmesh. Be patient as this can take a min or two.");
@@ -109,6 +110,6 @@ namespace ssf.Manipulators
             return mesh;
         }
 
-
+        */
     }
 }

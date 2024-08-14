@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static Mutagen.Bethesda.Starfield.Package;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ssf.POI
@@ -151,7 +152,8 @@ namespace ssf.POI
 
 
                 int cellid = 0;
-                foreach(var sbc in newworld.SubCells)
+                FortCellGen.BuildMap(myMod, settings.seed);
+                foreach (var sbc in newworld.SubCells)
                 {
                     var point = sbc.Items[0].Items[0].Grid.Point;
 
@@ -181,7 +183,7 @@ namespace ssf.POI
                     Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
                 };
                 myMod.PlanetContentManagerContentNodes.Add(pcmcn);
-                for(int i =0;i<myMod.PlanetContentManagerContentNodes.Count;i++)
+                for(int i =0;i<myMod.PlanetContentManagerBranchNodes.Count;i++)
                 {
                     if(myMod.PlanetContentManagerBranchNodes.ElementAt(i).EditorID== "takeovercontent")
                     {
@@ -195,7 +197,7 @@ namespace ssf.POI
                     Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
                 };
                 myMod.PlanetContentManagerContentNodes.Add(pcmcnscan);
-                for (int i = 0; i < myMod.PlanetContentManagerContentNodes.Count; i++)
+                for (int i = 0; i < myMod.PlanetContentManagerBranchNodes.Count; i++)
                 {
                     if (myMod.PlanetContentManagerBranchNodes.ElementAt(i).EditorID == "takeoverscancontent1")
                     {
@@ -209,7 +211,7 @@ namespace ssf.POI
                     Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
                 };
                 myMod.PlanetContentManagerContentNodes.Add(pcmcnquest);
-                for (int i = 0; i < myMod.PlanetContentManagerContentNodes.Count; i++)
+                for (int i = 0; i < myMod.PlanetContentManagerBranchNodes.Count; i++)
                 {
                     if (myMod.PlanetContentManagerBranchNodes.ElementAt(i).EditorID == "takeoverquestcontent")
                     {

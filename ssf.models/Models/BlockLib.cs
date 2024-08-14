@@ -21,8 +21,8 @@ namespace ssf.Models
     {
         public BlockDetails blockDetails { get; set; }
         public string path;
-        public List<PlacedObject> placedObjects;
-        public List<Navmesh> navmeshs;
+        //public List<PlacedObject> placedObjects;
+        //public List<Navmesh> navmeshs;
 
         public Block Clone()
         {

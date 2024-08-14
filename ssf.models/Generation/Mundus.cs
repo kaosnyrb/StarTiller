@@ -97,6 +97,7 @@ namespace ssf.Generation
         public List<Block> Generate(int maxsteps)
         {
             Output = new List<Block>();
+            /*
             SSFEventLog.EventLogs.Enqueue("Mundus Generation Beginning");
             SSFEventLog.EventLogs.Enqueue("Place the entrance.");
             // 
@@ -149,6 +150,7 @@ namespace ssf.Generation
                 steps++;
             }
             SSFEventLog.EventLogs.Enqueue("Total Blocks: " + SuccessFullBlocks);
+            */
             return Output;
         }
     }

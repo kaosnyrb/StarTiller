@@ -148,7 +148,7 @@ namespace ssf.IO
                     //IFormLink<IPlaceableObjectGetter> PrefabPackinPivotDummy = new FormKey(env.LoadOrder[0].ModKey, 0x0003F808).ToLink<IPlaceableObjectGetter>();
                     //IFormLink<IKeywordGetter> UpdatesDynamicNavmeshKeyword = new FormKey(env.LoadOrder[0].ModKey, 0x00140158).ToLink<IKeywordGetter>();
 
-                    
+                    /*
                     IFormLink<IPlaceableObjectGetter> COCMarkerHeading = new FormKey(env.LoadOrder[0].ModKey, 0x00000032).ToLink<IPlaceableObjectGetter>();
 
                     foreach (var placedobj in outblock.placedObjects)

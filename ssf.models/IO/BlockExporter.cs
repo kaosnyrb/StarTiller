@@ -12,6 +12,7 @@ namespace ssf.IO
     {
         public static int Export(List<Block> blocks, SeedStarfieldSettings settings)
         {
+            /*
             SSFEventLog.EventLogs.Enqueue("Exporting to " + settings.ExportPath);
             string pluginname = settings.EspName;
             int count = settings.FormIdOffset;//3428 works
@@ -70,6 +71,7 @@ namespace ssf.IO
             YamlExporter.WriteObjToYamlFile(settings.ExportPath + "/NavigationMeshes/" + formid + "_" + pluginname + ".yaml", mesh);
 
             SSFEventLog.EventLogs.Enqueue("Export complete!");
+            */
             return 1;
         }
     }

@@ -23,6 +23,7 @@ namespace ssf.Generation
         public List<Block> Generate(int maxsteps)
         {
             Output = new List<Block>();
+            /*
             SSFEventLog.EventLogs.Enqueue("Block Showroom Generation Beginning");
 
             for(int i = 0; i < Libary.Count();i++)
@@ -36,7 +37,7 @@ namespace ssf.Generation
                     Utils.TranslateBlock(block, new Vector3(5000 * j, 0, 0), 90 * j);
                     Output.Add(newblock);
                 }
-            }
+            }*/
             return Output;
         }
 
