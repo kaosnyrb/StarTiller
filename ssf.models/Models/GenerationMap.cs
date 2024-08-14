@@ -65,6 +65,42 @@ namespace ssf.Models
             }
             return false;
         }
+
+        public bool placesingletile(int x, int y,string type,int rotation)
+        {
+            if (x > xsize || x < 0 || y > ysize || y < 0)
+            {
+                //Doesn't fit
+                return false;
+            }
+            tiles[x][y].rotation = rotation;
+            tiles[x][y].type = type;
+            return true;
+        }
+
+        public bool placelargetile(int x, int y, string type, int rotation, string filltag)
+        {
+            if (x > xsize - 6 || x < 6 || y > ysize - 6 || y < 6)
+            {
+                //Doesn't fit
+                return false;
+            }
+
+            //Do we care about overlaps?
+            //For now don't worry.
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    tiles[(x-4)+i][(y-4) + j].rotation = 0;
+                    tiles[(x-4) + i][(y-4) + j].type = filltag;
+                }
+            }
+            //Place the centre tile
+            tiles[x][y].rotation = rotation;
+            tiles[x][y].type = type;
+            return true;
+        }
         public bool placesmalltile(int x, int y, string type, int rotation, string filltag)
         {
             if (x > xsize - 2 || x < 1 || y > ysize - 2 || y < 1)

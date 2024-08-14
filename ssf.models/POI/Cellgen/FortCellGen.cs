@@ -16,7 +16,7 @@ namespace ssf.POI.Cellgen
     public static class FortCellGen
     {
 
-        public static Dictionary<string,List<FormKey>> packinLib = new Dictionary<string, List<FormKey>>();
+        public static Dictionary<string, List<FormKey>> packinLib = new Dictionary<string, List<FormKey>>();
         public static GenerationMap map;
 
         //public static List<FormKey> SmallPkns = new List<FormKey>();
@@ -36,7 +36,7 @@ namespace ssf.POI.Cellgen
             return 0;
         }
 
-        public static List<FormKey>GetPackinFormsForId(StarfieldMod myMod,string id)
+        public static List<FormKey> GetPackinFormsForId(StarfieldMod myMod, string id)
         {
             List<FormKey> to_pkn_base = new List<FormKey>();
             for (int i = 0; i < myMod.PackIns.Count; i++)
@@ -58,6 +58,8 @@ namespace ssf.POI.Cellgen
             {
                 { "to_pkn_base", GetPackinFormsForId(myMod, "to_pkn_base") },
                 { "to_pkn_wall_", GetPackinFormsForId(myMod, "to_pkn_wall_") },
+                { "to_pkn_single", GetPackinFormsForId(myMod, "to_pkn_single") },
+                { "to_pkn_large", GetPackinFormsForId(myMod, "to_pkn_large") },
                 { "to_pkn_small_", GetPackinFormsForId(myMod, "to_pkn_small_") }
             };
         }
@@ -77,22 +79,25 @@ namespace ssf.POI.Cellgen
             map = new GenerationMap(mapsize, mapsize);
 
             //Place the roads
-            int roadcount = 1 + rand.Next(5);
+            int roadcount = 3 + rand.Next(3);
 
-            for (int road = 0; road < 1; road++)
+            int startx = rand.Next(3) * 3;
+            int starty = rand.Next(3) * 3;
+            int length = (6 + rand.Next(10)) * 3;
+
+            for (int i = 0; i < length * 2; i += 3)
+            {
+                map.placesmalltileonempty(startx + i, starty, "to_pkn_base", 0, "floor");
+                map.placesmalltileonempty(startx + i, starty + 3, "to_pkn_base", 0, "floor");
+                map.placesmalltileonempty(startx + i, starty - 3, "to_pkn_base", 0, "floor");
+                map.placesmalltileonempty(startx + i, starty + 6, "to_pkn_base", 0, "floor");
+                map.placesmalltileonempty(startx + i, starty - 6, "to_pkn_base", 0, "floor");
+            }
+
+            for (int road = 0; road < roadcount; road++)
             {
                 //Place X road
-                int startx = rand.Next(25);
-                int starty = rand.Next(25);
-                int length = 10 + rand.Next(20);
-
-                for (int i = 0; i < length; i += 3)
-                {
-                    map.placesmalltileonempty(startx + i, starty, "to_pkn_base", 0, "floor");
-                    map.placesmalltileonempty(startx + i, starty + 3, "to_pkn_base", 0, "floor");
-                    map.placesmalltileonempty(startx + i, starty - 3, "to_pkn_base", 0, "floor");
-                }
-                startx += rand.Next(length);
+                startx += 3 + (rand.Next(3) * 3);
                 for (int i = 0; i < length; i += 3)
                 {
                     map.placesmalltileonempty(startx, starty + i, "to_pkn_base", 0, "floor");
@@ -100,20 +105,76 @@ namespace ssf.POI.Cellgen
                     map.placesmalltileonempty(startx - 3, starty + i, "to_pkn_base", 0, "floor");
                 }
             }
-            //Place blocks
-            int blockcount =  10 + rand.Next(10);
+
+            //Place single filler blocks
+            //Having a single strip of empty blocks looks wierd
+            for (int x = 1; x < mapsize - 1; x++)
+            {
+                for (int y = 1; y < mapsize - 1; y++)
+                {
+                    if (map.tiles[x][y].type == "empty")
+                    {
+                        if (map.tiles[x - 1][y].type == "floor" && map.tiles[x + 1][y].type == "floor")
+                        {
+                            map.placesingletile(x, y, "to_pkn_single", 0);
+                        }
+                        if (map.tiles[x][y - 1].type == "floor" && map.tiles[x][y + 1].type == "floor")
+                        {
+                            map.placesingletile(x, y, "to_pkn_single", 0);
+                        }
+                    }
+                }
+            }
+            //Place large blocks over bases
+            int largeblockcount = 1 + rand.Next(5);
+            int attempts = 100;//Breakout in case being stuck
+            for (int i = 0; i < largeblockcount; i++)
+            {
+                bool foundblock = false;
+                for (int x = 3; x < mapsize - 3; x++)
+                {
+                    for (int y = 3; y < mapsize - 3; y++)
+                    {
+                        //Find random road block
+                        if (map.tiles[x][y].type == "to_pkn_base")
+                        {
+                            //Check surroundings
+                            if (map.tiles[x + 3][y].type == "to_pkn_base" &&
+                                map.tiles[x + 3][y + 3].type == "to_pkn_base" &&
+                                map.tiles[x + 3][y - 3].type == "to_pkn_base" &&
+                                map.tiles[x - 3][y].type == "to_pkn_base" &&
+                                map.tiles[x - 3][y + 3].type == "to_pkn_base" &&
+                                map.tiles[x - 3][y - 3].type == "to_pkn_base" &&
+                                map.tiles[x][y + 3].type == "to_pkn_base" &&
+                                map.tiles[x][y - 3].type == "to_pkn_base")
+                            {
+                                //Convert the group of 9 small bases into a large base.
+                                map.placelargetile(x, y, "to_pkn_large", rand.Next(3) * 90, "floor");
+                                foundblock = true;
+                            }
+                        }
+                    }
+
+                }
+            }
+
+
+            //Place small blocks over bases
+            int blockcount = 10 + rand.Next(10);
+            attempts = 100;
             for (int i = 0; i < blockcount; i++)
             {
                 bool foundblock = false;
                 int x = rand.Next(mapsize);
                 int y = rand.Next(mapsize);
-                while (!foundblock)
+                while (!foundblock && attempts > 0)
                 {
+                    attempts--;
                     //Find random road block
                     if (map.tiles[x][y].type == "to_pkn_base")
                     {
-                        map.placesmalltile(x, y, "to_pkn_small_", rand.Next(3)*90, "floor");
-                        foundblock  = true;
+                        map.placesmalltile(x, y, "to_pkn_small_", rand.Next(3) * 90, "floor");
+                        foundblock = true;
                     }
                     else
                     {
@@ -122,47 +183,47 @@ namespace ssf.POI.Cellgen
                     }
                 }
             }
-            //map.placesmalltile(48,48, "to_pkn_base", 0);
-            
+
             //Build walls
             for (int x = 0; x < mapsize; x++)
             {
-                for(int y = 0; y < mapsize; y++)
+                for (int y = 0; y < mapsize; y++)
                 {
                     if (map.tiles[x][y].type == "empty")
                     {
-                        if (map.canPlace(x,y))
+                        if (map.canPlace(x, y))
                         {
+                            /*
                             //Check surrounding to see if we should build a wall
-                            if (y > 2)
+                            if (y > 3)
                             {
-                                if (map.tiles[x][y - 2].type != "empty" && map.tiles[x][y - 2].type != "to_pkn_wall_" && map.tiles[x][y - 2].type != "ignore")
+                                if (map.tiles[x][y - 3].type == "to_pkn_base")
                                 {
-                                    map.placesmalltile(x, y, "to_pkn_wall_", 90, "ignore");
+                                    map.placesmalltileonempty(x, y, "to_pkn_wall_", 90, "ignore");
                                 }
                             }
-                            if (y < mapsize - 2)
+                            if (y < mapsize - 3)
                             {
-                                if (map.tiles[x][y + 2].type != "empty" && map.tiles[x][y + 2].type != "to_pkn_wall_" && map.tiles[x][y + 2].type != "ignore")
+                                if (map.tiles[x][y + 3].type != "to_pkn_base")
                                 {
-                                    map.placesmalltile(x, y, "to_pkn_wall_", 90, "ignore");
+                                    map.placesmalltileonempty(x, y, "to_pkn_wall_", 90, "ignore");
                                 }
                             }
-                            if (x > 2)
+                            if (x > 3)
                             {
-                                if (map.tiles[x - 2][y].type != "empty" && map.tiles[x - 2][y].type != "to_pkn_wall_" && map.tiles[x - 2][y].type != "ignore")
+                                if (map.tiles[x - 3][y].type != "to_pkn_base")
                                 {
-                                    map.placesmalltile(x, y, "to_pkn_wall_", 0, "ignore");
+                                    map.placesmalltileonempty(x, y, "to_pkn_wall_", 0, "ignore");
                                 }
                             }
-                            if (x < mapsize - 2)
+                            if (x < mapsize - 3)
                             {
-                                if (map.tiles[x + 2][y].type != "empty" && map.tiles[x + 2][y].type != "to_pkn_wall_" && map.tiles[x + 2][y].type != "ignore")
+                                if (map.tiles[x + 3][y].type != "to_pkn_base")
                                 {
-                                    map.placesmalltile(x, y, "to_pkn_wall_", 0, "ignore");
+                                    map.placesmalltileonempty(x, y, "to_pkn_wall_", 0, "ignore");
                                 }
-                            }
-                        }                        
+                            }*/
+                        }
                         //Could do diagonals as well...
                     }
                 }
@@ -208,7 +269,7 @@ namespace ssf.POI.Cellgen
 
             for (int x = startx; x < endx; x++)
             {
-                for(int y = starty; y < endy; y++)
+                for (int y = starty; y < endy; y++)
                 {
                     if (map.tiles[x][y].type != "empty" && map.tiles[x][y].type != "full")
                     {
@@ -216,8 +277,8 @@ namespace ssf.POI.Cellgen
                         if (packinLib.ContainsKey(map.tiles[x][y].type))
                         {
                             var prefab = packinLib[map.tiles[x][y].type].ElementAt(rand.Next(packinLib[map.tiles[x][y].type].Count));
-                            P3Float pos = new P3Float(-94 + (blocksize * x),94 - (blocksize * y),-10);                         
-                            
+                            P3Float pos = new P3Float(-94 + (blocksize * x), 94 - (blocksize * y), -10);
+
                             var inewblock = new PlacedObject(myMod)
                             {
                                 Base = prefab.ToNullableLink<IPlaceableObjectGetter>(),
