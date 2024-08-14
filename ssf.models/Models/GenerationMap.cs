@@ -34,7 +34,38 @@ namespace ssf.Models
             }
         }
 
-        public bool placesmalltile(int x, int y, string type, int rotation)
+        public bool canPlace(int x, int y)
+        {
+            if (x > xsize - 2 || x < 1 || y > ysize - 2 || y < 1)
+            {
+                //Doesn't fit
+                return false;
+            }
+            if (tiles[x][y].type != "empty")return false;
+            if (tiles[x][y + 1].type != "empty") return false;
+            if (tiles[x][y - 1].type != "empty") return false;
+
+            if (tiles[x + 1][y].type != "empty") return false;
+            if (tiles[x + 1][y + 1].type != "empty") return false;
+            if (tiles[x + 1][y - 1].type != "empty") return false;
+
+            
+            if (tiles[x - 1][y].type != "empty") return false;
+            if (tiles[x - 1][y + 1].type != "empty") return false;
+            if (tiles[x - 1][y - 1 ].type != "empty") return false;
+
+            return true;
+        }
+
+        public bool placesmalltileonempty(int x, int y, string type, int rotation, string filltag)
+        {
+            if (canPlace(x,y))
+            {
+                return placesmalltile(x,y,type,rotation,filltag);            
+            }
+            return false;
+        }
+        public bool placesmalltile(int x, int y, string type, int rotation, string filltag)
         {
             if (x > xsize - 2 || x < 1 || y > ysize - 2 || y < 1)
             {
@@ -52,29 +83,29 @@ namespace ssf.Models
             //Fill in the other tiles
             //Col 1
             tiles[x-1][y].rotation = 0;
-            tiles[x-1][y].type = "full";
+            tiles[x-1][y].type = filltag;
 
             tiles[x-1][y-1].rotation = 0;
-            tiles[x-1][y-1].type = "full";
+            tiles[x-1][y-1].type = filltag;
 
             tiles[x - 1][y + 1].rotation = 0;
-            tiles[x - 1][y + 1].type = "full";
+            tiles[x - 1][y + 1].type = filltag;
             //Col 2
             tiles[x][y - 1].rotation = 0;
-            tiles[x][y - 1].type = "full";
+            tiles[x][y - 1].type = filltag;
 
             tiles[x][y + 1].rotation = 0;
-            tiles[x][y + 1].type = "full";
+            tiles[x][y + 1].type = filltag;
 
             //Col 3
             tiles[x + 1][y].rotation = 0;
-            tiles[x + 1][y].type = "full";
+            tiles[x + 1][y].type = filltag;
 
             tiles[x + 1][y - 1].rotation = 0;
-            tiles[x + 1][y - 1].type = "full";
+            tiles[x + 1][y - 1].type = filltag;
 
             tiles[x + 1][y + 1].rotation = 0;
-            tiles[x + 1][y + 1].type = "full";
+            tiles[x + 1][y + 1].type = filltag;
 
             return true;
         }

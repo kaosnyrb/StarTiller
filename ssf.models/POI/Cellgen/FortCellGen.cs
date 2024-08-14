@@ -57,7 +57,8 @@ namespace ssf.POI.Cellgen
             packinLib = new Dictionary<string, List<FormKey>>
             {
                 { "to_pkn_base", GetPackinFormsForId(myMod, "to_pkn_base") },
-                { "to_pkn_sm_", GetPackinFormsForId(myMod, "to_pkn_sm_") }
+                { "to_pkn_wall_", GetPackinFormsForId(myMod, "to_pkn_wall_") },
+                { "to_pkn_small_", GetPackinFormsForId(myMod, "to_pkn_small_") }
             };
         }
 
@@ -66,20 +67,104 @@ namespace ssf.POI.Cellgen
         {
             //Load the packins
             BuildPkns(myMod);
-
+            Random rand = new Random(seed);
             //Generate the map
             //A small block is 3x3
             //Cells are
             // 0-36
             // 37-72
-            map = new GenerationMap(50, 50);
+            int mapsize = 50;
+            map = new GenerationMap(mapsize, mapsize);
+
+            //Place the roads
+            int roadcount = 1 + rand.Next(5);
+
+            for (int road = 0; road < 1; road++)
+            {
+                //Place X road
+                int startx = rand.Next(25);
+                int starty = rand.Next(25);
+                int length = 10 + rand.Next(20);
+
+                for (int i = 0; i < length; i += 3)
+                {
+                    map.placesmalltileonempty(startx + i, starty, "to_pkn_base", 0, "floor");
+                    map.placesmalltileonempty(startx + i, starty + 3, "to_pkn_base", 0, "floor");
+                    map.placesmalltileonempty(startx + i, starty - 3, "to_pkn_base", 0, "floor");
+                }
+                startx += rand.Next(length);
+                for (int i = 0; i < length; i += 3)
+                {
+                    map.placesmalltileonempty(startx, starty + i, "to_pkn_base", 0, "floor");
+                    map.placesmalltileonempty(startx + 3, starty + i, "to_pkn_base", 0, "floor");
+                    map.placesmalltileonempty(startx - 3, starty + i, "to_pkn_base", 0, "floor");
+                }
+            }
+            //Place blocks
+            int blockcount =  10 + rand.Next(10);
+            for (int i = 0; i < blockcount; i++)
+            {
+                bool foundblock = false;
+                int x = rand.Next(mapsize);
+                int y = rand.Next(mapsize);
+                while (!foundblock)
+                {
+                    //Find random road block
+                    if (map.tiles[x][y].type == "to_pkn_base")
+                    {
+                        map.placesmalltile(x, y, "to_pkn_small_", rand.Next(3)*90, "floor");
+                        foundblock  = true;
+                    }
+                    else
+                    {
+                        x = rand.Next(mapsize);
+                        y = rand.Next(mapsize);
+                    }
+                }
+            }
             //map.placesmalltile(48,48, "to_pkn_base", 0);
             
-            for(int x = 0; x < 16; x++)
+            //Build walls
+            for (int x = 0; x < mapsize; x++)
             {
-                for(int y = 0;  y < 16; y++)
+                for(int y = 0; y < mapsize; y++)
                 {
-                    map.placesmalltile(1 + (x * 3), 1 + (y * 3), "to_pkn_base", 0);
+                    if (map.tiles[x][y].type == "empty")
+                    {
+                        if (map.canPlace(x,y))
+                        {
+                            //Check surrounding to see if we should build a wall
+                            if (y > 2)
+                            {
+                                if (map.tiles[x][y - 2].type != "empty" && map.tiles[x][y - 2].type != "to_pkn_wall_" && map.tiles[x][y - 2].type != "ignore")
+                                {
+                                    map.placesmalltile(x, y, "to_pkn_wall_", 90, "ignore");
+                                }
+                            }
+                            if (y < mapsize - 2)
+                            {
+                                if (map.tiles[x][y + 2].type != "empty" && map.tiles[x][y + 2].type != "to_pkn_wall_" && map.tiles[x][y + 2].type != "ignore")
+                                {
+                                    map.placesmalltile(x, y, "to_pkn_wall_", 90, "ignore");
+                                }
+                            }
+                            if (x > 2)
+                            {
+                                if (map.tiles[x - 2][y].type != "empty" && map.tiles[x - 2][y].type != "to_pkn_wall_" && map.tiles[x - 2][y].type != "ignore")
+                                {
+                                    map.placesmalltile(x, y, "to_pkn_wall_", 0, "ignore");
+                                }
+                            }
+                            if (x < mapsize - 2)
+                            {
+                                if (map.tiles[x + 2][y].type != "empty" && map.tiles[x + 2][y].type != "to_pkn_wall_" && map.tiles[x + 2][y].type != "ignore")
+                                {
+                                    map.placesmalltile(x, y, "to_pkn_wall_", 0, "ignore");
+                                }
+                            }
+                        }                        
+                        //Could do diagonals as well...
+                    }
                 }
             }
         }
@@ -92,7 +177,6 @@ namespace ssf.POI.Cellgen
             int cellsize = 100;
             int blocksize = 4;
             Random rand = new Random(seed);
-
 
             //This function builds 4 cells from one map, need to build 1 quadrant based on cellPos
             int startx = 0;
@@ -122,7 +206,6 @@ namespace ssf.POI.Cellgen
                 endy = map.ysize;
             }
 
-
             for (int x = startx; x < endx; x++)
             {
                 for(int y = starty; y < endy; y++)
@@ -133,26 +216,7 @@ namespace ssf.POI.Cellgen
                         if (packinLib.ContainsKey(map.tiles[x][y].type))
                         {
                             var prefab = packinLib[map.tiles[x][y].type].ElementAt(rand.Next(packinLib[map.tiles[x][y].type].Count));
-                            P3Float pos = new P3Float(-98 + (blocksize * x),
-                                98 - (blocksize * y),
-                                -10);
-                            if (cellPos.X == -1)
-                            {
-                                pos.X = -94 + (blocksize * x);
-                            }
-                            else
-                            {
-                                pos.X = -94 + (blocksize * x);
-                            }
-                            if(cellPos.Y == -1)
-                            {
-                                pos.Y = 94 - (blocksize * y);
-                            }
-                            else
-                            {
-                                pos.Y = 94 - (blocksize * y);
-                            }
-                            
+                            P3Float pos = new P3Float(-94 + (blocksize * x),94 - (blocksize * y),-10);                         
                             
                             var inewblock = new PlacedObject(myMod)
                             {

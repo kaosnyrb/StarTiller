@@ -75,7 +75,7 @@ namespace ssf.POI
                 SSFEventLog.EventLogs.Enqueue(shortname);
                 SSFEventLog.EventLogs.Enqueue(prefix + "wld" + item);
 
-                for (int x = 0; x < 2000; x++)
+                for (int x = 0; x < 2500; x++)
                 {
                     // Formid padding
                     // Basically we get overrides if we start adding stuff without a gap.
