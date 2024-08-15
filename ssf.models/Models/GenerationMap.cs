@@ -1,6 +1,7 @@
 ﻿using Mutagen.Bethesda.Plugins.Binary.Parameters;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -59,6 +60,11 @@ namespace ssf.Models
 
         public bool placesmalltileonempty(int x, int y, string type, int rotation, string filltag)
         {
+            bool debug = false;
+            if (debug)
+            {
+                SSFEventLog.EventLogs.Enqueue("placesmalltileonempty " + x +" | " + y + " : " +type);
+            }
             if (canPlace(x,y))
             {
                 return placesmalltile(x,y,type,rotation,filltag);            

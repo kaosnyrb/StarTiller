@@ -81,13 +81,14 @@ namespace ssf.POI.Cellgen
             map = new GenerationMap(mapsize, mapsize);
 
             //Place the roads
-            int roadcount = 3 + rand.Next(3);
+            int roadcount = 6 + rand.Next(3);
 
-            int startx = rand.Next(3) * 3;
-            int starty = rand.Next(3) * 3;
-            int length = (6 + rand.Next(10)) * 3;
+            int startx = 3 + (rand.Next(3) *3);
+            int starty = 3 + (rand.Next(3) *3);
+            int lengthX = rand.Next((mapsize - 9) - startx);//Padding
+            int lengthY = rand.Next((mapsize - 9) - starty);//Padding
 
-            for (int i = 0; i < length * 2; i += 3)
+            for (int i = 0; i < lengthX; i += 3)
             {
                 map.placesmalltileonempty(startx + i, starty, "to_pkn_base", 0, "floor");
                 map.placesmalltileonempty(startx + i, starty + 3, "to_pkn_base", 0, "floor");
@@ -95,16 +96,28 @@ namespace ssf.POI.Cellgen
                 map.placesmalltileonempty(startx + i, starty + 6, "to_pkn_base", 0, "floor");
                 map.placesmalltileonempty(startx + i, starty - 6, "to_pkn_base", 0, "floor");
             }
+            for (int i = 0; i < lengthX; i += 3)
+            {
+                map.placesmalltileonempty(startx + i, starty + lengthY, "to_pkn_base", 0, "floor");
+                map.placesmalltileonempty(startx + i, starty + lengthY + 3, "to_pkn_base", 0, "floor");
+                map.placesmalltileonempty(startx + i, starty + lengthY - 3, "to_pkn_base", 0, "floor");
+                map.placesmalltileonempty(startx + i, starty + lengthY + 6, "to_pkn_base", 0, "floor");
+                map.placesmalltileonempty(startx + i, starty + lengthY- 6, "to_pkn_base", 0, "floor");
+            }
 
+            int roadx = startx;
             for (int road = 0; road < roadcount; road++)
             {
-                //Place X road
-                startx += 3 + (rand.Next(3) * 3);
-                for (int i = 0; i < length; i += 3)
+                if (roadx > mapsize - 6)
                 {
-                    map.placesmalltileonempty(startx, starty + i, "to_pkn_base", 0, "floor");
-                    map.placesmalltileonempty(startx + 3, starty + i, "to_pkn_base", 0, "floor");
-                    map.placesmalltileonempty(startx - 3, starty + i, "to_pkn_base", 0, "floor");
+                    //Place X road
+                    for (int i = 0; i < lengthY; i += 3)
+                    {
+                        map.placesmalltileonempty(roadx, starty + i, "to_pkn_base", 0, "floor");
+                        map.placesmalltileonempty(roadx + 3, starty + i, "to_pkn_base", 0, "floor");
+                        map.placesmalltileonempty(roadx - 3, starty + i, "to_pkn_base", 0, "floor");
+                    }
+                    roadx += 3 + (rand.Next(6) * 3);
                 }
             }
 
@@ -294,8 +307,8 @@ namespace ssf.POI.Cellgen
             }
 
             //Place small blocks over bases
-            int blockcount = 10 + rand.Next(10);
-            attempts = 1500;
+            int blockcount = 1000 + rand.Next(10);
+            attempts = 150000;
             for (int i = 0; i < blockcount; i++)
             {
                 bool foundblock = false;

@@ -116,5 +116,25 @@ namespace Seedstarfield
             Random random = new Random();
             Seed.Text = random.Next(int.MaxValue).ToString();
         }
+
+        private async void build10_Click(object sender, EventArgs e)
+        {
+            int amount = 10;
+            for (int i = 0; i < amount; i++)
+            {
+                textBox1.Text += "Building POI " + i + " /" + amount + Environment.NewLine;
+                Random random = new Random();
+                Seed.Text = random.Next(int.MaxValue).ToString();
+                settings.cellname = CellName.Text;
+                settings.seed = int.Parse(Seed.Text);
+                await Task.Run(() => DoWork());
+            }
+            textBox1.Text += "Batch complete" + Environment.NewLine;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

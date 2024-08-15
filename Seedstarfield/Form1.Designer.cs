@@ -44,6 +44,7 @@
             CellName = new TextBox();
             Seed = new TextBox();
             randseed = new Button();
+            build10 = new Button();
             SuspendLayout();
             // 
             // button1
@@ -65,6 +66,7 @@
             textBox1.ScrollBars = ScrollBars.Vertical;
             textBox1.Size = new Size(812, 464);
             textBox1.TabIndex = 1;
+            textBox1.TextChanged += textBox1_TextChanged;
             // 
             // timer1
             // 
@@ -175,11 +177,22 @@
             randseed.UseVisualStyleBackColor = true;
             randseed.Click += randseed_Click;
             // 
+            // build10
+            // 
+            build10.Location = new Point(728, 311);
+            build10.Name = "build10";
+            build10.Size = new Size(75, 23);
+            build10.TabIndex = 15;
+            build10.Text = "build10";
+            build10.UseVisualStyleBackColor = true;
+            build10.Click += build10_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(815, 845);
+            Controls.Add(build10);
             Controls.Add(randseed);
             Controls.Add(Seed);
             Controls.Add(CellName);
@@ -217,5 +230,6 @@
         private TextBox CellName;
         private TextBox Seed;
         private Button randseed;
+        private Button build10;
     }
 }
