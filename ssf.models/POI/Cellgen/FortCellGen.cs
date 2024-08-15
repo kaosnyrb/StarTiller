@@ -58,6 +58,8 @@ namespace ssf.POI.Cellgen
             {
                 { "to_pkn_base", GetPackinFormsForId(myMod, "to_pkn_base") },
                 { "to_pkn_wall_", GetPackinFormsForId(myMod, "to_pkn_wall_") },
+                { "to_pkn_wallcorner_", GetPackinFormsForId(myMod, "to_pkn_wallcorner_") },
+                { "to_pkn_wallinside_", GetPackinFormsForId(myMod, "to_pkn_wallinside_") },
                 { "to_pkn_single", GetPackinFormsForId(myMod, "to_pkn_single") },
                 { "to_pkn_large", GetPackinFormsForId(myMod, "to_pkn_large") },
                 { "to_pkn_small_", GetPackinFormsForId(myMod, "to_pkn_small_") }
@@ -125,8 +127,138 @@ namespace ssf.POI.Cellgen
                     }
                 }
             }
+
+            //Build walls
+            for (int x = 3; x < mapsize - 3; x++)
+            {
+                for (int y = 3; y < mapsize - 3; y++)
+                {
+                    if (map.tiles[x][y].type == "to_pkn_base")
+                    {
+                        //Check surrounding to see if we should build a wall
+
+                        bool topclear = false;
+                        bool botclear = false;
+                        bool leftclear = false;
+                        bool rightclear = false;
+
+                        bool tlclear = false;
+                        bool trclear = false;
+                        bool blclear = false;
+                        bool brclear = false;
+
+                        if (map.tiles[x][y - 3].type == "empty")
+                        {
+                            topclear = true;
+                        }
+                        if (map.tiles[x][y + 3].type == "empty")
+                        {
+                            botclear = true;
+                        }
+                        if (map.tiles[x - 3][y].type == "empty")
+                        {
+                            leftclear = true;
+                        }
+                        if (map.tiles[x + 3][y].type == "empty")
+                        {
+                            rightclear = true;
+                        }
+                        if (map.tiles[x - 3][y - 3].type == "empty")
+                        {
+                            tlclear = true;
+                        }
+                        if (map.tiles[x + 3][y - 3].type == "empty")
+                        {
+                            trclear = true;
+                        }
+                        if (map.tiles[x - 3][y + 3].type == "empty")
+                        {
+                            blclear = true;
+                        }
+                        if (map.tiles[x + 3][y + 3].type == "empty")
+                        {
+                            brclear = true;
+                        }
+
+                        bool placed = false;
+                        if (topclear && leftclear && !placed)
+                        {
+                            //Corner
+                            map.placesmalltile(x, y, "to_pkn_wallcorner_", 0, "ignore");
+                            placed = true;
+                        }
+                        if (topclear && rightclear && !placed)
+                        {
+                            //Corner
+                            map.placesmalltile(x, y, "to_pkn_wallcorner_", 90, "ignore");
+                            placed = true;
+                        }
+                        if (botclear && rightclear && !placed)
+                        {
+                            //Corner
+                            map.placesmalltile(x, y, "to_pkn_wallcorner_", 180, "ignore");
+                            placed = true;
+                        }
+                        if (botclear && leftclear && !placed)
+                        {
+                            //Corner
+                            map.placesmalltile(x, y, "to_pkn_wallcorner_", 270, "ignore");
+                            placed = true;
+                        }
+                        if (topclear && !placed)
+                        {
+                            //Corner
+                            map.placesmalltile(x, y, "to_pkn_wall_", 0, "ignore");
+                            placed = true;
+                        }
+                        if (botclear && !placed)
+                        {
+                            //Corner
+                            map.placesmalltile(x, y, "to_pkn_wall_", 180, "ignore");
+                            placed = true;
+                        }
+                        if (leftclear && !placed)
+                        {
+                            //Corner
+                            map.placesmalltile(x, y, "to_pkn_wall_", 270, "ignore");
+                            placed = true;
+                        }
+                        if (rightclear && !placed)
+                        {
+                            //Corner
+                            map.placesmalltile(x, y, "to_pkn_wall_", 90, "ignore");
+                            placed = true;
+                        }
+                        if(tlclear && !placed)
+                        {
+                            //Corner
+                            map.placesmalltile(x, y, "to_pkn_wallinside_", 0, "ignore");
+                            placed = true;
+                        }
+                        if (trclear && !placed)
+                        {
+                            //Corner
+                            map.placesmalltile(x, y, "to_pkn_wallinside_", 90, "ignore");
+                            placed = true;
+                        }
+                        if (brclear && !placed)
+                        {
+                            //Corner
+                            map.placesmalltile(x, y, "to_pkn_wallinside_", 180, "ignore");
+                            placed = true;
+                        }
+                        if (blclear && !placed)
+                        {
+                            //Corner
+                            map.placesmalltile(x, y, "to_pkn_wallinside_", 270, "ignore");
+                            placed = true;
+                        }
+                    }
+                }
+            }
+
             //Place large blocks over bases
-            int largeblockcount = 1 + rand.Next(5);
+            int largeblockcount = 2 + rand.Next(5);
             int attempts = 100;//Breakout in case being stuck
             for (int i = 0; i < largeblockcount; i++)
             {
@@ -136,7 +268,7 @@ namespace ssf.POI.Cellgen
                     for (int y = 3; y < mapsize - 3; y++)
                     {
                         //Find random road block
-                        if (map.tiles[x][y].type == "to_pkn_base")
+                        if (map.tiles[x][y].type == "to_pkn_base" && !foundblock)
                         {
                             //Check surroundings
                             if (map.tiles[x + 3][y].type == "to_pkn_base" &&
@@ -148,20 +280,22 @@ namespace ssf.POI.Cellgen
                                 map.tiles[x][y + 3].type == "to_pkn_base" &&
                                 map.tiles[x][y - 3].type == "to_pkn_base")
                             {
-                                //Convert the group of 9 small bases into a large base.
-                                map.placelargetile(x, y, "to_pkn_large", rand.Next(3) * 90, "floor");
-                                foundblock = true;
+                                //We don't want it to be just first come first serve.
+                                if (rand.Next(100) > 25)
+                                {
+                                    //Convert the group of 9 small bases into a large base.
+                                    map.placelargetile(x, y, "to_pkn_large", rand.Next(3) * 90, "floor");
+                                    foundblock = true;
+                                }
                             }
                         }
                     }
-
                 }
             }
 
-
             //Place small blocks over bases
             int blockcount = 10 + rand.Next(10);
-            attempts = 100;
+            attempts = 1500;
             for (int i = 0; i < blockcount; i++)
             {
                 bool foundblock = false;
@@ -180,51 +314,6 @@ namespace ssf.POI.Cellgen
                     {
                         x = rand.Next(mapsize);
                         y = rand.Next(mapsize);
-                    }
-                }
-            }
-
-            //Build walls
-            for (int x = 0; x < mapsize; x++)
-            {
-                for (int y = 0; y < mapsize; y++)
-                {
-                    if (map.tiles[x][y].type == "empty")
-                    {
-                        if (map.canPlace(x, y))
-                        {
-                            /*
-                            //Check surrounding to see if we should build a wall
-                            if (y > 3)
-                            {
-                                if (map.tiles[x][y - 3].type == "to_pkn_base")
-                                {
-                                    map.placesmalltileonempty(x, y, "to_pkn_wall_", 90, "ignore");
-                                }
-                            }
-                            if (y < mapsize - 3)
-                            {
-                                if (map.tiles[x][y + 3].type != "to_pkn_base")
-                                {
-                                    map.placesmalltileonempty(x, y, "to_pkn_wall_", 90, "ignore");
-                                }
-                            }
-                            if (x > 3)
-                            {
-                                if (map.tiles[x - 3][y].type != "to_pkn_base")
-                                {
-                                    map.placesmalltileonempty(x, y, "to_pkn_wall_", 0, "ignore");
-                                }
-                            }
-                            if (x < mapsize - 3)
-                            {
-                                if (map.tiles[x + 3][y].type != "to_pkn_base")
-                                {
-                                    map.placesmalltileonempty(x, y, "to_pkn_wall_", 0, "ignore");
-                                }
-                            }*/
-                        }
-                        //Could do diagonals as well...
                     }
                 }
             }

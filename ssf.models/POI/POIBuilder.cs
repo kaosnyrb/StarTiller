@@ -75,13 +75,14 @@ namespace ssf.POI
                 SSFEventLog.EventLogs.Enqueue(shortname);
                 SSFEventLog.EventLogs.Enqueue(prefix + "wld" + item);
 
+                /*
                 for (int x = 0; x < 9000; x++)
                 {
                     // Formid padding
                     // Basically we get overrides if we start adding stuff without a gap.
                     // So we generate a bunch here and don't even add them to the esm.
                     var fsd = new Cell(myMod);
-                }
+                }*/
 
                 IFormLinkNullable<IKeywordGetter> LocTypeDungeon = new FormKey(env.LoadOrder[0].ModKey, 0x000254BC).ToNullableLink<IKeywordGetter>();
                 IFormLinkNullable<IKeywordGetter> LocTypeClearable = new FormKey(env.LoadOrder[0].ModKey, 0x00064EDE).ToNullableLink<IKeywordGetter>();
@@ -119,9 +120,11 @@ namespace ssf.POI
                 };
 
                 //Worldspace and terrain
-                var baseworld = myMod.Worldspaces[new FormKey(myMod.ModKey, 0x00000CEB)];
-                var newworld = myMod.Worldspaces.DuplicateInAsNewRecord(baseworld);               
-                var newblock = myMod.SurfaceBlocks.DuplicateInAsNewRecord(myMod.SurfaceBlocks[new FormKey(myMod.ModKey, 0x00000CEC)]);
+
+                Worldspace baseworld = myMod.Worldspaces.Where(x => x.EditorID == "stbblock001").First();
+                var newworld = myMod.Worldspaces.DuplicateInAsNewRecord(baseworld);
+                SurfaceBlock stbblock = myMod.SurfaceBlocks.Where(x => x.EditorID == "OverlayBlockstbblock001").First();
+                var newblock = myMod.SurfaceBlocks.DuplicateInAsNewRecord(stbblock);
 
                 string newterrainfile = "Data\\Terrain\\" + prefix + "wld" + item + ".btd";
                 try
@@ -171,7 +174,6 @@ namespace ssf.POI
                     foreach(var pack in packins)
                     {
                         newworld.TopCell.Persistent.Add(pack);
-                        //sbc.Items[0].Items[0].Temporary.Add(pack);
                     }
                 }
                 //Add content node to the branchs
@@ -183,27 +185,16 @@ namespace ssf.POI
                     Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
                 };
                 myMod.PlanetContentManagerContentNodes.Add(pcmcn);
-                for(int i =0;i<myMod.PlanetContentManagerBranchNodes.Count;i++)
-                {
-                    if(myMod.PlanetContentManagerBranchNodes.ElementAt(i).EditorID== "takeovercontent")
-                    {
-                        myMod.PlanetContentManagerBranchNodes.ElementAt(i).Nodes.Add(pcmcn.ToLinkGetter<IPlanetNodeGetter>());
-                    }
-                }
+                myMod.PlanetContentManagerBranchNodes.Where(x => x.EditorID == "takeovercontent").First().Nodes.Add(pcmcn.ToLinkGetter<IPlanetNodeGetter>());
                 //Scan
                 var pcmcnscan = new PlanetContentManagerContentNode(myMod)
                 {
                     EditorID = "scan" + item + id,
                     Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
                 };
-                myMod.PlanetContentManagerContentNodes.Add(pcmcnscan);
-                for (int i = 0; i < myMod.PlanetContentManagerBranchNodes.Count; i++)
-                {
-                    if (myMod.PlanetContentManagerBranchNodes.ElementAt(i).EditorID == "takeoverscancontent1")
-                    {
-                        myMod.PlanetContentManagerBranchNodes.ElementAt(i).Nodes.Add(pcmcnscan.ToLinkGetter<IPlanetNodeGetter>());
-                    }
-                }
+                myMod.PlanetContentManagerContentNodes.Add(pcmcnscan);                
+                myMod.PlanetContentManagerBranchNodes.Where(x => x.EditorID == "takeoverscancontent1").First().Nodes.Add(pcmcnscan.ToLinkGetter<IPlanetNodeGetter>());
+
                 //Quest
                 var pcmcnquest = new PlanetContentManagerContentNode(myMod)
                 {
@@ -211,23 +202,12 @@ namespace ssf.POI
                     Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
                 };
                 myMod.PlanetContentManagerContentNodes.Add(pcmcnquest);
-                for (int i = 0; i < myMod.PlanetContentManagerBranchNodes.Count; i++)
-                {
-                    if (myMod.PlanetContentManagerBranchNodes.ElementAt(i).EditorID == "takeoverquestcontent")
-                    {
-                        myMod.PlanetContentManagerBranchNodes.ElementAt(i).Nodes.Add(pcmcnquest.ToLinkGetter<IPlanetNodeGetter>());
-                    }
-                }
+                myMod.PlanetContentManagerBranchNodes.Where(x => x.EditorID == "takeoverquestcontent").First().Nodes.Add(pcmcnquest.ToLinkGetter<IPlanetNodeGetter>());
             }
             foreach (var rec in myMod.EnumerateMajorRecords())
             {
                 rec.IsCompressed = false;
-                
-                if (rec.FormKey.ToString() == "001513:du_takeover.esm")
-                {
-                    Console.WriteLine("Break");
-                }
-                SSFEventLog.EventLogs.Enqueue(rec.FormKey.ToString() + " " + rec.EditorID);
+                //SSFEventLog.EventLogs.Enqueue(rec.FormKey.ToString() + " " + rec.EditorID);
             }
             myMod.WriteToBinary(datapath + "\\" + pluginname + ".esm",new BinaryWriteParameters()
             {

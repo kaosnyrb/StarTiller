@@ -43,6 +43,7 @@
             espname_text = new TextBox();
             CellName = new TextBox();
             Seed = new TextBox();
+            randseed = new Button();
             SuspendLayout();
             // 
             // button1
@@ -164,11 +165,22 @@
             Seed.TabIndex = 13;
             Seed.Text = "1";
             // 
+            // randseed
+            // 
+            randseed.Location = new Point(218, 151);
+            randseed.Name = "randseed";
+            randseed.Size = new Size(75, 23);
+            randseed.TabIndex = 14;
+            randseed.Text = "random";
+            randseed.UseVisualStyleBackColor = true;
+            randseed.Click += randseed_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(815, 845);
+            Controls.Add(randseed);
             Controls.Add(Seed);
             Controls.Add(CellName);
             Controls.Add(espname_text);
@@ -204,5 +216,6 @@
         private TextBox espname_text;
         private TextBox CellName;
         private TextBox Seed;
+        private Button randseed;
     }
 }

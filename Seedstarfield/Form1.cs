@@ -1,4 +1,5 @@
 using Microsoft.VisualBasic.Logging;
+using Mutagen.Bethesda.Starfield;
 using ssf;
 using ssf.Generation;
 using ssf.IO;
@@ -39,7 +40,7 @@ namespace Seedstarfield
 
         private async void DoWork()
         {
-            
+
             Mundus generator = new Mundus();
             List<Block> blocks = new List<Block>();
             POIBuilder.Setup(BlockLib.Instance, settings.seed);
@@ -108,6 +109,12 @@ namespace Seedstarfield
         private void espname_text_TextChanged(object sender, EventArgs e)
         {
             settings.EspName = espname_text.Text;
+        }
+
+        private void randseed_Click(object sender, EventArgs e)
+        {
+            Random random = new Random();
+            Seed.Text = random.Next(int.MaxValue).ToString();
         }
     }
 }
