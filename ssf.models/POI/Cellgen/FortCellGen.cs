@@ -60,6 +60,7 @@ namespace ssf.POI.Cellgen
                 { "to_pkn_wall_", GetPackinFormsForId(myMod, "to_pkn_wall_") },
                 { "to_pkn_wallcorner_", GetPackinFormsForId(myMod, "to_pkn_wallcorner_") },
                 { "to_pkn_wallinside_", GetPackinFormsForId(myMod, "to_pkn_wallinside_") },
+                { "to_pkn_gate_", GetPackinFormsForId(myMod, "to_pkn_gate_") },
                 { "to_pkn_single", GetPackinFormsForId(myMod, "to_pkn_single") },
                 { "to_pkn_large", GetPackinFormsForId(myMod, "to_pkn_large") },
                 { "to_pkn_small_", GetPackinFormsForId(myMod, "to_pkn_small_") }
@@ -72,52 +73,75 @@ namespace ssf.POI.Cellgen
             //Load the packins
             BuildPkns(myMod);
             Random rand = new Random(seed);
-            //Generate the map
-            //A small block is 3x3
-            //Cells are
-            // 0-36
-            // 37-72
             int mapsize = 50;
             map = new GenerationMap(mapsize, mapsize);
+            //Place the rects around the center point
+            //We draw a bunch of rectangles from a central point  so they overlap in the middle.
+            //This is like blocky flower petals
+            int centerx = 24;
+            int centery = 24;
 
-            //Place the roads
-            int roadcount = 6 + rand.Next(3);
+            int numberofrects = 3 + rand.Next(4);
 
-            int startx = 3 + (rand.Next(3) *3);
-            int starty = 3 + (rand.Next(3) *3);
-            int lengthX = rand.Next((mapsize - 9) - startx);//Padding
-            int lengthY = rand.Next((mapsize - 9) - starty);//Padding
+            //Core of 9
+            map.placesmalltileonempty(centerx, centery, "to_pkn_base", 0, "floor");
+            map.placesmalltileonempty(centerx, centery + 3, "to_pkn_base", 0, "floor");
+            map.placesmalltileonempty(centerx, centery + 3, "to_pkn_base", 0, "floor");
+            map.placesmalltileonempty(centerx + 3, centery, "to_pkn_base", 0, "floor");
+            map.placesmalltileonempty(centerx - 3, centery, "to_pkn_base", 0, "floor");
+            map.placesmalltileonempty(centerx + 3, centery + 3, "to_pkn_base", 0, "floor");
+            map.placesmalltileonempty(centerx - 3, centery + 3, "to_pkn_base", 0, "floor");
+            map.placesmalltileonempty(centerx + 3, centery - 3, "to_pkn_base", 0, "floor");
+            map.placesmalltileonempty(centerx - 3, centery - 3, "to_pkn_base", 0, "floor");
 
-            for (int i = 0; i < lengthX; i += 3)
+            for (int i = 0;i  < numberofrects;i++)
             {
-                map.placesmalltileonempty(startx + i, starty, "to_pkn_base", 0, "floor");
-                map.placesmalltileonempty(startx + i, starty + 3, "to_pkn_base", 0, "floor");
-                map.placesmalltileonempty(startx + i, starty - 3, "to_pkn_base", 0, "floor");
-                map.placesmalltileonempty(startx + i, starty + 6, "to_pkn_base", 0, "floor");
-                map.placesmalltileonempty(startx + i, starty - 6, "to_pkn_base", 0, "floor");
-            }
-            for (int i = 0; i < lengthX; i += 3)
-            {
-                map.placesmalltileonempty(startx + i, starty + lengthY, "to_pkn_base", 0, "floor");
-                map.placesmalltileonempty(startx + i, starty + lengthY + 3, "to_pkn_base", 0, "floor");
-                map.placesmalltileonempty(startx + i, starty + lengthY - 3, "to_pkn_base", 0, "floor");
-                map.placesmalltileonempty(startx + i, starty + lengthY + 6, "to_pkn_base", 0, "floor");
-                map.placesmalltileonempty(startx + i, starty + lengthY- 6, "to_pkn_base", 0, "floor");
-            }
+                int direction = rand.Next(4);
 
-            int roadx = startx;
-            for (int road = 0; road < roadcount; road++)
-            {
-                if (roadx > mapsize - 6)
+                int rectx = (2 + rand.Next(5)) * 3;
+                int recty = (2 + rand.Next(5)) * 3;
+                switch(direction)
                 {
-                    //Place X road
-                    for (int i = 0; i < lengthY; i += 3)
-                    {
-                        map.placesmalltileonempty(roadx, starty + i, "to_pkn_base", 0, "floor");
-                        map.placesmalltileonempty(roadx + 3, starty + i, "to_pkn_base", 0, "floor");
-                        map.placesmalltileonempty(roadx - 3, starty + i, "to_pkn_base", 0, "floor");
-                    }
-                    roadx += 3 + (rand.Next(6) * 3);
+                    case 0:
+                        //TopLeft
+                        for (int x = centerx - rectx; x <= centerx; x += 3)
+                        {
+                            for (int y = centery - recty; y <= centerx; y += 3)
+                            {
+                                map.placesmalltileonempty(x, y, "to_pkn_base", 0, "floor");
+                            }
+                        }
+                        break;
+                    case 1:
+                        //TopRight
+                        for (int x = centerx; x <= centerx + rectx; x += 3)
+                        {
+                            for (int y = centery - recty; y <= centerx; y += 3)
+                            {
+                                map.placesmalltileonempty(x, y, "to_pkn_base", 0, "floor");
+                            }
+                        }
+                        break;
+                    case 2:
+                        //BottomRight
+                        for (int x = centerx; x <= centerx + rectx; x += 3)
+                        {
+                            for (int y = centery; y <= centerx + recty; y += 3)
+                            {
+                                map.placesmalltileonempty(x, y, "to_pkn_base", 0, "floor");
+                            }
+                        }
+                        break;
+                    case 3:
+                        //BottomLeft
+                        for (int x = centerx - rectx; x <= centerx; x += 3)
+                        {
+                            for (int y = centery; y <= centerx + recty; y += 3)
+                            {
+                                map.placesmalltileonempty(x, y, "to_pkn_base", 0, "floor");
+                            }
+                        }
+                        break;
                 }
             }
 
@@ -269,6 +293,32 @@ namespace ssf.POI.Cellgen
                     }
                 }
             }
+            //Place gates on walls
+            int gateloops = 100;
+            int gatecount = 2 + rand.Next(2);
+
+            List<int> roations = new List<int>();
+            for(int i = 0; i < gateloops && gatecount > 0; i++)
+            {
+                for (int x = 3; x < mapsize - 3; x++)
+                {
+                    for (int y = 3; y < mapsize - 3; y++)
+                    {
+                        if (map.tiles[x][y].type == "to_pkn_wall_")
+                        {
+                            //We don't want it to be just first come first serve.
+                            if (rand.Next(100) > 10 && gatecount > 0 && !roations.Contains(map.tiles[x][y].rotation))
+                            {
+                                //Convert the wall into a gate, keeping rotation
+                                roations.Add(map.tiles[x][y].rotation);//We only want 1 gate a side
+                                map.placesmalltile(x, y, "to_pkn_gate_", map.tiles[x][y].rotation, "ignore");
+                                gatecount--;
+                            }
+                        }
+                    }
+                }
+            }
+
 
             //Place large blocks over bases
             int largeblockcount = 2 + rand.Next(5);
@@ -305,6 +355,8 @@ namespace ssf.POI.Cellgen
                     }
                 }
             }
+
+            
 
             //Place small blocks over bases
             int blockcount = 1000 + rand.Next(10);
@@ -378,7 +430,16 @@ namespace ssf.POI.Cellgen
                         //The tile isn't empty or blocked off by another prefab
                         if (packinLib.ContainsKey(map.tiles[x][y].type))
                         {
-                            var prefab = packinLib[map.tiles[x][y].type].ElementAt(rand.Next(packinLib[map.tiles[x][y].type].Count));
+                            int prefabid = rand.Next(packinLib[map.tiles[x][y].type].Count);
+                            var prefab = packinLib[map.tiles[x][y].type].ElementAt(prefabid);
+                            if (!myMod.PackIns[prefab].EditorID.Contains("reuse"))
+                            {
+                                //We should have reuseable versions of every piece but don't crash.
+                                if (packinLib[map.tiles[x][y].type].Count > 1)
+                                {
+                                    packinLib[map.tiles[x][y].type].RemoveAt(prefabid);
+                                }
+                            }
                             P3Float pos = new P3Float(-94 + (blocksize * x), 94 - (blocksize * y), -10);
 
                             var inewblock = new PlacedObject(myMod)

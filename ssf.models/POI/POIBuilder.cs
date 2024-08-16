@@ -37,7 +37,6 @@ namespace ssf.POI
             string pluginname = settings.EspName;
             string datapath = "";
 
-            string prefix = "1to";
 
             StarfieldMod myMod;
 
@@ -70,6 +69,9 @@ namespace ssf.POI
                 string shortname = poiname.ToLower();
                 shortname = new string(shortname.Where(c => !vowels.Contains(c)).ToArray());
                 string item = shortname;
+
+                string prefix = myMod.Worldspaces.Count().ToString("000");
+
 
                 SSFEventLog.EventLogs.Enqueue(poiname);
                 SSFEventLog.EventLogs.Enqueue(shortname);

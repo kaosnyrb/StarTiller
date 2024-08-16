@@ -37,7 +37,7 @@ namespace ssf.Models
 
         public bool canPlace(int x, int y)
         {
-            if (x > xsize - 2 || x < 1 || y > ysize - 2 || y < 1)
+            if (x > xsize - 3 || x < 1 || y > ysize - 3 || y < 1)
             {
                 //Doesn't fit
                 return false;
@@ -109,7 +109,7 @@ namespace ssf.Models
         }
         public bool placesmalltile(int x, int y, string type, int rotation, string filltag)
         {
-            if (x > xsize - 2 || x < 1 || y > ysize - 2 || y < 1)
+            if (x > xsize - 3 || x < 1 || y > ysize - 3 || y < 1)
             {
                 //Doesn't fit
                 return false;

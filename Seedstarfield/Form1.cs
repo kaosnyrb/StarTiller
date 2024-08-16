@@ -122,7 +122,7 @@ namespace Seedstarfield
             int amount = 10;
             for (int i = 0; i < amount; i++)
             {
-                textBox1.Text += "Building POI " + i + " /" + amount + Environment.NewLine;
+                textBox1.Text += "Building POI " + (i+1) + " /" + amount + Environment.NewLine;
                 Random random = new Random();
                 Seed.Text = random.Next(int.MaxValue).ToString();
                 settings.cellname = CellName.Text;
