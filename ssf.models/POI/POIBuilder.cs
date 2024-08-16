@@ -77,15 +77,6 @@ namespace ssf.POI
                 SSFEventLog.EventLogs.Enqueue(shortname);
                 SSFEventLog.EventLogs.Enqueue(prefix + "wld" + item);
 
-                /*
-                for (int x = 0; x < 9000; x++)
-                {
-                    // Formid padding
-                    // Basically we get overrides if we start adding stuff without a gap.
-                    // So we generate a bunch here and don't even add them to the esm.
-                    var fsd = new Cell(myMod);
-                }*/
-
                 IFormLinkNullable<IKeywordGetter> LocTypeDungeon = new FormKey(env.LoadOrder[0].ModKey, 0x000254BC).ToNullableLink<IKeywordGetter>();
                 IFormLinkNullable<IKeywordGetter> LocTypeClearable = new FormKey(env.LoadOrder[0].ModKey, 0x00064EDE).ToNullableLink<IKeywordGetter>();
                 IFormLinkNullable<IKeywordGetter> LocTypeOE_Keyword = new FormKey(env.LoadOrder[0].ModKey, 0x001A5468).ToNullableLink<IKeywordGetter>();
@@ -153,11 +144,11 @@ namespace ssf.POI
                     MajorFlags = Cell.MajorFlag.Persistent,
                     Persistent = new ExtendedList<IPlaced>()
                 };
-                    
 
-
+                //Build map
                 int cellid = 0;
                 FortCellGen.BuildMap(myMod, settings.seed);
+                bool placedboss = false;
                 foreach (var sbc in newworld.SubCells)
                 {
                     var point = sbc.Items[0].Items[0].Grid.Point;
@@ -173,7 +164,7 @@ namespace ssf.POI
                     };
 
                     var packins = FortCellGen.BuildCell(myMod, settings.seed, point);
-                    foreach(var pack in packins)
+                    foreach (var pack in packins)
                     {
                         newworld.TopCell.Persistent.Add(pack);
                     }

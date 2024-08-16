@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ssf.POI.Cellgen
@@ -19,7 +20,6 @@ namespace ssf.POI.Cellgen
         public static Dictionary<string, List<FormKey>> packinLib = new Dictionary<string, List<FormKey>>();
         public static GenerationMap map;
 
-        //public static List<FormKey> SmallPkns = new List<FormKey>();
         public static float GetRot(int euler)
         {
             switch (euler)
@@ -63,6 +63,7 @@ namespace ssf.POI.Cellgen
                 { "to_pkn_gate_", GetPackinFormsForId(myMod, "to_pkn_gate_") },
                 { "to_pkn_single", GetPackinFormsForId(myMod, "to_pkn_single") },
                 { "to_pkn_large", GetPackinFormsForId(myMod, "to_pkn_large") },
+                { "to_pkn_landing_", GetPackinFormsForId(myMod, "to_pkn_landing_") },
                 { "to_pkn_small_", GetPackinFormsForId(myMod, "to_pkn_small_") }
             };
         }
@@ -80,20 +81,34 @@ namespace ssf.POI.Cellgen
             //This is like blocky flower petals
             int centerx = 24;
             int centery = 24;
+                        
+            //Landing Pads are kinda cool, but dominate the size of smaller pois.
+            if (  rand.Next(100) > 75 )
+            {
+                //Core of 12
+                for (int x = centerx - 6; x <= centerx + 6; x += 3)
+                {
+                    for (int y = centery - 6; y <= centery + 6; y += 3)
+                    {
+                        map.placesmalltileonempty(x, y, "to_pkn_base", 0, "floor");
+                    }
+                }
+                //Place LandingPad
+                map.placelandingpadtile(centerx, centery, "to_pkn_landing_", 0, "pad");
+            }
+            else
+            {
+                //Core of 9
+                for (int x = centerx - 3; x <= centerx + 3; x += 3)
+                {
+                    for (int y = centery - 3; y <= centery + 3; y += 3)
+                    {
+                        map.placesmalltileonempty(x, y, "to_pkn_base", 0, "floor");
+                    }
+                }
+            }
 
             int numberofrects = 3 + rand.Next(4);
-
-            //Core of 9
-            map.placesmalltileonempty(centerx, centery, "to_pkn_base", 0, "floor");
-            map.placesmalltileonempty(centerx, centery + 3, "to_pkn_base", 0, "floor");
-            map.placesmalltileonempty(centerx, centery + 3, "to_pkn_base", 0, "floor");
-            map.placesmalltileonempty(centerx + 3, centery, "to_pkn_base", 0, "floor");
-            map.placesmalltileonempty(centerx - 3, centery, "to_pkn_base", 0, "floor");
-            map.placesmalltileonempty(centerx + 3, centery + 3, "to_pkn_base", 0, "floor");
-            map.placesmalltileonempty(centerx - 3, centery + 3, "to_pkn_base", 0, "floor");
-            map.placesmalltileonempty(centerx + 3, centery - 3, "to_pkn_base", 0, "floor");
-            map.placesmalltileonempty(centerx - 3, centery - 3, "to_pkn_base", 0, "floor");
-
             for (int i = 0;i  < numberofrects;i++)
             {
                 int direction = rand.Next(4);
@@ -106,7 +121,7 @@ namespace ssf.POI.Cellgen
                         //TopLeft
                         for (int x = centerx - rectx; x <= centerx; x += 3)
                         {
-                            for (int y = centery - recty; y <= centerx; y += 3)
+                            for (int y = centery - recty; y <= centery; y += 3)
                             {
                                 map.placesmalltileonempty(x, y, "to_pkn_base", 0, "floor");
                             }
@@ -116,7 +131,7 @@ namespace ssf.POI.Cellgen
                         //TopRight
                         for (int x = centerx; x <= centerx + rectx; x += 3)
                         {
-                            for (int y = centery - recty; y <= centerx; y += 3)
+                            for (int y = centery - recty; y <= centery; y += 3)
                             {
                                 map.placesmalltileonempty(x, y, "to_pkn_base", 0, "floor");
                             }
@@ -126,7 +141,7 @@ namespace ssf.POI.Cellgen
                         //BottomRight
                         for (int x = centerx; x <= centerx + rectx; x += 3)
                         {
-                            for (int y = centery; y <= centerx + recty; y += 3)
+                            for (int y = centery; y <= centery + recty; y += 3)
                             {
                                 map.placesmalltileonempty(x, y, "to_pkn_base", 0, "floor");
                             }
@@ -136,7 +151,7 @@ namespace ssf.POI.Cellgen
                         //BottomLeft
                         for (int x = centerx - rectx; x <= centerx; x += 3)
                         {
-                            for (int y = centery; y <= centerx + recty; y += 3)
+                            for (int y = centery; y <= centery + recty; y += 3)
                             {
                                 map.placesmalltileonempty(x, y, "to_pkn_base", 0, "floor");
                             }
@@ -307,7 +322,7 @@ namespace ssf.POI.Cellgen
                         if (map.tiles[x][y].type == "to_pkn_wall_")
                         {
                             //We don't want it to be just first come first serve.
-                            if (rand.Next(100) > 10 && gatecount > 0 && !roations.Contains(map.tiles[x][y].rotation))
+                            if (rand.Next(100) < 10 && gatecount > 0 && !roations.Contains(map.tiles[x][y].rotation))
                             {
                                 //Convert the wall into a gate, keeping rotation
                                 roations.Add(map.tiles[x][y].rotation);//We only want 1 gate a side
@@ -355,8 +370,6 @@ namespace ssf.POI.Cellgen
                     }
                 }
             }
-
-            
 
             //Place small blocks over bases
             int blockcount = 1000 + rand.Next(10);
@@ -420,7 +433,6 @@ namespace ssf.POI.Cellgen
                 starty = (map.ysize / 2);
                 endy = map.ysize;
             }
-
             for (int x = startx; x < endx; x++)
             {
                 for (int y = starty; y < endy; y++)
@@ -440,7 +452,12 @@ namespace ssf.POI.Cellgen
                                     packinLib[map.tiles[x][y].type].RemoveAt(prefabid);
                                 }
                             }
-                            P3Float pos = new P3Float(-94 + (blocksize * x), 94 - (blocksize * y), -10);
+                            float z = -10;
+                            if (map.tiles[x][y].zoverride != 0)
+                            {
+                                z = map.tiles[x][y].zoverride;
+                            }
+                            P3Float pos = new P3Float(-94 + (blocksize * x), 94 - (blocksize * y), z);
 
                             var inewblock = new PlacedObject(myMod)
                             {
@@ -454,6 +471,7 @@ namespace ssf.POI.Cellgen
                     }
                 }
             }
+
             return results;
         }
     }

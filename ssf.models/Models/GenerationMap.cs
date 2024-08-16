@@ -1,4 +1,6 @@
-﻿using Mutagen.Bethesda.Plugins.Binary.Parameters;
+﻿using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Binary.Parameters;
+using Mutagen.Bethesda.Starfield;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +14,7 @@ namespace ssf.Models
     {
         public string type = "empty";
         public int rotation = 0;
+        public float zoverride = 0;
     }
     public  class GenerationMap
     {
@@ -107,6 +110,46 @@ namespace ssf.Models
             tiles[x][y].type = type;
             return true;
         }
+
+        public bool placelandingpadtile(int x, int y, string type, int rotation, string filltag)
+        {
+            if (x > xsize - 6 || x < 6 || y > ysize - 6 || y < 6)
+            {
+                //Doesn't fit
+                return false;
+            }
+
+            //Do we care about overlaps?
+            //For now don't worry.
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    tiles[(x - 4) + i][(y - 4) + j].rotation = 0;
+                    tiles[(x - 4) + i][(y - 4) + j].type = filltag;
+                }
+            }
+            //Place the centre tile
+            tiles[x][y].rotation = rotation;
+            tiles[x][y].type = type;
+            tiles[x][y].zoverride = -13.1000f;
+
+            return true;
+        }
+
+        //squares of 3
+        public void placeSquareofsmalltiles(int size, int centerx, int centery, string type, string filltag)
+        {
+            
+            for (int x = centerx - (size / 3); x <= centerx + (size / 3); x += 3)
+            {
+                for (int y = centery - (size / 3); y <= centery + (size / 3); y += 3)
+                {
+                    placesmalltileonempty(x, y, type, 0, "floor");
+                }
+            }
+        }
+
         public bool placesmalltile(int x, int y, string type, int rotation, string filltag)
         {
             if (x > xsize - 3 || x < 1 || y > ysize - 3 || y < 1)
