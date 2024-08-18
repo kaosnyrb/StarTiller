@@ -12,7 +12,8 @@ namespace ssf.Models
 {
     public class tile
     {
-        public string type = "empty";
+        public List<string> prefabs = new List<string>();
+        //public string type = "empty";
         public int rotation = 0;
         public float zoverride = 0;
     }
@@ -38,6 +39,16 @@ namespace ssf.Models
             }
         }
 
+        public void replacetile(int x, int y, string type, int rotation)
+        {
+            if (!tiles[x][y].prefabs.Contains(type))
+            {
+                tiles[x][y].prefabs.Clear();
+                tiles[x][y].rotation = rotation;
+                tiles[x][y].prefabs.Add(type);
+            }
+        }
+
         public bool canPlace(int x, int y)
         {
             if (x > xsize - 3 || x < 1 || y > ysize - 3 || y < 1)
@@ -45,18 +56,18 @@ namespace ssf.Models
                 //Doesn't fit
                 return false;
             }
-            if (tiles[x][y].type != "empty")return false;
-            if (tiles[x][y + 1].type != "empty") return false;
-            if (tiles[x][y - 1].type != "empty") return false;
+            if (tiles[x][y].prefabs.Count > 0)return false;
+            if (tiles[x][y + 1].prefabs.Count > 0) return false;
+            if (tiles[x][y - 1].prefabs.Count > 0) return false;
 
-            if (tiles[x + 1][y].type != "empty") return false;
-            if (tiles[x + 1][y + 1].type != "empty") return false;
-            if (tiles[x + 1][y - 1].type != "empty") return false;
+            if (tiles[x + 1][y].prefabs.Count > 0) return false;
+            if (tiles[x + 1][y + 1].prefabs.Count > 0) return false;
+            if (tiles[x + 1][y - 1].prefabs.Count > 0) return false;
 
             
-            if (tiles[x - 1][y].type != "empty") return false;
-            if (tiles[x - 1][y + 1].type != "empty") return false;
-            if (tiles[x - 1][y - 1 ].type != "empty") return false;
+            if (tiles[x - 1][y].prefabs.Count > 0) return false;
+            if (tiles[x - 1][y + 1].prefabs.Count > 0) return false;
+            if (tiles[x - 1][y - 1].prefabs.Count > 0) return false;
 
             return true;
         }
@@ -82,8 +93,7 @@ namespace ssf.Models
                 //Doesn't fit
                 return false;
             }
-            tiles[x][y].rotation = rotation;
-            tiles[x][y].type = type;
+            replacetile(x,y,type,rotation);
             return true;
         }
 
@@ -101,13 +111,11 @@ namespace ssf.Models
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    tiles[(x-4)+i][(y-4) + j].rotation = 0;
-                    tiles[(x-4) + i][(y-4) + j].type = filltag;
+                    replacetile((x - 4) + i, (y - 4) + j, filltag, 0);
                 }
             }
             //Place the centre tile
-            tiles[x][y].rotation = rotation;
-            tiles[x][y].type = type;
+            replacetile(x, y, type, rotation);
             return true;
         }
 
@@ -125,13 +133,11 @@ namespace ssf.Models
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    tiles[(x - 4) + i][(y - 4) + j].rotation = 0;
-                    tiles[(x - 4) + i][(y - 4) + j].type = filltag;
+                    replacetile((x - 4) + i, (y - 4) + j, filltag, 0);
                 }
             }
             //Place the centre tile
-            tiles[x][y].rotation = rotation;
-            tiles[x][y].type = type;
+            replacetile(x, y, type, rotation);
             tiles[x][y].zoverride = -13.1000f;
 
             return true;
@@ -157,41 +163,18 @@ namespace ssf.Models
                 //Doesn't fit
                 return false;
             }
-
-            //Do we care about overlaps?
-            //For now don't worry.
-
-            //Place the centre tile
-            tiles[x][y].rotation = rotation;
-            tiles[x][y].type = type;
-
-            //Fill in the other tiles
             //Col 1
-            tiles[x-1][y].rotation = 0;
-            tiles[x-1][y].type = filltag;
-
-            tiles[x-1][y-1].rotation = 0;
-            tiles[x-1][y-1].type = filltag;
-
-            tiles[x - 1][y + 1].rotation = 0;
-            tiles[x - 1][y + 1].type = filltag;
+            replacetile(x - 1, y, filltag, 0);
+            replacetile(x - 1, y - 1, filltag, 0);
+            replacetile(x - 1, y + 1, filltag, 0);
             //Col 2
-            tiles[x][y - 1].rotation = 0;
-            tiles[x][y - 1].type = filltag;
-
-            tiles[x][y + 1].rotation = 0;
-            tiles[x][y + 1].type = filltag;
-
+            replacetile(x, y, type, rotation);
+            replacetile(x, y - 1, filltag, 0);
+            replacetile(x, y + 1, filltag, 0);
             //Col 3
-            tiles[x + 1][y].rotation = 0;
-            tiles[x + 1][y].type = filltag;
-
-            tiles[x + 1][y - 1].rotation = 0;
-            tiles[x + 1][y - 1].type = filltag;
-
-            tiles[x + 1][y + 1].rotation = 0;
-            tiles[x + 1][y + 1].type = filltag;
-
+            replacetile(x + 1, y, filltag, 0);
+            replacetile(x + 1, y - 1, filltag, 0);
+            replacetile(x + 1, y + 1, filltag, 0);
             return true;
         }
     }

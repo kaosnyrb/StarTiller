@@ -166,13 +166,13 @@ namespace ssf.POI.Cellgen
             {
                 for (int y = 1; y < mapsize - 1; y++)
                 {
-                    if (map.tiles[x][y].type == "empty")
+                    if (map.tiles[x][y].prefabs.Count == 0)
                     {
-                        if (map.tiles[x - 1][y].type == "floor" && map.tiles[x + 1][y].type == "floor")
+                        if (map.tiles[x - 1][y].prefabs.Contains("floor") && map.tiles[x + 1][y].prefabs.Contains("floor"))
                         {
                             map.placesingletile(x, y, "to_pkn_single", 0);
                         }
-                        if (map.tiles[x][y - 1].type == "floor" && map.tiles[x][y + 1].type == "floor")
+                        if (map.tiles[x][y - 1].prefabs.Contains("floor") && map.tiles[x][y + 1].prefabs.Contains("floor"))
                         {
                             map.placesingletile(x, y, "to_pkn_single", 0);
                         }
@@ -185,7 +185,7 @@ namespace ssf.POI.Cellgen
             {
                 for (int y = 3; y < mapsize - 3; y++)
                 {
-                    if (map.tiles[x][y].type == "to_pkn_base")
+                    if (map.tiles[x][y].prefabs.Contains("to_pkn_base"))
                     {
                         //Check surrounding to see if we should build a wall
 
@@ -199,35 +199,35 @@ namespace ssf.POI.Cellgen
                         bool blclear = false;
                         bool brclear = false;
 
-                        if (map.tiles[x][y - 3].type == "empty")
+                        if (map.tiles[x][y - 3].prefabs.Count == 0)
                         {
                             topclear = true;
                         }
-                        if (map.tiles[x][y + 3].type == "empty")
+                        if (map.tiles[x][y + 3].prefabs.Count == 0)
                         {
                             botclear = true;
                         }
-                        if (map.tiles[x - 3][y].type == "empty")
+                        if (map.tiles[x - 3][y].prefabs.Count == 0)
                         {
                             leftclear = true;
                         }
-                        if (map.tiles[x + 3][y].type == "empty")
+                        if (map.tiles[x + 3][y].prefabs.Count == 0)
                         {
                             rightclear = true;
                         }
-                        if (map.tiles[x - 3][y - 3].type == "empty")
+                        if (map.tiles[x - 3][y - 3].prefabs.Count == 0)
                         {
                             tlclear = true;
                         }
-                        if (map.tiles[x + 3][y - 3].type == "empty")
+                        if (map.tiles[x + 3][y - 3].prefabs.Count == 0)
                         {
                             trclear = true;
                         }
-                        if (map.tiles[x - 3][y + 3].type == "empty")
+                        if (map.tiles[x - 3][y + 3].prefabs.Count == 0)
                         {
                             blclear = true;
                         }
-                        if (map.tiles[x + 3][y + 3].type == "empty")
+                        if (map.tiles[x + 3][y + 3].prefabs.Count == 0)
                         {
                             brclear = true;
                         }
@@ -319,7 +319,7 @@ namespace ssf.POI.Cellgen
                 {
                     for (int y = 3; y < mapsize - 3; y++)
                     {
-                        if (map.tiles[x][y].type == "to_pkn_wall_")
+                        if (map.tiles[x][y].prefabs.Contains("to_pkn_wall_"))
                         {
                             //We don't want it to be just first come first serve.
                             if (rand.Next(100) < 10 && gatecount > 0 && !roations.Contains(map.tiles[x][y].rotation))
@@ -346,17 +346,17 @@ namespace ssf.POI.Cellgen
                     for (int y = 3; y < mapsize - 3; y++)
                     {
                         //Find random road block
-                        if (map.tiles[x][y].type == "to_pkn_base" && !foundblock)
+                        if (map.tiles[x][y].prefabs.Contains("to_pkn_base") && !foundblock)
                         {
                             //Check surroundings
-                            if (map.tiles[x + 3][y].type == "to_pkn_base" &&
-                                map.tiles[x + 3][y + 3].type == "to_pkn_base" &&
-                                map.tiles[x + 3][y - 3].type == "to_pkn_base" &&
-                                map.tiles[x - 3][y].type == "to_pkn_base" &&
-                                map.tiles[x - 3][y + 3].type == "to_pkn_base" &&
-                                map.tiles[x - 3][y - 3].type == "to_pkn_base" &&
-                                map.tiles[x][y + 3].type == "to_pkn_base" &&
-                                map.tiles[x][y - 3].type == "to_pkn_base")
+                            if (map.tiles[x + 3][y].prefabs.Contains("to_pkn_base") &&
+                                map.tiles[x + 3][y + 3].prefabs.Contains("to_pkn_base") &&
+                                map.tiles[x + 3][y - 3].prefabs.Contains("to_pkn_base") &&
+                                map.tiles[x - 3][y].prefabs.Contains("to_pkn_base") &&
+                                map.tiles[x - 3][y + 3].prefabs.Contains("to_pkn_base") &&
+                                map.tiles[x - 3][y - 3].prefabs.Contains("to_pkn_base") &&
+                                map.tiles[x][y + 3].prefabs.Contains("to_pkn_base") &&
+                                map.tiles[x][y - 3].prefabs.Contains("to_pkn_base"))
                             {
                                 //We don't want it to be just first come first serve.
                                 if (rand.Next(100) > 25)
@@ -383,7 +383,7 @@ namespace ssf.POI.Cellgen
                 {
                     attempts--;
                     //Find random road block
-                    if (map.tiles[x][y].type == "to_pkn_base")
+                    if (map.tiles[x][y].prefabs.Contains("to_pkn_base"))
                     {
                         map.placesmalltile(x, y, "to_pkn_small_", rand.Next(3) * 90, "floor");
                         foundblock = true;
@@ -437,37 +437,41 @@ namespace ssf.POI.Cellgen
             {
                 for (int y = starty; y < endy; y++)
                 {
-                    if (map.tiles[x][y].type != "empty" && map.tiles[x][y].type != "full")
+                    if (map.tiles[x][y].prefabs.Count > 0)
                     {
                         //The tile isn't empty or blocked off by another prefab
-                        if (packinLib.ContainsKey(map.tiles[x][y].type))
+                        foreach(var pfb in map.tiles[x][y].prefabs)
                         {
-                            int prefabid = rand.Next(packinLib[map.tiles[x][y].type].Count);
-                            var prefab = packinLib[map.tiles[x][y].type].ElementAt(prefabid);
-                            if (!myMod.PackIns[prefab].EditorID.Contains("reuse"))
+                            if (packinLib.ContainsKey(pfb))
                             {
-                                //We should have reuseable versions of every piece but don't crash.
-                                if (packinLib[map.tiles[x][y].type].Count > 1)
+                                int prefabid = rand.Next(packinLib[pfb].Count);
+                                var prefab = packinLib[pfb].ElementAt(prefabid);
+                                if (!myMod.PackIns[prefab].EditorID.Contains("reuse"))
                                 {
-                                    packinLib[map.tiles[x][y].type].RemoveAt(prefabid);
+                                    //We should have reuseable versions of every piece but don't crash.
+                                    if (packinLib[pfb].Count > 1)
+                                    {
+                                        packinLib[pfb].RemoveAt(prefabid);
+                                    }
                                 }
-                            }
-                            float z = -10;
-                            if (map.tiles[x][y].zoverride != 0)
-                            {
-                                z = map.tiles[x][y].zoverride;
-                            }
-                            P3Float pos = new P3Float(-94 + (blocksize * x), 94 - (blocksize * y), z);
+                                float z = -10;
+                                if (map.tiles[x][y].zoverride != 0)
+                                {
+                                    z = map.tiles[x][y].zoverride;
+                                }
+                                P3Float pos = new P3Float(-94 + (blocksize * x), 94 - (blocksize * y), z);
 
-                            var inewblock = new PlacedObject(myMod)
-                            {
-                                Base = prefab.ToNullableLink<IPlaceableObjectGetter>(),
-                                Position = pos,
-                                Rotation = new P3Float(0, 0, GetRot(map.tiles[x][y].rotation)),
-                                MajorRecordFlagsRaw = 66560
-                            };
-                            results.Add(inewblock);
+                                var inewblock = new PlacedObject(myMod)
+                                {
+                                    Base = prefab.ToNullableLink<IPlaceableObjectGetter>(),
+                                    Position = pos,
+                                    Rotation = new P3Float(0, 0, GetRot(map.tiles[x][y].rotation)),
+                                    MajorRecordFlagsRaw = 66560
+                                };
+                                results.Add(inewblock);
+                            }
                         }
+
                     }
                 }
             }
