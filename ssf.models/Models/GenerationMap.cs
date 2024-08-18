@@ -51,7 +51,10 @@ namespace ssf.Models
 
         public void addontile(int x, int y, string type, int rotation)
         {
-            tiles[x][y].prefabs.Add(type);
+            if (!tiles[x][y].prefabs.Contains(type))
+            {
+                tiles[x][y].prefabs.Add(type);
+            }
         }
 
         public bool canPlace(int x, int y)
