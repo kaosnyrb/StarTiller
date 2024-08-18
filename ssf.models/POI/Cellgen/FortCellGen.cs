@@ -60,6 +60,7 @@ namespace ssf.POI.Cellgen
                 { "to_pkn_wall_", GetPackinFormsForId(myMod, "to_pkn_wall_") },
                 { "to_pkn_wallcorner_", GetPackinFormsForId(myMod, "to_pkn_wallcorner_") },
                 { "to_pkn_wallinside_", GetPackinFormsForId(myMod, "to_pkn_wallinside_") },
+                { "to_pkn_addon_wall_", GetPackinFormsForId(myMod, "to_pkn_addon_wall_") },
                 { "to_pkn_gate_", GetPackinFormsForId(myMod, "to_pkn_gate_") },
                 { "to_pkn_single", GetPackinFormsForId(myMod, "to_pkn_single") },
                 { "to_pkn_large", GetPackinFormsForId(myMod, "to_pkn_large") },
@@ -180,6 +181,7 @@ namespace ssf.POI.Cellgen
                 }
             }
 
+            int wallcount = 0;
             //Build walls
             for (int x = 3; x < mapsize - 3; x++)
             {
@@ -305,6 +307,10 @@ namespace ssf.POI.Cellgen
                             map.placesmalltile(x, y, "to_pkn_wallinside_", 270, "ignore");
                             placed = true;
                         }
+                        if(placed)
+                        {
+                            wallcount++;
+                        }
                     }
                 }
             }
@@ -334,6 +340,29 @@ namespace ssf.POI.Cellgen
                 }
             }
 
+            //Place addons on walls
+            //to_pkn_addon_wall_
+            int walladdonloops = 100;
+            int walladdoncount = wallcount / 2;
+            for (int i = 0; i < walladdonloops && walladdoncount > 0; i++)
+            {
+                for (int x = 3; x < mapsize - 3; x++)
+                {
+                    for (int y = 3; y < mapsize - 3; y++)
+                    {
+                        if (map.tiles[x][y].prefabs.Contains("to_pkn_wall_"))
+                        {
+                            //We don't want it to be just first come first serve.
+                            if (rand.Next(100) < 10 && walladdoncount > 0)
+                            {
+                                //place an addon on top of the wall.
+                                map.placesmalladdontile(x, y, "to_pkn_addon_wall_", map.tiles[x][y].rotation, "ignore");
+                                walladdoncount--;
+                            }
+                        }
+                    }
+                }
+            }
 
             //Place large blocks over bases
             int largeblockcount = 2 + rand.Next(5);

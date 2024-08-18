@@ -49,6 +49,11 @@ namespace ssf.Models
             }
         }
 
+        public void addontile(int x, int y, string type, int rotation)
+        {
+            tiles[x][y].prefabs.Add(type);
+        }
+
         public bool canPlace(int x, int y)
         {
             if (x > xsize - 3 || x < 1 || y > ysize - 3 || y < 1)
@@ -175,6 +180,12 @@ namespace ssf.Models
             replacetile(x + 1, y, filltag, 0);
             replacetile(x + 1, y - 1, filltag, 0);
             replacetile(x + 1, y + 1, filltag, 0);
+            return true;
+        }
+
+        public bool placesmalladdontile(int x, int y, string type, int rotation, string filltag)
+        {
+            addontile(x, y, type, rotation);
             return true;
         }
     }
