@@ -342,8 +342,8 @@ namespace ssf.POI.Cellgen
 
             //Place addons on walls
             //to_pkn_addon_wall_
-            int walladdonloops = 100;
-            int walladdoncount = wallcount / 2;
+            int walladdonloops = 200;
+            int walladdoncount = wallcount - (wallcount / 4);
             for (int i = 0; i < walladdonloops && walladdoncount > 0; i++)
             {
                 for (int x = 3; x < mapsize - 3; x++)
@@ -427,9 +427,11 @@ namespace ssf.POI.Cellgen
         }
 
         //This function takes a map and builds one of four cells
-        public static List<IPlaced> BuildCell(StarfieldMod myMod, int seed, P2Int cellPos)
+        public static CellGenerationResult BuildCell(StarfieldMod myMod, int seed, P2Int cellPos)
         {
-            var results = new List<IPlaced>();
+            var Persistantresults = new List<IPlaced>();
+            var Tempresults = new List<IPlaced>();
+
             int edgepadding = 2;
             int cellsize = 100;
             int blocksize = 4;
@@ -445,21 +447,21 @@ namespace ssf.POI.Cellgen
             if (cellPos.X == -1)
             {
                 startx = 0;
-                endx = (map.xsize / 2);
+                endx = (map.xsize / 2) - 1;
             }
             if (cellPos.X == 0)
             {
-                startx = (map.xsize / 2);
+                startx = (map.xsize / 2) - 1;
                 endx = map.xsize;
             }
             if (cellPos.Y == 0)
             {
                 starty = 0;
-                endy = (map.ysize / 2);
+                endy = (map.ysize / 2) - 1;
             }
             if (cellPos.Y == -1)
             {
-                starty = (map.ysize / 2);
+                starty = (map.ysize / 2) - 1;
                 endy = map.ysize;
             }
             for (int x = startx; x < endx; x++)
@@ -475,7 +477,7 @@ namespace ssf.POI.Cellgen
                             {
                                 int prefabid = rand.Next(packinLib[pfb].Count);
                                 var prefab = packinLib[pfb].ElementAt(prefabid);
-                                if (!myMod.PackIns[prefab].EditorID.Contains("reuse"))
+                                if (!myMod.PackIns[prefab].EditorID.Contains("reuse") && !myMod.PackIns[prefab].EditorID.Contains("addon"))
                                 {
                                     //We should have reuseable versions of every piece but don't crash.
                                     if (packinLib[pfb].Count > 1)
@@ -490,21 +492,39 @@ namespace ssf.POI.Cellgen
                                 }
                                 P3Float pos = new P3Float(-94 + (blocksize * x), 94 - (blocksize * y), z);
 
-                                var inewblock = new PlacedObject(myMod)
+                                //Persistant vs temp
+                                if (myMod.PackIns[prefab].MajorRecordFlagsRaw == 2560)//Instanced Static
                                 {
-                                    Base = prefab.ToNullableLink<IPlaceableObjectGetter>(),
-                                    Position = pos,
-                                    Rotation = new P3Float(0, 0, GetRot(map.tiles[x][y].rotation)),
-                                    MajorRecordFlagsRaw = 66560
-                                };
-                                results.Add(inewblock);
+                                    var inewblock = new PlacedObject(myMod)
+                                    {
+                                        Base = prefab.ToNullableLink<IPlaceableObjectGetter>(),
+                                        Position = pos,
+                                        Rotation = new P3Float(0, 0, GetRot(map.tiles[x][y].rotation)),
+                                        MajorRecordFlagsRaw = 66560
+                                    };
+                                    Persistantresults.Add(inewblock);
+                                }
+                                else
+                                {
+                                    var inewblock = new PlacedObject(myMod)
+                                    {
+                                        Base = prefab.ToNullableLink<IPlaceableObjectGetter>(),
+                                        Position = pos,
+                                        Rotation = new P3Float(0, 0, GetRot(map.tiles[x][y].rotation)),
+                                    };
+                                    Tempresults.Add(inewblock);
+                                }
                             }
                         }
-
                     }
                 }
             }
 
+            var results = new CellGenerationResult()
+            {
+                Persistant = Persistantresults,
+                Temp = Tempresults,
+            };
             return results;
         }
     }

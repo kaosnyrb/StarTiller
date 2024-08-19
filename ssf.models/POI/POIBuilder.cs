@@ -164,10 +164,15 @@ namespace ssf.POI
                     };
 
                     var packins = FortCellGen.BuildCell(myMod, settings.seed, point);
-                    foreach (var pack in packins)
+                    foreach (var pack in packins.Persistant)
                     {
                         newworld.TopCell.Persistent.Add(pack);
                     }
+                    foreach (var pack in packins.Temp)
+                    {
+                        sbc.Items[0].Items[0].Temporary.Add(pack);
+                    }
+
                 }
                 //Add content node to the branchs
                 int id = rng.Next(100);
