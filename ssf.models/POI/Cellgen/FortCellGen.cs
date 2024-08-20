@@ -62,8 +62,11 @@ namespace ssf.POI.Cellgen
                 { "to_pkn_wallinside_", GetPackinFormsForId(myMod, "to_pkn_wallinside_") },
                 { "to_pkn_addon_wall_", GetPackinFormsForId(myMod, "to_pkn_addon_wall_") },
                 { "to_pkn_gate_", GetPackinFormsForId(myMod, "to_pkn_gate_") },
+                { "to_pkn_stairs_", GetPackinFormsForId(myMod, "to_pkn_stairs_") },
                 { "to_pkn_single", GetPackinFormsForId(myMod, "to_pkn_single") },
                 { "to_pkn_large", GetPackinFormsForId(myMod, "to_pkn_large") },
+                { "to_pkn_large_barracks", GetPackinFormsForId(myMod, "to_pkn_large_barracks") },
+                { "to_pkn_large_armory", GetPackinFormsForId(myMod, "to_pkn_large_armory") },
                 { "to_pkn_landing_", GetPackinFormsForId(myMod, "to_pkn_landing_") },
                 { "to_pkn_small_", GetPackinFormsForId(myMod, "to_pkn_small_") }
             };
@@ -82,31 +85,22 @@ namespace ssf.POI.Cellgen
             //This is like blocky flower petals
             int centerx = 24;
             int centery = 24;
-                        
+
+            //Core of 12
+            for (int x = centerx - 6; x <= centerx + 6; x += 3)
+            {
+                for (int y = centery - 6; y <= centery + 6; y += 3)
+                {
+                    map.placesmalltileonempty(x, y, "to_pkn_base", 0, "floor");
+                }
+            }
+
             //Landing Pads are kinda cool, but dominate the size of smaller pois.
             if (  rand.Next(100) > 75 )
             {
-                //Core of 12
-                for (int x = centerx - 6; x <= centerx + 6; x += 3)
-                {
-                    for (int y = centery - 6; y <= centery + 6; y += 3)
-                    {
-                        map.placesmalltileonempty(x, y, "to_pkn_base", 0, "floor");
-                    }
-                }
+
                 //Place LandingPad
                 map.placelandingpadtile(centerx, centery, "to_pkn_landing_", 0, "pad");
-            }
-            else
-            {
-                //Core of 9
-                for (int x = centerx - 3; x <= centerx + 3; x += 3)
-                {
-                    for (int y = centery - 3; y <= centery + 3; y += 3)
-                    {
-                        map.placesmalltileonempty(x, y, "to_pkn_base", 0, "floor");
-                    }
-                }
             }
 
             int numberofrects = 3 + rand.Next(4);
@@ -114,8 +108,8 @@ namespace ssf.POI.Cellgen
             {
                 int direction = rand.Next(4);
 
-                int rectx = (2 + rand.Next(5)) * 3;
-                int recty = (2 + rand.Next(5)) * 3;
+                int rectx = (4 + rand.Next(5)) * 3;
+                int recty = (4 + rand.Next(5)) * 3;
                 switch(direction)
                 {
                     case 0:
@@ -317,7 +311,6 @@ namespace ssf.POI.Cellgen
             //Place gates on walls
             int gateloops = 100;
             int gatecount = 2 + rand.Next(2);
-
             List<int> roations = new List<int>();
             for(int i = 0; i < gateloops && gatecount > 0; i++)
             {
@@ -334,6 +327,30 @@ namespace ssf.POI.Cellgen
                                 roations.Add(map.tiles[x][y].rotation);//We only want 1 gate a side
                                 map.placesmalltile(x, y, "to_pkn_gate_", map.tiles[x][y].rotation, "ignore");
                                 gatecount--;
+                            }
+                        }
+                    }
+                }
+            }
+            //Place stairs on walls
+            int stairloops = 100;
+            int staircount = 2 + rand.Next(2);
+            roations = new List<int>();
+            for (int i = 0; i < stairloops && staircount > 0; i++)
+            {
+                for (int x = 3; x < mapsize - 3; x++)
+                {
+                    for (int y = 3; y < mapsize - 3; y++)
+                    {
+                        if (map.tiles[x][y].prefabs.Contains("to_pkn_wall_"))
+                        {
+                            //We don't want it to be just first come first serve.
+                            if (rand.Next(100) < 10 && staircount > 0 && !roations.Contains(map.tiles[x][y].rotation))
+                            {
+                                //Convert the wall into a gate, keeping rotation
+                                roations.Add(map.tiles[x][y].rotation);//We only want 1 gate a side
+                                map.placesmalltile(x, y, "to_pkn_stairs_", map.tiles[x][y].rotation, "ignore");
+                                staircount--;
                             }
                         }
                     }
@@ -366,10 +383,11 @@ namespace ssf.POI.Cellgen
 
             //Place large blocks over bases
             int largeblockcount = 2 + rand.Next(5);
+            bool foundblock = false;
             int attempts = 100;//Breakout in case being stuck
             for (int i = 0; i < largeblockcount; i++)
             {
-                bool foundblock = false;
+                foundblock = false;
                 for (int x = 3; x < mapsize - 3; x++)
                 {
                     for (int y = 3; y < mapsize - 3; y++)
@@ -400,12 +418,61 @@ namespace ssf.POI.Cellgen
                 }
             }
 
+            //Place Living base parts
+            //Place to_pkn_large_barracks
+            foundblock = false;
+            attempts = 200;//Breakout in case being stuck
+            for (int i = 0; i < attempts && !foundblock; i++)
+            {
+                for (int x = 3; x < mapsize - 3; x++)
+                {
+                    for (int y = 3; y < mapsize - 3; y++)
+                    {
+                        //Find random large block
+                        if (map.tiles[x][y].prefabs.Contains("to_pkn_large") && !foundblock)
+                        {
+                            //We don't want it to be just first come first serve.
+                            if (rand.Next(100) > 25)
+                            {
+                                //Convert it to a barracks
+                                map.placelargetile(x, y, "to_pkn_large_barracks", rand.Next(3) * 90, "floor");
+                                foundblock = true;
+                            }
+                        }
+                    }
+                }
+            }
+            //Place to_pkn_large_armory
+            foundblock = false;
+            attempts = 200;//Breakout in case being stuck
+            for (int i = 0; i < attempts && !foundblock; i++)
+            {
+                for (int x = 3; x < mapsize - 3; x++)
+                {
+                    for (int y = 3; y < mapsize - 3; y++)
+                    {
+                        //Find random large block
+                        if (map.tiles[x][y].prefabs.Contains("to_pkn_large") && !foundblock)
+                        {
+                            //We don't want it to be just first come first serve.
+                            if (rand.Next(100) > 25)
+                            {
+                                //Convert it to a barracks
+                                map.placelargetile(x, y, "to_pkn_large_armory", rand.Next(3) * 90, "floor");
+                                foundblock = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+
             //Place small blocks over bases
             int blockcount = 1000 + rand.Next(10);
             attempts = 150000;
             for (int i = 0; i < blockcount; i++)
             {
-                bool foundblock = false;
+                foundblock = false;
                 int x = rand.Next(mapsize);
                 int y = rand.Next(mapsize);
                 while (!foundblock && attempts > 0)

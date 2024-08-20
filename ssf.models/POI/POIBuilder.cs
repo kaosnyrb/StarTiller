@@ -155,7 +155,7 @@ namespace ssf.POI
 
                     sbc.Items[0].Items[0] = new Cell(myMod)
                     {
-                        EditorID = prefix+newworld.EditorID + "cell" + cellid++,
+                        EditorID = newworld.EditorID + "cell" + cellid++,
                         Grid = new CellGrid() { Point = point },
                         Flags = Cell.Flag.HasWater,
                         XILS = 1,
