@@ -24,6 +24,8 @@ namespace ssf.POI
     {
         static Random rng;
 
+        public static ModKey starfieldesm; 
+
         public static void Setup(BlockLib lib, int seed)
         {
             //Seed the generator
@@ -76,6 +78,7 @@ namespace ssf.POI
                 SSFEventLog.EventLogs.Enqueue(poiname);
                 SSFEventLog.EventLogs.Enqueue(shortname);
                 SSFEventLog.EventLogs.Enqueue(prefix + "wld" + item);
+                starfieldesm = env.LoadOrder[0].ModKey;
 
                 IFormLinkNullable<IKeywordGetter> LocTypeDungeon = new FormKey(env.LoadOrder[0].ModKey, 0x000254BC).ToNullableLink<IKeywordGetter>();
                 IFormLinkNullable<IKeywordGetter> LocTypeClearable = new FormKey(env.LoadOrder[0].ModKey, 0x00064EDE).ToNullableLink<IKeywordGetter>();
@@ -174,6 +177,8 @@ namespace ssf.POI
                     }
 
                 }
+                /*
+                //WITH THE ROVER UPDATE DO WE JUST DO THIS BY HAND?
                 //Add content node to the branchs
                 int id = rng.Next(100);
                 //Block
@@ -201,6 +206,7 @@ namespace ssf.POI
                 };
                 myMod.PlanetContentManagerContentNodes.Add(pcmcnquest);
                 myMod.PlanetContentManagerBranchNodes.Where(x => x.EditorID == "takeoverquestcontent").First().Nodes.Add(pcmcnquest.ToLinkGetter<IPlanetNodeGetter>());
+                */
             }
             foreach (var rec in myMod.EnumerateMajorRecords())
             {

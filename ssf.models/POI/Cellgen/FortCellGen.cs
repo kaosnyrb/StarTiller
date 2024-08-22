@@ -504,6 +504,8 @@ namespace ssf.POI.Cellgen
             int blocksize = 4;
             Random rand = new Random(seed);
 
+            bool placeseedmarker = false;
+
             //This function builds 4 cells from one map, need to build 1 quadrant based on cellPos
             int startx = 0;
             int starty = 0;
@@ -531,6 +533,36 @@ namespace ssf.POI.Cellgen
                 starty = (map.ysize / 2) - 1;
                 endy = map.ysize;
             }
+
+            //Navmesh SeedMarkers - These are used by the navmesh generator.
+            //As we're a shape around the center we should just be able to place a marker in each corner.
+            IFormLinkNullable<IPlaceableObject> navmeshseedmarker = new FormKey(POIBuilder.starfieldesm, 0x000001F8).ToNullableLink<IPlaceableObject>();
+            
+            var tl = new PlacedObject(myMod)
+            {
+                Base = navmeshseedmarker,
+                Position = new P3Float(-94 + (blocksize * startx), 94 - (blocksize * (starty + 1)), -10.0000f)
+            };
+            Tempresults.Add(tl);
+            var tr = new PlacedObject(myMod)
+            {
+                Base = navmeshseedmarker,
+                Position = new P3Float(-94 + (blocksize * endx), 94 - (blocksize * (starty + 1)), -10.0000f)
+            };
+            Tempresults.Add(tr);
+            var bl = new PlacedObject(myMod)
+            {
+                Base = navmeshseedmarker,
+                Position = new P3Float(-94 + (blocksize * startx), 94 - (blocksize * (endy-1)), -10.0000f)
+            };
+            Tempresults.Add(bl);
+            var br = new PlacedObject(myMod)
+            {
+                Base = navmeshseedmarker,
+                Position = new P3Float(-94 + (blocksize * endx), 94 - (blocksize * (endy-1)), -10.0000f)
+            };
+            Tempresults.Add(br);
+
             for (int x = startx; x < endx; x++)
             {
                 for (int y = starty; y < endy; y++)
