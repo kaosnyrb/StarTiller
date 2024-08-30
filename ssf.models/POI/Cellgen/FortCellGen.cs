@@ -108,8 +108,8 @@ namespace ssf.POI.Cellgen
             {
                 int direction = rand.Next(4);
 
-                int rectx = (4 + rand.Next(5)) * 3;
-                int recty = (4 + rand.Next(5)) * 3;
+                int rectx = (4 + rand.Next(2)) * 3;
+                int recty = (4 + rand.Next(2)) * 3;
                 switch(direction)
                 {
                     case 0:
