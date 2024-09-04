@@ -1,9 +1,0 @@
-MutagenObjectType: PlacedObject
-FormKey: 00084D:bryntest.esp
-VersionControl: 12085
-EditorID: ExitBlocksbend
-Base: 00041D32:Starfield.esm
-LightData: {}
-Placement:
-  Position: 4, 4, 0
-  Rotation: 0, 0, 1.5707964
