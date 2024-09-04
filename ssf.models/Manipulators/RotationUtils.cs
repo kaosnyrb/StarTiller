@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace ssf.Manipulators
 {
-    internal class RotationUtils
+    public class RotationUtils
     {
         //This is based off a papyrus function
         //credit of dafydd99 - https://forums.nexusmods.com/index.php?/topic/9011983-local-to-global-rotations-that-old-chestnut/page-2
-
+        
         public static Vector3 rotateAroundZ(Vector3 Rotation, float angle)
         {
             //float[] normalisedAngles = getLocalAngles(originalXAngle, originalYAngle, -originalZAngle)
@@ -79,6 +79,22 @@ namespace ssf.Manipulators
             }
 
             return worldAng;
+        }
+
+        public static float EulerToRadCardinals(int euler)
+        {
+            switch (euler)
+            {
+                case 0:
+                    return 0;
+                case 90:
+                    return 1.57079632f;
+                case 180:
+                    return 3.14159f;
+                case 270:
+                    return 4.71239f;
+            }
+            return 0;
         }
     }
 }

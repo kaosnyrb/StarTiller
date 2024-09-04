@@ -1,5 +1,4 @@
-﻿using DynamicData;
-using Mutagen.Bethesda;
+﻿using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Binary.Parameters;
@@ -9,14 +8,6 @@ using Noggog;
 using ssf.Generation;
 using ssf.Models;
 using ssf.POI.Cellgen;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using static Mutagen.Bethesda.Starfield.Package;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ssf.POI
 {
@@ -24,26 +15,25 @@ namespace ssf.POI
     {
         static Random rng;
 
-        public static ModKey starfieldesm; 
+        public static ModKey starfieldesm;
+        public static StartillerGeneratorInstance MapGenerator;
 
-        public static void Setup(BlockLib lib, int seed)
+        public static void Setup(StartillerGeneratorInstance generator, int seed)
         {
             //Seed the generator
             rng = new Random(seed);
+            MapGenerator = generator;
         }
-
-
 
         public static void Generate(int maxsteps, SeedStarfieldSettings settings)
         {
             string pluginname = settings.EspName;
             string datapath = "";
-
-
             StarfieldMod myMod;
-
             using (var env = GameEnvironment.Typical.Builder<IStarfieldMod, IStarfieldModGetter>(GameRelease.Starfield).Build())
             {
+
+                //Load the ESM
                 var immutableLoadOrderLinkCache = env.LoadOrder.ToImmutableLinkCache();
                 datapath = env.DataFolderPath;
                 //Find the modkey 
@@ -65,30 +55,29 @@ namespace ssf.POI
                         }
                     }
                 }
-                //Location                
+
+
+                //Build the Location Form
                 string poiname = NameGenerator.GetRandomPOIName(settings.seed);
                 string vowels = "aeiouy ";
                 string shortname = poiname.ToLower();
                 shortname = new string(shortname.Where(c => !vowels.Contains(c)).ToArray());
-                string item = shortname;
-
                 string prefix = myMod.Worldspaces.Count().ToString("000");
 
+                SSFEventLog.EventLogs.Enqueue("Building new POI : " + poiname);
+                SSFEventLog.EventLogs.Enqueue(prefix + "wld" + shortname);
+                starfieldesm = env.LoadOrder[0].ModKey;//Store the Starfield ESM for later.
 
-                SSFEventLog.EventLogs.Enqueue(poiname);
-                SSFEventLog.EventLogs.Enqueue(shortname);
-                SSFEventLog.EventLogs.Enqueue(prefix + "wld" + item);
-                starfieldesm = env.LoadOrder[0].ModKey;
-
-                IFormLinkNullable<IKeywordGetter> LocTypeDungeon = new FormKey(env.LoadOrder[0].ModKey, 0x000254BC).ToNullableLink<IKeywordGetter>();
-                IFormLinkNullable<IKeywordGetter> LocTypeClearable = new FormKey(env.LoadOrder[0].ModKey, 0x00064EDE).ToNullableLink<IKeywordGetter>();
-                IFormLinkNullable<IKeywordGetter> LocTypeOE_Keyword = new FormKey(env.LoadOrder[0].ModKey, 0x001A5468).ToNullableLink<IKeywordGetter>();
-                IFormLinkNullable<IKeywordGetter> LocEncSpacers_Exclusive = new FormKey(env.LoadOrder[0].ModKey, 0x00283585).ToNullableLink<IKeywordGetter>();
-                IFormLinkNullable<IKeywordGetter> LocTypeOverlay = new FormKey(env.LoadOrder[0].ModKey, 0x002CA99D).ToNullableLink<IKeywordGetter>();
+                //Location Keywords, Important for bounties/Block Overlay stuff
+                IFormLinkNullable<IKeywordGetter> LocTypeDungeon = new FormKey(starfieldesm, 0x000254BC).ToNullableLink<IKeywordGetter>();
+                IFormLinkNullable<IKeywordGetter> LocTypeClearable = new FormKey(starfieldesm, 0x00064EDE).ToNullableLink<IKeywordGetter>();
+                IFormLinkNullable<IKeywordGetter> LocTypeOE_Keyword = new FormKey(starfieldesm, 0x001A5468).ToNullableLink<IKeywordGetter>();
+                IFormLinkNullable<IKeywordGetter> LocEncSpacers_Exclusive = new FormKey(starfieldesm, 0x00283585).ToNullableLink<IKeywordGetter>();
+                IFormLinkNullable<IKeywordGetter> LocTypeOverlay = new FormKey(starfieldesm, 0x002CA99D).ToNullableLink<IKeywordGetter>();
 
                 Location location = new Location(myMod)
                 {
-                    EditorID = prefix + "loc" + item,
+                    EditorID = prefix + "loc" + shortname,
                     Name = poiname,
                     Keywords = new ExtendedList<IFormLinkGetter<IKeywordGetter>>(),
                     WorldLocationRadius = 0,
@@ -104,7 +93,7 @@ namespace ssf.POI
 
                 myMod.Locations.Add(location);
 
-                //TopCell
+                //Topcell is the Persistant cell for the Worldspace
                 var topcell = new Cell(myMod)
                 {
                     Flags = Cell.Flag.HasWater,
@@ -116,26 +105,30 @@ namespace ssf.POI
                 };
 
                 //Worldspace and terrain
+                //To parameterise:
+                string realworldspaceeditorid = "stbblock001";
+                string realSurfaceBlockEditorId = "OverlayBlockstbblock001";
 
-                Worldspace baseworld = myMod.Worldspaces.Where(x => x.EditorID == "stbblock001").First();
+                //We clone the existing Worldspace then build ontop of it.
+                Worldspace baseworld = myMod.Worldspaces.Where(x => x.EditorID == realworldspaceeditorid).First();
                 var newworld = myMod.Worldspaces.DuplicateInAsNewRecord(baseworld);
-                SurfaceBlock stbblock = myMod.SurfaceBlocks.Where(x => x.EditorID == "OverlayBlockstbblock001").First();
+                SurfaceBlock stbblock = myMod.SurfaceBlocks.Where(x => x.EditorID == realSurfaceBlockEditorId).First();
                 var newblock = myMod.SurfaceBlocks.DuplicateInAsNewRecord(stbblock);
 
-                string newterrainfile = "Data\\Terrain\\" + prefix + "wld" + item + ".btd";
+                //Terrain files must match worldspace names percisely.
+                string newterrainfile = "Data\\Terrain\\" + prefix + "wld" + shortname + ".btd";
                 try
                 {
-                    File.Copy(env.DataFolderPath + "\\Terrain\\stbblock001.btd", env.DataFolderPath + "\\Terrain\\" + prefix + "wld" + item + ".btd");
+                    File.Copy(env.DataFolderPath + "\\Terrain\\stbblock001.btd", env.DataFolderPath + "\\Terrain\\" + prefix + "wld" + shortname + ".btd");
                 }
                 catch
                 {
                     SSFEventLog.EventLogs.Enqueue("Terrain probs exists");
                 }
                 newblock.ANAM = newterrainfile;
-                newblock.EditorID = "OverlayBlock" + prefix + "wld" + item;
+                newblock.EditorID = "OverlayBlock" + prefix + "wld" + shortname;
                 ((WorldSpaceOverlayComponent)newworld.Components[0]).SurfaceBlock = newblock.ToNullableLink<ISurfaceBlockGetter>();
-
-                newworld.EditorID = prefix + "wld" + item;
+                newworld.EditorID = prefix + "wld" + shortname;
                 newworld.Location = location.ToNullableLink<ILocationGetter>();
                 newworld.Name = poiname;
                 newworld.TopCell = new Cell(myMod)
@@ -149,8 +142,9 @@ namespace ssf.POI
                 };
 
                 //Build map
+                //Now we have a worldspace we have to fill each of the Cells in it.
                 int cellid = 0;
-                FortCellGen.BuildMap(myMod, settings.seed);
+                MapGenerator.BuildMap(myMod, settings.seed);
                 bool placedboss = false;
                 foreach (var sbc in newworld.SubCells)
                 {
@@ -166,7 +160,8 @@ namespace ssf.POI
                         WaterHeight = -200,                        
                     };
 
-                    var packins = FortCellGen.BuildCell(myMod, settings.seed, point);
+                    // Generate each cell in the worldspace and add the Persistant and Temporary items.
+                    var packins = MapGenerator.BuildCell(myMod, settings.seed, point);
                     foreach (var pack in packins.Persistant)
                     {
                         newworld.TopCell.Persistent.Add(pack);
@@ -176,42 +171,13 @@ namespace ssf.POI
                         sbc.Items[0].Items[0].Temporary.Add(pack);
                     }
 
-                }
-                /*
-                //WITH THE ROVER UPDATE DO WE JUST DO THIS BY HAND?
-                //Add content node to the branchs
-                int id = rng.Next(100);
-                //Block
-                var pcmcn = new PlanetContentManagerContentNode(myMod)
-                {
-                    EditorID = "block" + item + id,
-                    Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
-                };
-                myMod.PlanetContentManagerContentNodes.Add(pcmcn);
-                myMod.PlanetContentManagerBranchNodes.Where(x => x.EditorID == "takeovercontent").First().Nodes.Add(pcmcn.ToLinkGetter<IPlanetNodeGetter>());
-                //Scan
-                var pcmcnscan = new PlanetContentManagerContentNode(myMod)
-                {
-                    EditorID = "scan" + item + id,
-                    Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
-                };
-                myMod.PlanetContentManagerContentNodes.Add(pcmcnscan);                
-                myMod.PlanetContentManagerBranchNodes.Where(x => x.EditorID == "takeoverscancontent1").First().Nodes.Add(pcmcnscan.ToLinkGetter<IPlanetNodeGetter>());
-
-                //Quest
-                var pcmcnquest = new PlanetContentManagerContentNode(myMod)
-                {
-                    EditorID = "quest" + item + id,
-                    Content = newworld.ToNullableLink<IPlanetContentTargetGetter>()
-                };
-                myMod.PlanetContentManagerContentNodes.Add(pcmcnquest);
-                myMod.PlanetContentManagerBranchNodes.Where(x => x.EditorID == "takeoverquestcontent").First().Nodes.Add(pcmcnquest.ToLinkGetter<IPlanetNodeGetter>());
-                */
+                }                
             }
+            //This is needed for now as Mutagen can't handle compression. Believe this is fixed in the CK.
             foreach (var rec in myMod.EnumerateMajorRecords())
             {
                 rec.IsCompressed = false;
-                //SSFEventLog.EventLogs.Enqueue(rec.FormKey.ToString() + " " + rec.EditorID);
+                //SSFEventLog.EventLogs.Enqueue(rec.FormKey.ToString() + " " + rec.EditorID);//Useful for listing Formids
             }
             myMod.WriteToBinary(datapath + "\\" + pluginname + ".esm",new BinaryWriteParameters()
             {

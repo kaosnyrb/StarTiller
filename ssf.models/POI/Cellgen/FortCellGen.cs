@@ -3,6 +3,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Starfield;
 using Noggog;
+using ssf.Manipulators;
 using ssf.Models;
 using System;
 using System.Collections.Generic;
@@ -14,29 +15,12 @@ using System.Threading.Tasks;
 
 namespace ssf.POI.Cellgen
 {
-    public static class FortCellGen
+    public class FortCellGen : StartillerGeneratorInstance
     {
+        Dictionary<string, List<FormKey>> packinLib = new Dictionary<string, List<FormKey>>();
+        GenerationMap map;
 
-        public static Dictionary<string, List<FormKey>> packinLib = new Dictionary<string, List<FormKey>>();
-        public static GenerationMap map;
-
-        public static float GetRot(int euler)
-        {
-            switch (euler)
-            {
-                case 0:
-                    return 0;
-                case 90:
-                    return 1.57079632f;
-                case 180:
-                    return 3.14159f;
-                case 270:
-                    return 4.71239f;
-            }
-            return 0;
-        }
-
-        public static List<FormKey> GetPackinFormsForId(StarfieldMod myMod, string id)
+        public List<FormKey> GetPackinFormsForId(StarfieldMod myMod, string id)
         {
             List<FormKey> to_pkn_base = new List<FormKey>();
             for (int i = 0; i < myMod.PackIns.Count; i++)
@@ -52,7 +36,10 @@ namespace ssf.POI.Cellgen
             return to_pkn_base;
         }
 
-        public static void BuildPkns(StarfieldMod myMod)
+        //This loads the various Packins we need into the packinLib.
+        //Note that it does a wildcard search on editorIds, this is how we do variations.
+        //Each Key has 1 or more prefabs, later when building we select a random one from this list.
+        public void BuildPkns(StarfieldMod myMod)
         {
             packinLib = new Dictionary<string, List<FormKey>>
             {
@@ -73,7 +60,9 @@ namespace ssf.POI.Cellgen
         }
 
         //This designs the layout
-        public static void BuildMap(StarfieldMod myMod, int seed)
+        //All the actual Procgen happens here.
+        //We build a GenerationMap and then convert it to Starfield entries in the BuildCell function
+        public void BuildMap(StarfieldMod myMod, int seed)
         {
             //Load the packins
             BuildPkns(myMod);
@@ -494,18 +483,14 @@ namespace ssf.POI.Cellgen
         }
 
         //This function takes a map and builds one of four cells
-        public static CellGenerationResult BuildCell(StarfieldMod myMod, int seed, P2Int cellPos)
+        public CellGenerationResult BuildCell(StarfieldMod myMod, int seed, P2Int cellPos)
         {
-            var Persistantresults = new List<IPlaced>();
-            var Tempresults = new List<IPlaced>();
-
-            int edgepadding = 2;
-            int cellsize = 100;
-            int blocksize = 4;
             Random rand = new Random(seed);
-
-            bool placeseedmarker = false;
-
+            //Persistant objects are used for distant LODs, and also mapmarkers and such
+            var Persistantresults = new List<IPlaced>();
+            //Tempory objects are basically everything else.
+            var Tempresults = new List<IPlaced>();
+            int blocksize = 4;
             //This function builds 4 cells from one map, need to build 1 quadrant based on cellPos
             int startx = 0;
             int starty = 0;
@@ -598,7 +583,7 @@ namespace ssf.POI.Cellgen
                                     {
                                         Base = prefab.ToNullableLink<IPlaceableObjectGetter>(),
                                         Position = pos,
-                                        Rotation = new P3Float(0, 0, GetRot(map.tiles[x][y].rotation)),
+                                        Rotation = new P3Float(0, 0, RotationUtils.EulerToRadCardinals(map.tiles[x][y].rotation)),
                                         MajorRecordFlagsRaw = 66560
                                     };
                                     Persistantresults.Add(inewblock);
@@ -609,7 +594,7 @@ namespace ssf.POI.Cellgen
                                     {
                                         Base = prefab.ToNullableLink<IPlaceableObjectGetter>(),
                                         Position = pos,
-                                        Rotation = new P3Float(0, 0, GetRot(map.tiles[x][y].rotation)),
+                                        Rotation = new P3Float(0, 0, RotationUtils.EulerToRadCardinals(map.tiles[x][y].rotation)),
                                     };
                                     Tempresults.Add(inewblock);
                                 }

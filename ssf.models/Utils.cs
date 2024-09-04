@@ -1,4 +1,7 @@
-﻿using ssf.IO;
+﻿using Mutagen.Bethesda.Environments;
+using Mutagen.Bethesda.Starfield;
+using Mutagen.Bethesda;
+using ssf.IO;
 using ssf.Manipulators;
 using ssf.Models;
 using System;
@@ -11,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using static System.Reflection.Metadata.BlobBuilder;
+using FluentResults;
 
 namespace ssf
 {
@@ -96,6 +100,21 @@ namespace ssf
         public static float ToDegrees(float rads)
         {
             return (float)(rads * (180 / Math.PI));
+        }
+
+        public static List<string> GetESM()
+        {
+            List<string> res = new List<string>();
+            using (var env = GameEnvironment.Typical.Builder<IStarfieldMod, IStarfieldModGetter>(GameRelease.Starfield).Build())
+            {
+
+                //Load the ESM
+                foreach(var link in env.LoadOrder)
+                {
+                    res.Add(link.Key.FileName);
+                }
+            }
+            return res;
         }
     }
 }
