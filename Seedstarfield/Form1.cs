@@ -24,9 +24,14 @@ namespace Seedstarfield
         {
             InitializeComponent();
             //Load settings
-            settings = YamlImporter.getObjectFromFile<SeedStarfieldSettings>("settings.yaml");
-            //Get list of ESMs
-            ESMDropdown.Items.AddRange(Utils.GetESM().ToArray());
+            try
+            {
+                settings = YamlImporter.getObjectFromFile<SeedStarfieldSettings>("settings.yaml");
+            }
+            catch (Exception ex)
+            {
+                settings = new SeedStarfieldSettings();
+            }
             //Add the generators
             generatordropbox.Items.Add("POI - Fort");
             SSFEventLog.EventLogs = new Queue<string>();
@@ -98,6 +103,13 @@ namespace Seedstarfield
         private void generatordropbox_SelectedIndexChanged(object sender, EventArgs e)
         {
             settings.GeneratorName = generatordropbox.SelectedText;
+        }
+
+        private void loadesm_Click(object sender, EventArgs e)
+        {
+            //Get list of ESMs
+            ESMDropdown.Items.AddRange(Utils.GetESM().ToArray());
+
         }
     }
 }

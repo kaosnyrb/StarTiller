@@ -41,6 +41,7 @@
             label1 = new Label();
             label2 = new Label();
             generatordropbox = new ComboBox();
+            loadesm = new Button();
             SuspendLayout();
             // 
             // button1
@@ -151,11 +152,22 @@
             generatordropbox.TabIndex = 19;
             generatordropbox.SelectedIndexChanged += generatordropbox_SelectedIndexChanged;
             // 
+            // loadesm
+            // 
+            loadesm.Location = new Point(281, 6);
+            loadesm.Name = "loadesm";
+            loadesm.Size = new Size(102, 23);
+            loadesm.TabIndex = 20;
+            loadesm.Text = "Load ESM List";
+            loadesm.UseVisualStyleBackColor = true;
+            loadesm.Click += loadesm_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(437, 718);
+            Controls.Add(loadesm);
             Controls.Add(generatordropbox);
             Controls.Add(label2);
             Controls.Add(label1);
@@ -187,5 +199,6 @@
         private Label label1;
         private Label label2;
         private ComboBox generatordropbox;
+        public Button loadesm;
     }
 }
