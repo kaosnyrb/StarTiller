@@ -1,4 +1,7 @@
 # StarTiller
+More info in the wiki
+https://github.com/kaosnyrb/StarTiller/wiki#creating-a-seed-plugin
+
 A app for generating seed based Starfield content
 
 This is based on the work done on Mundusform / Undaunted.
